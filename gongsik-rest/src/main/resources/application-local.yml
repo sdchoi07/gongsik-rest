@@ -4,5 +4,5 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/gsw?serverTimezone=Asia/Seoul
-    username: root
-    password: gongsik1204
+    username: gongsik-local
+    password: gongsik1204local

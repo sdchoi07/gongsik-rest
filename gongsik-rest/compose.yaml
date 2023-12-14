@@ -4,7 +4,7 @@ services:
     image: 'mysql:latest'
     environment:
       - 'MYSQL_DATABASE=gsw'
-      - 'MYSQL_ROOT_PASSWORD=gongsik1204'
+      - 'MYSQL_ROOT_PASSWORD=gongsik1204local'
     ports:
       - '3306'
     networks:
@@ -19,8 +19,8 @@ services:
     restart: always               ## 매번 프로젝트를 다시 실행한다. 
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gsw?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: gongsik1204
+      SPRING_DATASOURCE_USERNAME: gongsik-local
+      SPRING_DATASOURCE_PASSWORD: gongsik1204local
       spring.profiles.active: local                ## 스프링 active profile 설정
     depends_on:                   ## mysql 컨테이너가 올라온 뒤에 이 컨테이너가 올라올 수 있도록 한다.
       - mysql
