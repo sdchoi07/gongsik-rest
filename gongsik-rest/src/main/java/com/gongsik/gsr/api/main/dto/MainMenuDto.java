@@ -1,6 +1,7 @@
 package com.gongsik.gsr.api.main.dto;
 
 import com.gongsik.gsr.api.CommonDto;
+import com.gongsik.gsr.api.main.entity.MainMenuEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,4 +21,6 @@ public class MainMenuDto extends CommonDto{
 	private int menuOrderNo;
 	private String menuParentNo;
 	private String menuUrl;
+	
+	
 }

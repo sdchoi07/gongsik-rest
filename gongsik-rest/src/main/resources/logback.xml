@@ -46,12 +46,12 @@
     </appender>
     
     <logger name="jdbc" level="OFF" />
-    <logger name="jdbc.sqlonly" level="OFF" />
-    <logger name="jdbc.sqltiming" level="OFF" />
-    <logger name="jdbc.audit" level="OFF" />
-    <logger name="jdbc.resultset" level="OFF" />
-    <logger name="jdbc.resultsettable" level="OFF" />
-    <logger name="jdbc.connection" level="OFF" />
+    <logger name="jdbc.sqlonly" level="OFF" ><appender-ref ref="console"/></logger>
+    <logger name="jdbc.sqltiming" level="info" ><appender-ref ref="console"/></logger>
+    <logger name="jdbc.audit" level="OFF" ><appender-ref ref="console"/></logger>
+    <logger name="jdbc.resultset" level="info" ><appender-ref ref="console"/></logger>
+    <logger name="jdbc.resultsettable" level="info" ><appender-ref ref="console"/></logger>
+    <logger name="jdbc.connection" level="OFF" ><appender-ref ref="console"/></logger>
     <!-- 로그 전역 세팅 -->
     <root level="${LOG_LEVEL}">
         <!-- 위에 설정한 콘솔 설정 추가 -->

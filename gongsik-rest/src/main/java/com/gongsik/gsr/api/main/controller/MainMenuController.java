@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gongsik.gsr.api.main.dto.MainMenuDto;
 import com.gongsik.gsr.api.main.service.MainMenuService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/main/")	
 public class MainMenuController {

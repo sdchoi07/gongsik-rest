@@ -13,3 +13,7 @@ logging:
      com:
      gongsik:
      gsw: DEBUG
+     org:
+      hibernate:
+        orm.jdbc.bind: trace
+        SQL: debug
