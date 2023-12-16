@@ -5,6 +5,9 @@ spring:
       user:
        name: user
        password: 1111
+mvc:
+  pathmatch:
+    matching-strategy: ant_path_matcher
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
@@ -17,3 +20,9 @@ logging:
       hibernate:
         orm.jdbc.bind: trace
         SQL: debug
+#springdoc:
+#  api-docs:
+#    path: /api-docs
+springdoc:
+ default-consumes-media-type: application/json 
+ default-produces-media-type: application/json 
