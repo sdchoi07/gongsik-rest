@@ -26,8 +26,7 @@ public class MainMenuService {
 	private MainMenuRepository mainMenuRepository;
 	 
 	public List<MainMenuDto> menuListAll() {
-
-		 List<MainMenuEntity> menuList = mainMenuRepository.findByMenuOrderNo(1);
+		 List<MainMenuEntity> menuList = mainMenuRepository.findByMenuParentNo("0");
 		 List<MainMenuDto> menus =  menuList.stream()
 										    .map(menu -> {
 										        MainMenuDto dto = new MainMenuDto();

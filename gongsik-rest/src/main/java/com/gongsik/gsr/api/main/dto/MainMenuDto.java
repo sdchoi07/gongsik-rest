@@ -18,7 +18,6 @@ import lombok.ToString;
 @Schema(description = "MenuList")
 public class MainMenuDto extends CommonDto{
 	
-	@Schema(description = "dl")
 	private String menuNm;
 	private String menuGroupNo;
 	private int menuOrderNo;

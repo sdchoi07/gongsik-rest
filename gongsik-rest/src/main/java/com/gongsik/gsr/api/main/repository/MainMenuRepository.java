@@ -15,7 +15,7 @@ import com.gongsik.gsr.api.main.entity.MainMenuEntity;
 public interface MainMenuRepository extends JpaRepository<MainMenuEntity, String>{
 	
 	//기본 메뉴 조회 쿼리
-   	List<MainMenuEntity> findByMenuOrderNo(@Param("menuOrderNo") int menuOrderNo);
+   	List<MainMenuEntity> findByMenuParentNo(String menuParentNo );
 
 
 }
