@@ -1,7 +1,8 @@
 package com.gongsik.gsr.api.main.entity;
 
 
-import com.gongsik.gsr.api.main.CommonEntity;
+import com.gongsik.gsr.api.common.entity.CommonEntity;
+import com.querydsl.core.annotations.QueryEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -24,14 +25,17 @@ public class MainMenuEntity{
 	@Column(name = "MENU_NM")
 	private String menuNm;
 	
+	@Column(name = "MENU_NO", nullable = false)
+    private int menuNo;
+
 	@Column(name = "MENU_GROUP_NO", nullable = false)
     private String menuGroupNo;
 
-    @Column(name = "MENU_ORDER_NO")
+    @Column(name = "MENU_ORDER_NO" )
     private int menuOrderNo;
 
-    @Column(name = "MENU_PARENT_NO", nullable = true)
-    private String menuParentNo;
+    @Column(name = "MENU_LEVEL_NO", nullable = true)
+    private int menuLevelNo;
     
     @Column(name = "MENU_URL", nullable = true)
     private String menuUrl;

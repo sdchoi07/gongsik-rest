@@ -1,4 +1,4 @@
-package com.gongsik.gsr.api.main;
+package com.gongsik.gsr.api.common.entity;
 
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -11,14 +11,14 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class CommonEntity {
 	@CreatedBy
-    @Column(name = "REG_ID")
-    private String regId;
+    @Column(name = "CRT_ID")
+    private String crtId;
     
-    @Column(name = "REG_IP")
-    private String regIp;
+    @Column(name = "CRT_IP")
+    private String crtIp;
     @CreatedDate
-    @Column(name = "REG_DT", insertable = false, updatable = false, columnDefinition = "datetime default CURRENT_TIMESTAMP")
-    private String regDt;
+    @Column(name = "CRT_DT", insertable = false, updatable = false, columnDefinition = "datetime default CURRENT_TIMESTAMP")
+    private String crtDt;
     @LastModifiedBy
     @Column(name = "CHG_ID")
     private String chgId;

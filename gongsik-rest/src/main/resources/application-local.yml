@@ -9,7 +9,7 @@ spring:
   jpa:
    database-platform: org.hibernate.dialect.MySQLDialect
    hibernate:
-    ddl-auto: update
+    ddl-auto: none
    properties:
     hibernate:
      use_sql_comments: true  # sql 쿼리의 추가정보를 보여줍니다.

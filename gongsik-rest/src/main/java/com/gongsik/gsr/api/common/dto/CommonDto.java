@@ -1,7 +1,6 @@
-package com.gongsik.gsr.api;
+package com.gongsik.gsr.api.common.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,3 +19,4 @@ public class CommonDto {
 	private String chgIp;
 	private String chgDt;
 }
+
