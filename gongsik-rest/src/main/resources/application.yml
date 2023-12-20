@@ -1,5 +1,5 @@
 spring:
-  profiles:
+  profiles: 
     active: local
   security:
       user:
@@ -15,11 +15,25 @@ logging:
    level:
      com:
      gongsik:
-     gsw: DEBUG
+     gsw: INFO
      org:
-      hibernate:
-        orm.jdbc.bind: trace
-        SQL: debug
+#      hibernate:
+#        orm.jdbc.bind: trace
+#        SQL: debug
+
+        # Disable p6spy
+#decorator:
+#  datasource:
+#    p6spy:
+#      enable-logging: false
+
+---
+# Add p6spy profile
+#
+#decorator:
+#  datasource:
+#    p6spy:
+#      enable-logging: true
 #springdoc:
 #  api-docs:
 #    path: /api-docs

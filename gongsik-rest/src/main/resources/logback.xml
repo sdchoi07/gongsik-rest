@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 60초마다 설정 파일의 변경을 확인 하여 변경시 갱신 -->
-<configuration scan="true" scanPeriod="60 seconds">
+<configuration scan="true" scanPeriod="60 seconds" >
 <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
  <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
     <!-- 로그 파일이 저장될 경로 -->
@@ -45,13 +45,16 @@
         </rollingPolicy>
     </appender>
     
+<!--     <loggers>
     <logger name="jdbc" level="OFF" />
-    <logger name="jdbc.sqlonly" level="OFF" ><appender-ref ref="console"/></logger>
-    <logger name="jdbc.sqltiming" level="info" ><appender-ref ref="console"/></logger>
-    <logger name="jdbc.audit" level="OFF" ><appender-ref ref="console"/></logger>
-    <logger name="jdbc.resultset" level="info" ><appender-ref ref="console"/></logger>
-    <logger name="jdbc.resultsettable" level="info" ><appender-ref ref="console"/></logger>
-    <logger name="jdbc.connection" level="OFF" ><appender-ref ref="console"/></logger>
+    <logger name="jdbc.sqlonly" level="OFF" ></logger>
+    <logger name="jdbc.sqltiming" level="OFF" ></logger>
+    <logger name="jdbc.audit" level="OFF" ></logger>
+    <logger name="jdbc.resultset" level="OFF" ></logger>
+    <logger name="jdbc.resultsettable" level="INFO" ></logger>
+    <logger name="jdbc.connection" level="OFF" ></logger>
+    </loggers> -->
+    
     <!-- 로그 전역 세팅 -->
     <root level="${LOG_LEVEL}">
         <!-- 위에 설정한 콘솔 설정 추가 -->
@@ -59,4 +62,8 @@
         <!-- 위에 설정한 파일 설정 추가 -->
         <appender-ref ref="FILE"/>
     </root>
+    <!-- 
+     <logger name="log4jdbc.log4j2" level="error" additivity="false">
+      <appender-ref ref="log4jdbc_file"/>
+    </logger> -->
 </configuration>
