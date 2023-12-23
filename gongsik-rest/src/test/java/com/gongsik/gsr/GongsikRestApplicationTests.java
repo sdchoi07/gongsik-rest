@@ -17,7 +17,8 @@ class GongsikRestApplicationTests {
 	private MockMvc mockMvc;
 	@Test
 	void contextLoads() throws Exception {
-			menuListSelect();
+			//menuListSelect();
+			joinCountryPh();
 		
 		
 	
@@ -32,6 +33,15 @@ class GongsikRestApplicationTests {
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
 	}
+	
+	//메뉴 조회 리스트 
+		void joinCountryPh() throws Exception {
+			mockMvc.perform(MockMvcRequestBuilders.get("/api/account/join/countryPh") // API 엔드포인트 URL
+	                .contentType(MediaType.APPLICATION_JSON))
+	                .andExpect(MockMvcResultMatchers.status().isOk())
+	                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+	                .andReturn();
+		}
 
 }
  
