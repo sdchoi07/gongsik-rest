@@ -8,10 +8,8 @@ import lombok.ToString;
 @ToString
 @Schema(description = "countryPh")
 public class JoinDto {
-	private long countryId;
 	private String countryKoNm;
 	private String countryEnNm;
 	private String countryPh;
-	private String crtDt;
-	private String expireDt;
+	private String countryFullNm;
 }

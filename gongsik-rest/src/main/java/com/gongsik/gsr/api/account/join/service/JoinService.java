@@ -20,21 +20,19 @@ public class JoinService {
 	
 	@Autowired
 	private InternationalPhoneNumberRepository internationalPhoneNumberRepository;
+	
 	public List<JoinDto> countryPhNmList() {
-			List<InternationalPhoneNumberEntity> listEntity=  internationalPhoneNumberRepository.findAll();
-			List<JoinDto> joinList =  listEntity.stream()
-											   .map(mapEntity -> {
-												JoinDto dto = new JoinDto();
-											    dto.setCountryEnNm(mapEntity.getCountryEnNm());
-											    dto.setCountryId(mapEntity.getCountryId());
-											    dto.setCountryKoNm(mapEntity.getCountryKoNm());
-											    dto.setCountryEnNm(mapEntity.getCountryEnNm());
-											    dto.setCrtDt(mapEntity.getCrtDt());
-											    dto.setExpireDt(mapEntity.getExpireDt());
-											    	return dto;
-												   
-											   }).collect(Collectors.toList());
-		return  joinList;
+		    //조회된 국제번호를 String형 list에 저장
+			List<JoinDto> list=  internationalPhoneNumberRepository.findAllOnlyCountryPhNm();
+			//저장된 listEntity를 dto 하나씩 저장하여 joinList에 저장
+//			List<JoinDto> joinList =  listEntity.stream()
+//											   .map(mapEntity -> { 
+//												JoinDto dto = new JoinDto(); //entitiy에 저장한 data 를 dto에 저장
+//											    dto.setCountryId(mapEntity.getCountryId());
+//											    	return dto;
+//												   
+//											   }).collect(Collectors.toList()); //각각 저장된 dto는 list에 담기 
+		return  list;
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.gongsik.gsr.api.main.entity;
+package com.gongsik.gsr.api.main.menu.entity;
 
 
 import com.gongsik.gsr.api.common.entity.CommonEntity;

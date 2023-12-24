@@ -36,11 +36,16 @@ class GongsikRestApplicationTests {
 	
 	//메뉴 조회 리스트 
 		void joinCountryPh() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/api/account/join/countryPh") // API 엔드포인트 URL
+			mockMvc.perform(MockMvcRequestBuilders.get("/api/account/join/countryPhList") // API 엔드포인트 URL
 	                .contentType(MediaType.APPLICATION_JSON))
 	                .andExpect(MockMvcResultMatchers.status().isOk())
 	                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
 	                .andReturn();
+//			assertDoesNotThrow(() ->
+//		            userRepository.findUserNumByDivisionJpql());
+//		    System.out.println("JPQL 정상");
+//		    listJpql = userRepository.findUserNumByDivisionJpql();
+//		    assertNotNull(listJpql);
 		}
 
 }

@@ -1,4 +1,4 @@
-package com.gongsik.gsr.api.main.controller;
+package com.gongsik.gsr.api.main.menu.controller;
 
 import java.util.List;
 
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gongsik.gsr.api.main.dto.MainMenuDto;
-import com.gongsik.gsr.api.main.service.MainMenuService;
+import com.gongsik.gsr.api.main.menu.dto.MainMenuDto;
+import com.gongsik.gsr.api.main.menu.service.MainMenuService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -3,7 +3,7 @@ package com.gongsik.gsr.api.account.join.entity;
 import org.hibernate.annotations.Comment;
 
 import com.gongsik.gsr.api.common.entity.CommonEntity;
-import com.gongsik.gsr.api.main.entity.MainMenuEntity;
+import com.gongsik.gsr.api.main.menu.entity.MainMenuEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

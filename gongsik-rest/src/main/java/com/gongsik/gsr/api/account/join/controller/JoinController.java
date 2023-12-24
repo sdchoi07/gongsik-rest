@@ -27,13 +27,15 @@ public class JoinController {
 	@Autowired
 	private JoinService joinService;
 	
+	//국제번호 조회 
 	@GetMapping("/countryPhList")
 	@Operation(summary = "국제번호", description = "국제번호 각 나라 조회")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "성공")
 		})
 	public ResponseEntity<List<JoinDto>> countryPhNm(){
-			List<JoinDto> list = joinService.countryPhNmList();
+		//국제번호 list에 담기 
+		List<JoinDto> list = joinService.countryPhNmList();
 		return new ResponseEntity<>(list, HttpStatus.OK); 
 	}
 	

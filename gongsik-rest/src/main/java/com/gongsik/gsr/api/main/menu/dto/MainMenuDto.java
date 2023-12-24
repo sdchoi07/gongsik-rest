@@ -1,4 +1,4 @@
-package com.gongsik.gsr.api.main.dto;
+package com.gongsik.gsr.api.main.menu.dto;
 
 import com.gongsik.gsr.api.common.dto.CommonDto;
 

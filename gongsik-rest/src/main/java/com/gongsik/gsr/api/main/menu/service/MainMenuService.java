@@ -1,4 +1,4 @@
-package com.gongsik.gsr.api.main.service;
+package com.gongsik.gsr.api.main.menu.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.gongsik.gsr.api.main.dto.MainMenuDto;
-import com.gongsik.gsr.api.main.entity.MainMenuEntity;
 import com.gongsik.gsr.api.main.entity.QMainMenuEntity;
-import com.gongsik.gsr.api.main.repository.MainMenuRepository;
+import com.gongsik.gsr.api.main.menu.dto.MainMenuDto;
+import com.gongsik.gsr.api.main.menu.entity.MainMenuEntity;
+import com.gongsik.gsr.api.main.menu.repository.MainMenuRepository;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
