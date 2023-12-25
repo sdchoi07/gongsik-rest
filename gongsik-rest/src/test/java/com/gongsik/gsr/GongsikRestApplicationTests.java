@@ -34,7 +34,7 @@ class GongsikRestApplicationTests {
                 .andReturn();
 	}
 	
-	//메뉴 조회 리스트 
+	//국제 번호 조회 
 		void joinCountryPh() throws Exception {
 			mockMvc.perform(MockMvcRequestBuilders.get("/api/account/join/countryPhList") // API 엔드포인트 URL
 	                .contentType(MediaType.APPLICATION_JSON))
