@@ -17,23 +17,24 @@ logging:
      gongsik:
      gsw: INFO
      org:
+     
 #      hibernate:
 #        orm.jdbc.bind: trace
 #        SQL: debug
 
         # Disable p6spy
-#decorator:
-#  datasource:
-#    p6spy:
-#      enable-logging: false
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: false
 
 ---
 # Add p6spy profile
 #
-#decorator:
-#  datasource:
-#    p6spy:
-#      enable-logging: true
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
 #springdoc:
 #  api-docs:
 #    path: /api-docs

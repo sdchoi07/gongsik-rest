@@ -12,9 +12,9 @@ import lombok.ToString;
 @Setter
 @ToString
 public class CommonDto {
-	private String regId;
-	private String regIp;
-	private String regDt;
+	private String crtId;
+	private String crtIp;
+	private String crtDt;
 	private String chgId;
 	private String chgIp;
 	private String chgDt;

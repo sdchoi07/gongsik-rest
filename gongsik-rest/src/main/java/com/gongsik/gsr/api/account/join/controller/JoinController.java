@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/account/join")
+@RequestMapping("/api/account")
 @Tag(name = "Join Controller", description = "회원가입")
 @RequiredArgsConstructor
 public class JoinController {
@@ -28,7 +28,7 @@ public class JoinController {
 	private JoinService joinService;
 	
 	//국제번호 조회 
-	@GetMapping("/countryPhList")
+	@GetMapping("/join/countryPhList")
 	@Operation(summary = "국제번호", description = "국제번호 각 나라 조회")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "성공")
@@ -38,5 +38,17 @@ public class JoinController {
 		List<JoinDto> list = joinService.countryPhNmList();
 		return new ResponseEntity<>(list, HttpStatus.OK); 
 	}
+	
+	//핸드폰 인증 번호 저장 
+//	@GetMapping("/join/AuthNoSave")
+//	@Operation(summary = "국제번호", description = "국제번호 각 나라 조회")
+//	@ApiResponses(value = {
+//			@ApiResponse(responseCode = "200", description = "성공")
+//		})
+//	public ResponseEntity<List<JoinDto>> authNoSave(){
+//		//국제번호 list에 담기 
+//		List<JoinDto> list = joinService.countryPhNmList();
+//		return new ResponseEntity<>(list, HttpStatus.OK); 
+//	}
 	
 }

@@ -4,8 +4,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/gsw?serverTimezone=Asia/Seoul
-    username: gongsik-local
-    password: gongsik1204local    
+    username: root
+    password: gongsik1204   
   jpa:
    database-platform: org.hibernate.dialect.MySQLDialect
    hibernate:
@@ -15,4 +15,13 @@ spring:
      use_sql_comments: true  # sql 쿼리의 추가정보를 보여줍니다.
      format_sql: true  # sql query formatting
      dialect: org.hibernate.dialect.MySQL8Dialect
+#  data:
+#   redis:
+#    host: localhost  # Redis 호스트
+#    port: 6379 
      
+#sms 문자인증
+#coolsms:
+# api:
+#  key: NCSTLEJAYL0JPUHM
+#  secret: ZD4B8CRRXYL5MO9NKY8YMB8LJZ1YHJJM

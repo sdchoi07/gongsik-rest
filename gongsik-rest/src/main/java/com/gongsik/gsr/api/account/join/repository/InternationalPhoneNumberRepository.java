@@ -15,10 +15,14 @@ public interface InternationalPhoneNumberRepository extends JpaRepository<Intern
 	//국제번호 list 조회
 	@Query(value =  "       SELECT new com.gongsik.gsr.api.account.join.dto.JoinDto																						"
 				  + "          	(																																		"
-				  + "			  CONCAT(a.countryKoNm, '(', REGEXP_REPLACE(a.countryEnNm,' ', ''), ')' , ' +', REGEXP_REPLACE(a.countryPh,' ','')) AS countryFullNm    "
-				  + "      		 ,a.countryPh AS countryPh																						"
-				  + "           )                       																											 	"
-				  + "		 FROM InternationalPhoneNumberEntity a")
+				  + "			  CONCAT(a.countryKoNm, '(', a.countryEnNm, ')' , ' +', a.countryPh) AS countryFullNm    												"
+				  + "			  ,a.countryPh AS countryPh   		 																									"
+				  + "			)	                       																											 	"
+				  + "		 FROM InternationalPhoneNumberEntity a																									    "
+				  + "        WHERE DATE_FORMAT(a.crtDt,'%Y-&m-&D') <= DATE_FORMAT( CURRENT_TIMESTAMP, '%Y-%m-%d') 													    "
+				  + "          AND DATE_FORMAT( a.expireDt, '%Y-%m-%d') = DATE_FORMAT( '9999-12-31', '%Y-%m-%d')														"
+				  + "          AND a.useYn = 'Y' 																														"
+				  + "          AND a.delYn = 'N' 																														")
 	List<JoinDto> findAllOnlyCountryPhNm();
 	
 }

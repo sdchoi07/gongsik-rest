@@ -1,9 +1,7 @@
 package com.gongsik.gsr.api.account.join.entity;
 
-import org.hibernate.annotations.Comment;
-
-import com.gongsik.gsr.api.common.entity.CommonEntity;
-import com.gongsik.gsr.api.main.menu.entity.MainMenuEntity;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +9,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,11 +38,19 @@ public class InternationalPhoneNumberEntity {
 	@Column(name = "COUNTRY_PH", nullable = false)
     private String countryPh;
 	
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "CRT_DT")
-	private String crtDt;
+	private LocalDateTime crtDt;
    	
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "EXPIRE_DT")
-	private String expireDt;
+	private LocalDateTime expireDt;
+	
+	@Column(name = "USE_YN")
+	private String useYn;
+	
+	@Column(name = "DEL_YN")
+	private String delYn;
 
 
 }

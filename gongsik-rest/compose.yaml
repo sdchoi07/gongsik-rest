@@ -4,29 +4,34 @@ services:
     image: 'mysql:latest'
     environment:
       - 'MYSQL_DATABASE=gsw'
-      - 'MYSQL_ROOT_PASSWORD=gongsik1204local'
+      - 'MYSQL_ROOT_PASSWORD=gongsik1204'
+    command: --lower_case_table_names=1
     ports:
-      - '3306'
+      - '3307:3307'
     networks:
-      - gongsik_default
-
+      - gongsik-rest
+#  redis:
+#    container_name: goingsik-web
+#    image: redis:latest  # 레디스 이미지
+#    ports:
+#      - '6379:6379'
   application:
     build:              ## 빌드
       context: .        ## 빌드할 경로
     ports:
-      - 81:9090
-    container_name: gsw-backend  ## 컨테이너 이름
+      - 91:9090
+    container_name: gsw-rest  ## 컨테이너 이름
     restart: always               ## 매번 프로젝트를 다시 실행한다. 
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gsw?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
-      SPRING_DATASOURCE_USERNAME: gongsik-local
-      SPRING_DATASOURCE_PASSWORD: gongsik1204local
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: gongsik1204
       spring.profiles.active: local                ## 스프링 active profile 설정
     depends_on:                   ## mysql 컨테이너가 올라온 뒤에 이 컨테이너가 올라올 수 있도록 한다.
       - mysql
     networks:
-      - gongsik_default
+      - gongsik-rest
       
 networks:
-  gongsik_default:
+  gongsik-rest:
   

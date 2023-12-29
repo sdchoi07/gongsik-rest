@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/main/")	
+@RequestMapping("/api/main")	
 //@CrossOrigin(origins = "http://localhost:8080")
 @Tag(name = "Menu Controller", description = "메뉴정보")
 public class MainMenuController {
