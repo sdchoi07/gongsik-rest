@@ -25,7 +25,6 @@ import lombok.ToString;
 public class InternationalPhoneNumberEntity {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "COUNTRY_ID")
 	private long countryId;
 	

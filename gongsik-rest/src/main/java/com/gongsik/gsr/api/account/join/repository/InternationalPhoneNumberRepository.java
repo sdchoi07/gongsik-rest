@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.gongsik.gsr.api.account.join.dto.JoinDto;
+import com.gongsik.gsr.api.account.join.entity.AuthSMSEntity;
+import com.gongsik.gsr.api.account.join.entity.AuthSMSHistEntity;
 import com.gongsik.gsr.api.account.join.entity.InternationalPhoneNumberEntity;
 
 @Repository
@@ -24,6 +26,8 @@ public interface InternationalPhoneNumberRepository extends JpaRepository<Intern
 				  + "          AND a.useYn = 'Y' 																														"
 				  + "          AND a.delYn = 'N' 																														")
 	List<JoinDto> findAllOnlyCountryPhNm();
+
+	
 	
 }
 

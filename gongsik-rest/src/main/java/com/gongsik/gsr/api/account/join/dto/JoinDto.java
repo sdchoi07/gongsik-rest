@@ -11,6 +11,7 @@ import lombok.ToString;
 @ToString
 @Schema(description = "countryPh")
 public class JoinDto {
+	/* 국제 번호 */
 	private String countryKoNm;
 	private String countryEnNm;
 	private String countryPh;
@@ -19,4 +20,18 @@ public class JoinDto {
 	private LocalDateTime expiredt;
 	private String useYn;
 	private String delYn;
+	
+	/* 인증번호 */
+	private long smsSeq;
+	private String authId;
+	private String usrId;
+	private String usrPhNo;
+	private String authNo;
+	private int reReqAuthCnt;
+	private String authYn;
+	private String authType;
+	private LocalDateTime reqDt;
+	private LocalDateTime confDt;
+	private long cnt;
+	
 }
