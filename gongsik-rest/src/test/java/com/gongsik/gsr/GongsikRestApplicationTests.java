@@ -31,7 +31,7 @@ class GongsikRestApplicationTests {
 	void contextLoads() throws Exception {
 			//menuListSelect();
 			//joinCountryPh();
-		      authoNoSave();
+		     // authoNoSave();
 		
 	
 	
@@ -88,7 +88,7 @@ class GongsikRestApplicationTests {
 
 		        
 		        // 데이터베이스에 새로운 데이터 삽입
-		        Optional<AuthSMSEntity> savedData = au.findByUsrId(dto.getUsrId()); 
+		        Optional<AuthSMSEntity> savedData = au.findByUsrPhNo(dto.getUsrPhNo()); 
 			
 
 		        // 삽입한 데이터의 ID가 null이 아닌지 확인하는 예제 Assertion

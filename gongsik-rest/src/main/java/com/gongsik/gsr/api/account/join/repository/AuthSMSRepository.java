@@ -11,15 +11,9 @@ import com.gongsik.gsr.api.account.join.entity.AuthSMSEntity;
 
 @Repository
 public interface AuthSMSRepository extends JpaRepository<AuthSMSEntity, String> {
-	
-	@Query(value =  "       SELECT																					"
-				  + "			  COUNT(IFNULL(a.usrId,0)) 	as cnt															  	    									"
-				  + "		 FROM AuthSMSEntity a																									    			    "
-				  + "        WHERE a.usrId = :usrId 												    																")
-	long countByUsrId(@Param("usrId") String usrId);
 
 
-	Optional<AuthSMSEntity> findByUsrId(String usrId);
+	Optional<AuthSMSEntity> findByUsrPhNo(String usrPhNo);
 	
 
 

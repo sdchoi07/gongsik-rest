@@ -25,14 +25,8 @@ public class AuthSMSHistEntity {
 	@Column(name = "SMS_SEQ")
 	private long smsSeq;
 	
-	@Column(name = "AUTH_ID")
-	private String authId;
-	
 	@Column(name = "COUNTRY_PH")
 	private String countryPh;
-	
-	@Column(name = "USR_ID", nullable = false)
-	private String usrId;
 	
 	@Column(name = "USR_PH_NO", nullable = false)
     private String usrPhNo;

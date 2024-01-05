@@ -24,12 +24,6 @@ import lombok.ToString;
 public class AuthSMSEntity {
 	
 	@Id
-	@Column(name = "USR_ID", nullable = false)
-	private String usrId;
-
-	@Column(name = "AUTH_ID")
-	private String authId;
-	
 	@Column(name = "COUNTRY_PH")
 	private String countryPh;
 	

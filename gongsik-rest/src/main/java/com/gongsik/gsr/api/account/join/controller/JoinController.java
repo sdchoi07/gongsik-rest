@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gongsik.gsr.api.account.join.dto.JoinDto;
@@ -49,6 +50,22 @@ public class JoinController {
 		return new ResponseEntity<>(list, HttpStatus.OK); 
 	}
 	
+	//아이디 중복 조회 
+	@PostMapping("/join/emailChk")
+	@Operation(summary = "중복 아이디", description = "중복아이디 체크")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "성공")
+		})
+	public Map<String, String> emailChkBtn(@RequestBody String usrId){
+		Map<String, String>  map = new HashMap<String, String>();
+		ResultVO resultVo = new ResultVO();
+		//국제번호 list에 담기 
+		resultVo  = joinService.selectChkusrId(usrId);
+		map.put("code", resultVo.getErrCode());
+		map.put("msg", resultVo.getErrMsg());
+		return map;
+	}
+	
 	//핸드폰 인증 번호 저장 
 	@PostMapping("/join/authNoSave")
 	@Operation(summary = "인증번호", description = "인증번호 저장")
@@ -67,7 +84,6 @@ public class JoinController {
 		                    schema = @Schema(implementation = ResultVO.class)))
 		})
 	public Map<String, Object> authNoSave(@RequestBody JoinDto joinDto){
-		System.out.println("cnt : " + joinDto );
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		ResultVO resultVo = new ResultVO();
