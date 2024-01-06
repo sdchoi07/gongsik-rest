@@ -31,7 +31,8 @@ class GongsikRestApplicationTests {
 	void contextLoads() throws Exception {
 			//menuListSelect();
 			//joinCountryPh();
-		     // authoNoSave();
+		    // authoNoSave();
+		     emailChk();
 		
 	
 	
@@ -95,6 +96,23 @@ class GongsikRestApplicationTests {
 		        assertThat(responseBody).isEqualTo(savedData);
 		}
 
-
+		void emailChk() throws Exception {
+			JoinDto dto = new JoinDto();
+			dto.setUsrId("test@email.com");
+			// ObjectMapper를 사용하여 JoinDto 객체를 JSON 문자열로 변환
+			ObjectMapper objectMapper = new ObjectMapper();
+			String requestBody = objectMapper.writeValueAsString(dto);
+			
+			
+			MvcResult result =mockMvc.perform(MockMvcRequestBuilders.get("/api/account/join/emailChk/"+dto.getUsrId()) // API 엔드포인트 URL
+	                .contentType(MediaType.APPLICATION_JSON)
+	                .content(requestBody))
+	                .andExpect(MockMvcResultMatchers.status().isOk())
+	                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+	                .andReturn();
+		
+			 String responseBody = result.getResponse().getContentAsString();
+			 assertThat(responseBody).isNotEmpty();
+		}
 }
  

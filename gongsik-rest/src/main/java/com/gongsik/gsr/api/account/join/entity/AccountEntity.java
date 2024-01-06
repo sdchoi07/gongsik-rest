@@ -19,7 +19,7 @@ import lombok.ToString;
 @ToString
 @Data	
 @Table(name = "GS_ACCOUNT_INF")
-public class AccountEntitiy {
+public class AccountEntity {
 
 	@Id
 	@Column(name = "USR_NO")
@@ -35,7 +35,7 @@ public class AccountEntitiy {
     private String usrSex;
 	
 	@Column(name = "USR_PWD")
-	private int usrPwd;
+	private String usrPwd;
 	
 	@Column(name = "USR_ADDR")
 	private String usrAddr;
@@ -57,6 +57,9 @@ public class AccountEntitiy {
 	
 	@Column(name = "USR_ROLE")
 	private String usrRole;
+	
+	@Column(name = "COUNTRY_PH")
+	private String countryPh;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "USR_LOG_IN_DT")

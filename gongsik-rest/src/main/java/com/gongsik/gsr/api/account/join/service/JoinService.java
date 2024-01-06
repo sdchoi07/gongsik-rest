@@ -1,5 +1,8 @@
 package com.gongsik.gsr.api.account.join.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Formatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,10 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gongsik.gsr.api.account.join.dto.JoinDto;
+import com.gongsik.gsr.api.account.join.entity.AccountEntity;
 import com.gongsik.gsr.api.account.join.entity.AuthSMSEntity;
 import com.gongsik.gsr.api.account.join.entity.AuthSMSHistEntity;
 import com.gongsik.gsr.api.account.join.repository.AccountRepository;
@@ -65,11 +71,11 @@ public class JoinService {
 		ResultVO  resultVo = new ResultVO();
 		long result = accountRepository.countByUsrId(usrId);
 		if(result == 0) {
-			resultVo.setErrCode("success");
-			resultVo.setErrMsg("사용 할 수 있는 아이디 입니다.");
+			resultVo.setCode("success");
+			resultVo.setMsg("사용 할 수 있는 아이디 입니다.");
 		}else {
-			resultVo.setErrCode("fail");
-			resultVo.setErrMsg("이미 사용중인 아이디 입니다.");
+			resultVo.setCode("fail");
+			resultVo.setMsg("이미 사용중인 아이디 입니다.");
 		}
 		return resultVo;
 	}
@@ -89,7 +95,7 @@ public class JoinService {
 				if(selectOne.isPresent()) { //인증요청 한 아이디일경우 update
 					selectOne.get().setReReqAuthCnt(selectOne.get().getReReqAuthCnt()+1 );
 					selectOne.get().setReqDt(joinDto.getReqDt().toString());
-					
+					selectOne.get().setAuthNo(joinDto.getAuthNo());
 					result = authSMSRepository.save(selectOne.get());
 				}else { //인증 요청 처음 일 경우 insert
 				
@@ -127,27 +133,130 @@ public class JoinService {
 							resultHist = authSMSHistRepository.save(authSMSHistEntity);
 							
 						}else { //auth_sms_inf 테이블에 저장 안됬을경우
-							resultVo.setErrCode("fail");
-							resultVo.setErrMsg("AUTH_SMS_INF 저장 실패");
+							resultVo.setCode("fail");
+							resultVo.setMsg("AUTH_SMS_INF 저장 실패");
 							return resultVo;
 						}
 					//auth_sms_inf_hist 테이블에 저장 되었을경우
 					if(resultHist != null) {
-						resultVo.setErrCode("success");
-						resultVo.setErrMsg("AUTH_SMS_INF 저장 성공");
+						resultVo.setCode("success");
+						resultVo.setMsg("AUTH_SMS_INF 저장 성공");
 						return resultVo;
 					}else {//auth_sms_inf_hist 테이블에 저장 실패 일 경우
-						resultVo.setErrCode("fail");
-						resultVo.setErrMsg("AUTH_SMS_INF_hist 저장 실패");
+						resultVo.setCode("fail");
+						resultVo.setMsg("AUTH_SMS_INF_hist 저장 실패");
 						return resultVo;
 					}
 				
 		}catch(Exception e){
-				resultVo.setErrCode("fail");
-				resultVo.setErrMsg("전체 오류");
+				resultVo.setCode("fail");
+				resultVo.setMsg("전체 오류");
 		}
 		return resultVo;
 	}
-
-
+	
+	/* 회원가입  */
+	@Transactional
+	public ResponseEntity<ResultVO> joinForm(JoinDto joinDto) {
+		ResultVO resultVo = new ResultVO();
+		//입력한 정보가 잘못되어 있는지 검증
+		joinFormVaild(joinDto);
+		
+		try {
+			//인증번호 redis 저장된 값 가져오기
+			String redisAuthNo = redisTemplate.opsForValue().get("authNo");
+			System.out.println(redisAuthNo);
+			if(!redisAuthNo.equals(joinDto.getAuthNo())){ //인증번호 다를경우 오류 메세지
+				resultVo.setCode("fail");
+				resultVo.setMsg("인증번호가 틀렸습니다. 다시 인증 요청 해주세요.");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultVo);
+			}
+			
+			//가입된 확인인지 체크 
+			Long joinedUsrId = accountRepository.countByUsrId(joinDto.getUsrId());
+			if(joinedUsrId > 0) {
+				resultVo.setCode("fail");
+				resultVo.setMsg("이미 가입된 회원 입니다.");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultVo);
+			}
+			
+			//웹서버가져온 데이터 entity 옮기기
+			AccountEntity result = null;
+			AccountEntity accountEntity = new AccountEntity();
+			
+			accountEntity.setUsrId(joinDto.getUsrId());
+			accountEntity.setUsrPwd(joinDto.getUsrPwd());
+			accountEntity.setUsrNm(joinDto.getUsrNm());
+			accountEntity.setUsrSex(joinDto.getUsrSex());
+			accountEntity.setUsrNo(joinDto.getUsrNo());
+			accountEntity.setCountryPh(joinDto.getCountryPh());
+			accountEntity.setUsrPhone(joinDto.getUsrPhNo());
+			accountEntity.setUsrGrade("1");
+			accountEntity.setUsrStatus("");
+			accountEntity.setUsrRole("USER");
+			
+			result = accountRepository.save(accountEntity);
+			
+			if(result != null) {
+				AuthSMSEntity authSMSEntity = new AuthSMSEntity();
+				LocalDateTime date = LocalDateTime.now();
+				DateTimeFormatter  formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				String formatterDate = date.format(formatter);
+				authSMSEntity.setConfDt(formatterDate);
+				authSMSEntity.setAuthYn("Y");
+				AuthSMSEntity resultAuth = authSMSRepository.save(authSMSEntity);
+				
+				if(resultAuth != null) {
+					resultVo.setCode("success");
+					resultVo.setMsg("회원가입 완료되었습니다.");
+				}else {
+					resultVo.setCode("fail");
+					resultVo.setMsg("회원가입이 실패 하였습니다.");
+				}
+			}
+			
+		}catch(Exception e) {
+			resultVo.setCode("error");
+			resultVo.setMsg("error");
+		}
+		
+		return ResponseEntity.ok(resultVo) ;
+	}
+	
+	/* 회원가입시 검증 체크 */
+	public ResponseEntity<ResultVO> joinFormVaild(JoinDto joinDto) {
+		ResultVO resultVo = new ResultVO();
+		String usrId = joinDto.getUsrId();
+		String usrPwd = joinDto.getUsrPwd();
+		String usrNo = joinDto.getUsrNo();
+		String countryPh = joinDto.getCountryPh();
+		String usrPhNo = joinDto.getUsrPhNo();
+		if("".equals(usrId)) {
+			resultVo.setCode("fail");
+			resultVo.setMsg("이메일 다시 한 번 확인 해주세요.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultVo);
+		}
+		if("".equals(usrPwd)) {
+			resultVo.setCode("fail");
+			resultVo.setMsg("비밀번호를 다시 입력 해주세요.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultVo);
+		}
+		if("".equals(usrNo)) {
+			resultVo.setCode("fail");
+			resultVo.setMsg("생년월일 다시 입력 해주세요.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultVo);
+		}
+		if("".equals(countryPh)) {
+			resultVo.setCode("fail");
+			resultVo.setMsg("국제번호를 다시 선택 해주세요.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultVo);
+		}
+		if("".equals(usrPhNo)) {
+			resultVo.setCode("fail");
+			resultVo.setMsg("휴대폰 번호를 다시 입력 해주세요.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultVo);
+		}
+		return null;
+		
+	}
 }

@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class ResultVO {
-	private String errCode;
-	private String errMsg;
+	private String code;
+	private String msg;
 }

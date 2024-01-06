@@ -5,16 +5,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gongsik.gsr.api.account.join.dto.JoinDto;
+import com.gongsik.gsr.api.account.join.entity.AccountEntity;
 import com.gongsik.gsr.api.account.join.service.JoinService;
 import com.gongsik.gsr.global.vo.ResultVO;
 
@@ -51,19 +53,18 @@ public class JoinController {
 	}
 	
 	//아이디 중복 조회 
-	@PostMapping("/join/emailChk")
+	@GetMapping("/join/emailChk/{usrId}")
 	@Operation(summary = "중복 아이디", description = "중복아이디 체크")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "성공")
 		})
-	public Map<String, String> emailChkBtn(@RequestBody String usrId){
+	public ResponseEntity<ResultVO> emailChkBtn(@PathVariable("usrId") String usrId){
 		Map<String, String>  map = new HashMap<String, String>();
 		ResultVO resultVo = new ResultVO();
 		//국제번호 list에 담기 
 		resultVo  = joinService.selectChkusrId(usrId);
-		map.put("code", resultVo.getErrCode());
-		map.put("msg", resultVo.getErrMsg());
-		return map;
+		System.out.println(resultVo);
+		return ResponseEntity.ok(resultVo);
 	}
 	
 	//핸드폰 인증 번호 저장 
@@ -83,17 +84,38 @@ public class JoinController {
 		               content = @Content(
 		                    schema = @Schema(implementation = ResultVO.class)))
 		})
-	public Map<String, Object> authNoSave(@RequestBody JoinDto joinDto){
-		Map<String, Object> map = new HashMap<String, Object>();
+	public ResponseEntity<ResultVO> authNoSave(@RequestBody JoinDto joinDto){
 		
 		ResultVO resultVo = new ResultVO();
 		//국제번호 list에 담기 
 		resultVo = joinService.authNoSave(joinDto);
-		map.put("code", resultVo.getErrCode());
-		map.put("msg", resultVo.getErrMsg());
 		
 		
-		return map; 
+		return ResponseEntity.ok(resultVo); 
+	}
+	
+	//회원가입  
+	@PostMapping("/join")
+	@Operation(summary = "회원가입", description = "회원가입 하기")
+	@Parameters({
+        @Parameter(description = "인증 번호", name = "authNo", example = "1111"),
+        @Parameter(description = "사용자아이디", name = "usrId", example = "test"),
+        @Parameter(description = "사용자아이디", name = "authId", example = "test"),
+        @Parameter(description = "사용자아이디", name = "authType", example = "I"),
+        @Parameter(description = "사용자아이디", name = "usrPhNo", example = "01011111111")
+	})
+	@ApiResponses(value = {
+			 @ApiResponse(
+		               responseCode = "200",
+		               description = "인증번호 요청 성공",
+		               content = @Content(
+		                    schema = @Schema(implementation = ResultVO.class)))
+		})
+	public ResponseEntity<ResultVO> join(@RequestBody JoinDto joinDto){
+		
+		ResponseEntity<ResultVO> resultVo = joinService.joinForm(joinDto);
+		
+		return resultVo; 
 	}
 	
 }

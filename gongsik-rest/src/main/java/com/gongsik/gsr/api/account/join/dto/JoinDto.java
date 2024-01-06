@@ -34,4 +34,20 @@ public class JoinDto {
 	private LocalDateTime confDt;
 	private long cnt;
 	
+	/* 회원가입 */
+	private String usrNm;
+	private String usrNo;
+	private String usrSex;
+	private String usrPwd;
+	private String usrPhone;
+	private String usrAddr;
+	private String usrDelvArea;
+	private String usrGrade;
+	private String usrPurchaseCnt;
+	private String usrStatus;
+	private String usrRole;
+	private LocalDateTime usrLogInDt;
+	private LocalDateTime usrLogOutDt;
+	
+	
 }
