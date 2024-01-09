@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -23,10 +24,10 @@ import lombok.ToString;
 @Table(name = "GS_AUTH_SMS_INF")
 public class AuthSMSEntity {
 	
-	@Id
 	@Column(name = "COUNTRY_PH")
 	private String countryPh;
 	
+	@Id
 	@Column(name = "USR_PH_NO", nullable = false)
     private String usrPhNo;
 

@@ -21,7 +21,7 @@ services:
     ports:
       - 91:9090
     container_name: gsw-rest  ## 컨테이너 이름
-    restart: always               ## 매번 프로젝트를 다시 실행한다. 
+#    restart: always               ## 매번 프로젝트를 다시 실행한다. 
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gsw?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: root

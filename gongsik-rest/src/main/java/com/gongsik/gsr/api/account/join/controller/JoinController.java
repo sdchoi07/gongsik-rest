@@ -73,9 +73,8 @@ public class JoinController {
 	@Parameters({
         @Parameter(description = "인증 번호", name = "authNo", example = "1111"),
         @Parameter(description = "사용자아이디", name = "usrId", example = "test"),
-        @Parameter(description = "사용자아이디", name = "authId", example = "test"),
-        @Parameter(description = "사용자아이디", name = "authType", example = "I"),
-        @Parameter(description = "사용자아이디", name = "usrPhNo", example = "01011111111")
+        @Parameter(description = "인증타입", name = "authType", example = "J"),
+        @Parameter(description = "사용자전화번호", name = "usrPhNo", example = "01011111111")
 	})
 	@ApiResponses(value = {
 			 @ApiResponse(
@@ -95,25 +94,28 @@ public class JoinController {
 	}
 	
 	//회원가입  
-	@PostMapping("/join")
+	@PostMapping("/join/signUp")
 	@Operation(summary = "회원가입", description = "회원가입 하기")
 	@Parameters({
         @Parameter(description = "인증 번호", name = "authNo", example = "1111"),
+        @Parameter(description = "사용자 생년월일", name = "usrNo", example = "19990101"),
+        @Parameter(description = "사용자성별", name = "usrSex", example = "M"),
+        @Parameter(description = "사용자비밀번호", name = "usrPwd", example = "12311231"),
         @Parameter(description = "사용자아이디", name = "usrId", example = "test"),
-        @Parameter(description = "사용자아이디", name = "authId", example = "test"),
-        @Parameter(description = "사용자아이디", name = "authType", example = "I"),
-        @Parameter(description = "사용자아이디", name = "usrPhNo", example = "01011111111")
+        @Parameter(description = "인증타입", name = "authType", example = "J"),
+        @Parameter(description = "사용자전화번호", name = "usrPhNo", example = "01011111111")
+        
 	})
 	@ApiResponses(value = {
 			 @ApiResponse(
 		               responseCode = "200",
-		               description = "인증번호 요청 성공",
+		               description = "회원가입 성공",
 		               content = @Content(
 		                    schema = @Schema(implementation = ResultVO.class)))
 		})
-	public ResponseEntity<ResultVO> join(@RequestBody JoinDto joinDto){
+	public ResponseEntity<ResultVO> join(@RequestBody Map<String,String> map){
 		
-		ResponseEntity<ResultVO> resultVo = joinService.joinForm(joinDto);
+		ResponseEntity<ResultVO> resultVo = joinService.joinForm(map);
 		
 		return resultVo; 
 	}
