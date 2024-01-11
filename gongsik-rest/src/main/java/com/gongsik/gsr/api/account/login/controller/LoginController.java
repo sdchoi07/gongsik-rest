@@ -30,18 +30,18 @@ public class LoginController {
 	@Autowired
 	private LoginService loginService;
 	
-	//로그인 
-	@GetMapping("/login")
-	@Operation(summary = "로그인", description = "로그인 하기")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "성공")
-		})
-	public ResponseEntity<ResultVO> login(@RequestBody Map<String,String> map){
-		ResultVO resultVo = new ResultVO();
-		//국제번호 list에 담기 
-		//resultVo = loginService.login();
-		return new ResponseEntity<>(resultVo, HttpStatus.OK); 
-	}
+//	//로그인 
+//	@GetMapping("/login")
+//	@Operation(summary = "로그인", description = "로그인 하기")
+//	@ApiResponses(value = {
+//			@ApiResponse(responseCode = "200", description = "성공")
+//		})
+//	public ResponseEntity<ResultVO> login(@RequestBody Map<String,String> map){
+//		ResultVO resultVo = new ResultVO();
+//		//국제번호 list에 담기 
+//		//resultVo = loginService.login();
+//		return new ResponseEntity<>(resultVo, HttpStatus.OK); 
+//	}
 		
 	
 }

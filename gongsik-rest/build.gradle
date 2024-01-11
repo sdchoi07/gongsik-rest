@@ -50,6 +50,9 @@ dependencies {
     /* redis */
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     
+    /* JWT */
+    implementation 'com.auth0:java-jwt:4.4.0'
+    
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 

@@ -49,6 +49,7 @@ public class JoinService {
 	
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
 	
