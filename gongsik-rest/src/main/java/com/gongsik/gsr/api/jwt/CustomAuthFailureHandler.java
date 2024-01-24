@@ -1,4 +1,4 @@
-package com.gongsik.gsr.api.auth;
+package com.gongsik.gsr.api.jwt;
 
 import java.io.IOException;
 

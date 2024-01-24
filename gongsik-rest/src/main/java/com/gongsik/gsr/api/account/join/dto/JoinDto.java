@@ -9,7 +9,7 @@ import lombok.ToString;
 
 @Data
 @ToString
-@Schema(description = "countryPh")
+@Schema(description = "joinDto")
 public class JoinDto {
 	/* 국제 번호 */
 	private String countryKoNm;

@@ -6,13 +6,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.gongsik.gsr.api.account.join.entity.AccountEntity;
+import com.gongsik.gsr.api.account.join.entity.AccountMultiKey;
 
 @Repository
 public interface AccountRepository extends JpaRepository<AccountEntity, String>{
 
-	Optional<AccountEntity> findByUsrId(String usrId);
+	Optional<AccountEntity> findByUsrId(String AccountMultiKey);
 
 	long countByUsrId(String usrId);
+
 
 
 }

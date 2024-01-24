@@ -1,4 +1,4 @@
-package com.gongsik.gsr.api.auth;
+package com.gongsik.gsr.api.jwt;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,13 +30,13 @@ public class PrincipalDetails implements UserDetails{
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> collect = new ArrayList<>();
-//		if("ADMIN".equals(accountEntity.getUsrRole())) {
-//			collect.add(new SimpleGrantedAuthority("ADMIN"));
-//		}else {
-//			collect.add(new SimpleGrantedAuthority("USER"));
-//		}
+		if("ADMIN".equals(accountEntity.getUsrRole())) {
+			collect.add(new SimpleGrantedAuthority("ADMIN"));
+		}else {
+			collect.add(new SimpleGrantedAuthority("USER"));
+		}
 		
-		collect.add(() -> accountEntity.getUsrRole());
+		//collect.add(() -> accountEntity.getUsrRole());
 	    return collect;
 	}
 

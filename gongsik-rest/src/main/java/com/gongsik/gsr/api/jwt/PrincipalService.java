@@ -1,4 +1,4 @@
-package com.gongsik.gsr.api.auth;
+package com.gongsik.gsr.api.jwt;
 
 import java.util.Optional;
 
@@ -28,7 +28,6 @@ public class PrincipalService implements UserDetailsService {
 
         if (accountEntity.isPresent()) {
             AccountEntity result = accountEntity.get();
-            System.out.println(result);
             return new PrincipalDetails(result);
         }
 

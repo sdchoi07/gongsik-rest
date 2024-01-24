@@ -1,10 +1,13 @@
 package com.gongsik.gsr.api.account.join.entity;
 
+import java.io.Serializable;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -13,23 +16,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @Data	
+@IdClass(AccountMultiKey.class)	
 @Table(name = "GS_ACCOUNT_INF")
 public class AccountEntity {
-
+	
 	@Id
 	@Column(name = "USR_NO")
 	private String usrNo;
 	
+	@Id
+	@Column(name = "USR_ID", nullable = false)
+	private String usrId;
+	
 	@Column(name = "USR_NM")
 	private String usrNm;
 	
-	@Column(name = "USR_ID", nullable = false)
-    private String usrId;
 
 	@Column(name = "USR_SEX", nullable = false)
     private String usrSex;
@@ -68,5 +75,11 @@ public class AccountEntity {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "USR_LOG_OUT_DT")
 	private String usrLogOutDt;
+	
+
+
 
 }
+   
+
+

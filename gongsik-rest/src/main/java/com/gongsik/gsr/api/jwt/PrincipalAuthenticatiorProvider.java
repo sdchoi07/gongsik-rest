@@ -1,4 +1,4 @@
-package com.gongsik.gsr.api.auth;
+package com.gongsik.gsr.api.jwt;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,14 +41,13 @@ public class PrincipalAuthenticatiorProvider  implements AuthenticationProvider 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         
         if(!passwordEncoder.matches(password, dbPassword)) {
-            System.out.println("[사용자] 비밀번호가 일치하지 않습니다.");
-            throw new BadCredentialsException("[사용자] 아이디 또는 비밀번호가 일치하지 않습니다.");
+            throw new BadCredentialsException("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
         // ========================================================================================
-
-     // STEP3. ROLE권한 설정
+        
+        // STEP3. ROLE권한 설정
  		List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
- 		roles.add(new SimpleGrantedAuthority("USER"));
+ 		roles.add(new SimpleGrantedAuthority(principalDetails.getAuthorities().toString()));
  		
 
         // 인증이 성공하면 UsernamePasswordAuthenticationToken 객체를 반환한다.

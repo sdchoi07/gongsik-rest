@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.gongsik.gsr.api.account.join.dto.JoinDto;
 import com.gongsik.gsr.api.account.join.entity.AccountEntity;
+import com.gongsik.gsr.api.account.join.entity.AccountMultiKey;
 import com.gongsik.gsr.api.account.join.entity.AuthSMSEntity;
 import com.gongsik.gsr.api.account.join.entity.AuthSMSHistEntity;
 import com.gongsik.gsr.api.account.join.repository.AccountRepository;
@@ -26,7 +27,6 @@ import com.gongsik.gsr.api.account.join.repository.AuthSMSRepository;
 import com.gongsik.gsr.api.account.join.repository.InternationalPhoneNumberRepository;
 import com.gongsik.gsr.global.vo.ResultVO;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -122,7 +122,6 @@ public class JoinService {
 				
 				//회원정보 이력 hist 저장 테이블 초기화
 				AuthSMSHistEntity resultHist = null;
-				System.out.println("result:dd" );
 				log.info("result :{} " , result);
 						//auth_sms_inf 테이블에 저장 되었을 경우 hist 저장 시작 
 						if(result != null) {
@@ -180,7 +179,6 @@ public class JoinService {
 			}
 				//인증번호 redis 저장된 값 가져오기
 				String redisAuthNo = redisTemplate.opsForValue().get("authNo");
-				System.out.println(redisAuthNo);
 				if(!redisAuthNo.equals(map.get("authNo")) && !"".equals(redisAuthNo)){ //인증번호 다를경우 오류 메세지
 					resultVo.setCode("fail");
 					resultVo.setMsg("인증번호가 틀렸습니다. 다시 인증 요청 해주세요.");
@@ -192,7 +190,6 @@ public class JoinService {
 					AccountEntity accountEntity = new AccountEntity();
 					
 					accountEntity.setUsrId(map.get("usrId"));
-					
 					//암호화
 					String rawPassowrd = map.get("password");
 					String encPassword = bCryptPasswordEncoder.encode(rawPassowrd);

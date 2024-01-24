@@ -1,21 +1,57 @@
 package com.gongsik.gsr.api.account.login.service;
 
-import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Map;
+import java.util.Optional;
 
+import javax.security.auth.login.LoginException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.gongsik.gsr.api.account.join.dto.JoinDto;
-import com.gongsik.gsr.global.vo.ResultVO;
+import com.gongsik.gsr.api.account.join.entity.AccountEntity;
+import com.gongsik.gsr.api.account.join.repository.AccountRepository;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class LoginService {
 	
-	/* 로그인 */
-//	public ResultVO login() {
-//		return 
-//	}
+	@Autowired
+	private AccountRepository accountRepository;
+	
+	@Autowired
+	private RedisTemplate<String, String> redisTemplate;
+	
+	public void accountData(String usrId, String refreshToken) {
+		//로그인시 해당 계정 로그인 시간 업데이트
+		LocalDateTime date = LocalDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		String formatterDate = date.format(formatter);
+		
+		Optional<AccountEntity> list = accountRepository.findByUsrId(usrId);
+		if(list.isPresent()) {
+			list.get().setUsrLogInDt(formatterDate);
+			accountRepository.save(list.get());
+		}
+	}
+
+	public void logout(Map<String, String> map) {
+		Date now = new Date(System.currentTimeMillis()+ (600000*10));
+		String refreshToken = map.get("refreshToken");
+		
+		Optional<AccountEntity> list = accountRepository.findByUsrId(map.get("usrId"));
+		if(!list.isPresent()) {
+                new LoginException();
+		}
+        //**로그아웃 구분하기 위해 redis에 저장**
+		redisTemplate.opsForValue().set("logout", refreshToken, Duration.ofMillis(now.getTime()));
+	}
+	
+
 }

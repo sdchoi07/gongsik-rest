@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gongsik.gsr.api.account.join.dto.JoinDto;
-import com.gongsik.gsr.api.account.join.entity.AccountEntity;
 import com.gongsik.gsr.api.account.join.service.JoinService;
 import com.gongsik.gsr.global.vo.ResultVO;
 
@@ -120,4 +118,13 @@ public class JoinController {
 		return resultVo; 
 	}
 	
+	@GetMapping("/test")
+	public String test() {
+		return "성공";
+	}
+
+	@GetMapping("/admin")
+	public String admin() {
+		return"admin";
+	}
 }
