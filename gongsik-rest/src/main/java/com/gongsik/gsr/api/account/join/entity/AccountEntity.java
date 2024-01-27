@@ -27,16 +27,15 @@ import lombok.ToString;
 public class AccountEntity {
 	
 	@Id
-	@Column(name = "USR_NO")
-	private String usrNo;
-	
-	@Id
 	@Column(name = "USR_ID", nullable = false)
 	private String usrId;
 	
+	@Id	
 	@Column(name = "USR_NM")
 	private String usrNm;
 	
+	@Column(name = "USR_NO")
+	private String usrNo;
 
 	@Column(name = "USR_SEX", nullable = false)
     private String usrSex;
@@ -67,6 +66,15 @@ public class AccountEntity {
 	
 	@Column(name = "COUNTRY_PH")
 	private String countryPh;
+	
+	@Column(name = "PROVIDER")
+	private String provider;
+	
+	@Column(name = "PROVIDER_ID")
+	private String providerId;
+	
+	@Column(name = "LOG_TP")
+	private String logTp;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "USR_LOG_IN_DT")

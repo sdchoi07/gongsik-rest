@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,6 +77,20 @@ public class LoginController {
 	}
 	
 	//로그아웃
+	@PostMapping("/login/OAuth")
+	@Operation(summary = "sns 로그인", description = "sns 로그인")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "성공")
+		})
+	public ResponseEntity<ResultVO> SNSLogin(@RequestBody Map<String,String> map){
+		ResultVO resultVo = new ResultVO();
+		
+	    resultVo = loginService.SNSLogin(map);
+		return new ResponseEntity<>(resultVo, HttpStatus.OK); 
+	}
+		
+	
+	//로그아웃
 	@PostMapping("/logout")
 	@Operation(summary = "로그아웃", description = "로그인 아웃")
 	@ApiResponses(value = {
@@ -86,5 +99,6 @@ public class LoginController {
 	public void logout(@RequestBody Map<String,String> map){
 		loginService.logout(map);
 	}
+	
 	
 }

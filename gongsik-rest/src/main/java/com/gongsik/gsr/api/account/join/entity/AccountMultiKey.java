@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class AccountMultiKey implements Serializable{
 	    @Column(name = "USR_ID")		//3번
 	    private String usrId;
-	    @Column(name = "USR_NO")
-	    private String usrNo;
+	    @Column(name = "USR_NM")
+	    private String usrNm;
 
 }

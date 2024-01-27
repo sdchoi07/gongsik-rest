@@ -13,8 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.gongsik.gsr.api.account.join.dto.JoinDto;
 import com.gongsik.gsr.api.account.join.entity.AccountEntity;
 import com.gongsik.gsr.api.account.join.repository.AccountRepository;
+import com.gongsik.gsr.global.vo.ResultVO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -51,6 +53,33 @@ public class LoginService {
 		}
         //**로그아웃 구분하기 위해 redis에 저장**
 		redisTemplate.opsForValue().set("logout", refreshToken, Duration.ofMillis(now.getTime()));
+	}
+
+	public ResultVO SNSLogin(Map<String, String> map) {
+		ResultVO resultVo = new ResultVO();
+		
+		String provider = map.get("provider");
+		String providerId = map.get("providerId");
+		String email = map.get("email");
+		String role = map.get("role");
+		String logTp = map.get("logTp");
+		
+		Optional<AccountEntity> accountEntity = accountRepository.findByUsrIdAndProviderIdAndLogTp(email, providerId, logTp);
+		AccountEntity result = new AccountEntity();
+		if(accountEntity.isEmpty()) {
+			result.setUsrId(email);
+			result.setProvider(provider);
+			result.setProviderId(providerId);
+			result.setUsrRole(role);
+			result.setLogTp(logTp);
+			accountRepository.save(result);
+		}else {
+			result.setLogTp(logTp);
+			accountRepository.save(result);
+		}
+		
+		
+		return resultVo;
 	}
 	
 
