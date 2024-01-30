@@ -49,5 +49,7 @@ public class JoinDto {
 	private LocalDateTime usrLogInDt;
 	private LocalDateTime usrLogOutDt;
 	
+	private String logTp;
+	
 	
 }

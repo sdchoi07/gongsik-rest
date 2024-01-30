@@ -18,5 +18,7 @@ public class AccountMultiKey implements Serializable{
 	    private String usrId;
 	    @Column(name = "USR_NM")
 	    private String usrNm;
+		@Column(name = "LOG_TP")
+		private String logTp;
 
 }

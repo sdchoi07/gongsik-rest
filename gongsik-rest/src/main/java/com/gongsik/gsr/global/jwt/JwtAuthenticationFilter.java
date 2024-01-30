@@ -33,8 +33,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 	public final AuthenticationManager authenticationManager ;
 	
-	private AccountRepository accountRepository;
-	
 	private ObjectMapper em = new ObjectMapper();
 	
 

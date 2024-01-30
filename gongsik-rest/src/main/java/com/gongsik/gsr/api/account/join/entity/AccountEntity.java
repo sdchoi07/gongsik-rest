@@ -34,6 +34,10 @@ public class AccountEntity {
 	@Column(name = "USR_NM")
 	private String usrNm;
 	
+	@Id
+	@Column(name = "LOG_TP")
+	private String logTp;
+	
 	@Column(name = "USR_NO")
 	private String usrNo;
 
@@ -73,8 +77,6 @@ public class AccountEntity {
 	@Column(name = "PROVIDER_ID")
 	private String providerId;
 	
-	@Column(name = "LOG_TP")
-	private String logTp;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "USR_LOG_IN_DT")

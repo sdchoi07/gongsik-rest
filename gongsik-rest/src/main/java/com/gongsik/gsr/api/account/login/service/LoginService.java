@@ -74,7 +74,10 @@ public class LoginService {
 			result.setLogTp(logTp);
 			accountRepository.save(result);
 		}else {
-			result.setLogTp(logTp);
+			LocalDateTime date = LocalDateTime.now();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			String formatterDate = date.format(formatter);
+			result.setUsrLogInDt(formatterDate);
 			accountRepository.save(result);
 		}
 		

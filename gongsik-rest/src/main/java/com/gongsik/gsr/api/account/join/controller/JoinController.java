@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gongsik.gsr.api.account.join.dto.JoinDto;
@@ -61,7 +62,6 @@ public class JoinController {
 		ResultVO resultVo = new ResultVO();
 		//국제번호 list에 담기 
 		resultVo  = joinService.selectChkusrId(usrId);
-		System.out.println(resultVo);
 		return ResponseEntity.ok(resultVo);
 	}
 	
@@ -118,13 +118,82 @@ public class JoinController {
 		return resultVo; 
 	}
 	
-	@GetMapping("/test")
-	public String test() {
-		return "성공";
+	//유저 찾기  
+	@PostMapping("/check/email")
+	@Operation(summary = "유저찾기", description = "유저찾기")
+	@Parameters({
+        @Parameter(description = "아이디", name = "usrId", example = "test@gmail.com"),
+        @Parameter(description = "아이디", name = "usrId", example = "01011111111"),
+	})
+	@ApiResponses(value = {
+			 @ApiResponse(
+		               responseCode = "200",
+		               description = "아이디 찾기 성공",
+		               content = @Content(
+		                    schema = @Schema(implementation = Map.class)))
+		})
+	public ResponseEntity<ResultVO> findUser(@RequestBody Map<String,String> map){
+		ResultVO resultVo = new ResultVO();
+		resultVo = joinService.findEmail(map);
+		System.out.println("map : " + resultVo);
+		return ResponseEntity.ok(resultVo);
+		
 	}
-
-	@GetMapping("/admin")
-	public String admin() {
-		return"admin";
+	
+	
+	//아아디 찾기  
+	@PostMapping("/find/email/{phoneNumber}")
+	@Operation(summary = "아이디찾기", description = "아이디 찾기")
+	@Parameters({
+        @Parameter(description = "휴대전화", name = "usrPhNo", example = "01011111111"),
+        
+	})
+	@ApiResponses(value = {
+			 @ApiResponse(
+		               responseCode = "200",
+		               description = "아이디 찾기 성공",
+		               content = @Content(
+		                    schema = @Schema(implementation = Map.class)))
+		})
+	public ResponseEntity<Map<String,Object>> findEmail(@PathVariable("phoneNumber") String phoneNumber , @RequestParam(name="authNo") String authNo){
+		ResponseEntity<Map<String, Object>> map = joinService.findEmail(phoneNumber, authNo);
+		return map;
+	}
+	
+	//비밀번호 찾기  
+	@PostMapping("/find/pwd")
+	@Operation(summary = "아이디찾기", description = "아이디 찾기")
+	@Parameters({
+        @Parameter(description = "휴대전화", name = "usrPhNo", example = "01011111111"),
+        
+	})
+	@ApiResponses(value = {
+			 @ApiResponse(
+		               responseCode = "200",
+		               description = "비밀번호 찾기 성공",
+		               content = @Content(
+		                    schema = @Schema(implementation = Map.class)))
+		})
+	public ResponseEntity<ResultVO> findPasword(@RequestBody JoinDto joinDto){
+		ResponseEntity<ResultVO> resultVo = joinService.findPassword(joinDto);
+		return resultVo;
+	}
+	
+	//비밀번호 변경  
+	@PostMapping("/changePwd")
+	@Operation(summary = "비밀번호 변경", description = "비밀번호 변경")
+	@Parameters({
+		
+	})
+	@ApiResponses(value = {
+			@ApiResponse(
+					responseCode = "200",
+					description = "비밀번호 변경 성공",
+					content = @Content(
+							schema = @Schema(implementation = Map.class)))
+	})
+	public ResponseEntity<ResultVO> changePwd(@RequestBody JoinDto joinDto){
+		ResponseEntity<ResultVO> resultVo = joinService.changePwd(joinDto);
+		return resultVo;
 	}
 }
