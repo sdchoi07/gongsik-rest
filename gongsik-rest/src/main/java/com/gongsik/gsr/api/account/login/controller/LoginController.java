@@ -66,14 +66,14 @@ public class LoginController {
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "성공")
 		})
-	public ResponseEntity<Map<String,String>> loginData(@RequestBody Map<String,String> map){
-		Map<String,String> result = new HashMap<String, String>();
+	public ResponseEntity<Map<String,Object>> loginData(@RequestBody Map<String,String> map){
+		Map<String,Object> result = new HashMap<String, Object>();
 		Date now = new Date(System.currentTimeMillis()+ (600000*10));
 		String usrId = map.get("usrId");
 		String refreshToken = map.get("refreshToken");
         redisTemplate.opsForValue().set("usrId", usrId);
         redisTemplate.opsForValue().set("refreshToken", refreshToken, Duration.ofMillis(now.getTime()));
-        loginService.accountData(usrId, refreshToken);
+        result = loginService.accountData(usrId, refreshToken);
         
 		return new ResponseEntity<>(result, HttpStatus.OK); 
 	}

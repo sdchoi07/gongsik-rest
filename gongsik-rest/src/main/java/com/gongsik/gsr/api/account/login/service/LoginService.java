@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.gongsik.gsr.api.account.join.dto.JoinDto;
 import com.gongsik.gsr.api.account.join.entity.AccountEntity;
 import com.gongsik.gsr.api.account.join.repository.AccountRepository;
 import com.gongsik.gsr.global.vo.ResultVO;
@@ -30,7 +30,8 @@ public class LoginService {
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
 	
-	public void accountData(String usrId, String refreshToken) {
+	public Map<String, Object> accountData(String usrId, String refreshToken) {
+		Map<String, Object> map = new HashMap<String, Object>();
 		//로그인시 해당 계정 로그인 시간 업데이트
 		LocalDateTime date = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -41,6 +42,8 @@ public class LoginService {
 			list.get().setUsrLogInDt(formatterDate);
 			accountRepository.save(list.get());
 		}
+		map.put("result",list);
+		return map;
 	}
 
 	public void logout(Map<String, String> map) {

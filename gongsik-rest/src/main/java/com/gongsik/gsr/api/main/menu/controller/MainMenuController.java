@@ -42,6 +42,19 @@ public class MainMenuController {
 		log.info("menuList:{}", list);
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
+	
+	@GetMapping("/chk")
+	@Operation(summary = "검증 체크", description = "검증 체크")
+	public ResponseEntity chk() {
+		
+		 boolean validationCondition = true; // 예시 조건
+
+	    if (validationCondition) {
+	        return new ResponseEntity(HttpStatus.OK);
+	    } else {
+	        return ResponseEntity.status(HttpStatus.FOUND).header("Location", "/account/login").build();
+	    }
+	}
 //}
 //	@GetMapping("/menuList")
 //	public Map<String, Object> meneList() {

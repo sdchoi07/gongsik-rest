@@ -24,6 +24,7 @@ import com.gongsik.gsr.api.jwt.PrincipalDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 
 //시큐리티가 filter가지고 있는데 그 필터중에 BasicAuthenticationFilter 라는 것이 있음.
@@ -80,6 +81,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter{
 	}
 	 private void handleJwtVerificationException(HttpServletResponse response, JWTVerificationException e) throws IOException {
 		 	final Logger log =LoggerFactory.getLogger(JwtAuthorizationFilter.class);
+		 	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		    response.getWriter().write("Authentication failed.");
 		 	if (log.isDebugEnabled()) {
 		        log.debug(String.format("exception: %s, message: %s", e.getClass().getName(), e.getMessage()));
 		    }

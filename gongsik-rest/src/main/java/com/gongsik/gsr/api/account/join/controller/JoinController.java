@@ -179,6 +179,24 @@ public class JoinController {
 		return resultVo;
 	}
 	
+	//임시 비밀번호 발급  
+	@PostMapping("/tempPwd")
+	@Operation(summary = "임시 비밀번호 발급", description = "임시 비밀번호 발급")
+	@Parameters({
+		
+	})
+	@ApiResponses(value = {
+			@ApiResponse(
+					responseCode = "200",
+					description = "비밀번호 변경 성공",
+					content = @Content(
+							schema = @Schema(implementation = Map.class)))
+	})
+	public ResponseEntity<ResultVO> tempPwd(@RequestBody JoinDto joinDto){
+		ResponseEntity<ResultVO> resultVo = joinService.tempPwd(joinDto);
+		return resultVo;
+	}
+	
 	//비밀번호 변경  
 	@PostMapping("/changePwd")
 	@Operation(summary = "비밀번호 변경", description = "비밀번호 변경")
@@ -192,8 +210,8 @@ public class JoinController {
 					content = @Content(
 							schema = @Schema(implementation = Map.class)))
 	})
-	public ResponseEntity<ResultVO> changePwd(@RequestBody JoinDto joinDto){
-		ResponseEntity<ResultVO> resultVo = joinService.changePwd(joinDto);
+	public ResponseEntity<ResultVO> changePwd(@RequestBody Map<String,String> map){
+		ResponseEntity<ResultVO> resultVo = joinService.changePwd(map);
 		return resultVo;
 	}
 }

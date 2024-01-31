@@ -104,9 +104,8 @@ public class JoinService {
 					selectOne.get().setReqDt(joinDto.getReqDt().toString());
 					selectOne.get().setAuthNo(joinDto.getAuthNo());
 					selectOne.get().setAuthYn("N");
-					if("E".equals(joinDto.getAuthType())) {
-						selectOne.get().setAuthType(joinDto.getAuthType());
-					}
+					selectOne.get().setAuthType(joinDto.getAuthType());
+					
 					result = authSMSRepository.save(selectOne.get());
 				}else { //인증 요청 처음 일 경우 insert
 				
@@ -334,7 +333,7 @@ public class JoinService {
 		String requestUsrId = joinDto.getUsrId();
 		
 		//번호 다를경우 오류 메세지
-		if("".equals(redisPhoneNumber) || !redisPhoneNumber.equals(requestPhoneNumber)) {
+		if(redisPhoneNumber == null || "".equals(redisPhoneNumber) || !redisPhoneNumber.equals(requestPhoneNumber)) {
 			resultVo.setCode("fail");
 			resultVo.setMsg("다시 인증 요청 해주세요.");
 			return ResponseEntity.status(HttpStatus.OK).body(resultVo);
@@ -342,14 +341,14 @@ public class JoinService {
 		}
 		
 		//인증번호 다를경우 오류 메세지
-		if( "".equals(redisAuthNo) || !redisAuthNo.equals(requestAuthNo)){
+		if(redisAuthNo == null || "".equals(redisAuthNo) || !redisAuthNo.equals(requestAuthNo)){
 			resultVo.setCode("fail");
 			resultVo.setMsg("인증번호가 틀렸습니다. 다시 인증 요청 해주세요.");
 			return ResponseEntity.status(HttpStatus.OK).body(resultVo);
 		}
 		
 		//아이디 다를경우 오류 메세지
-		if("".equals(redisUsrId) || !redisUsrId.equals(requestUsrId)){ 
+		if(redisUsrId == null ||"".equals(redisUsrId) || !redisUsrId.equals(requestUsrId)){ 
 			resultVo.setCode("fail");
 			resultVo.setMsg("이메일 다시 한번 확인해 주세요.");
 			return ResponseEntity.status(HttpStatus.OK).body(resultVo);
@@ -444,9 +443,9 @@ public class JoinService {
 		return -1;
 	}
 
-	/* 비밀번호 변경 */
-	public ResponseEntity<ResultVO> changePwd(JoinDto joinDto) {
-		
+	/* 임시 비밀번호 발급 */
+	public ResponseEntity<ResultVO> tempPwd(JoinDto joinDto) {
+		ResultVO resultVo = new ResultVO();
 		//해당 정보 조회
 		String usrId = joinDto.getUsrId();
 		String logTp = joinDto.getLogTp();
@@ -458,8 +457,47 @@ public class JoinService {
 			AccountEntity result = selectOne.get();
 			result.setUsrPwd(tempPwd);
 			accountRepository.save(result);
+			resultVo.setCode("success");
+		}else {
+			resultVo.setCode("fail");
+			resultVo.setMsg("다시 시도 해주세요.");
 		}
-		return null;
+		
+		return ResponseEntity.ok(resultVo);
+	}
+
+	/* 비밀번호 변경 */
+	public ResponseEntity<ResultVO> changePwd(Map<String, String> map) {
+		ResultVO resultVo = new ResultVO();
+		
+		String usrId = map.get("usrId");
+		String usrNm = map.get("usrNm");
+		String logTp = map.get("logTp");
+		
+		Optional<AccountEntity> selectOne = accountRepository.findByUsrIdAndLogTpAndUsrNm(usrId, logTp, usrNm);
+		String tempPwd = map.get("tempPwd");
+		if(selectOne.isPresent()) {
+			String dbPwd = selectOne.get().getUsrPwd();
+			String changePwd = map.get("password");
+			boolean chk = bCryptPasswordEncoder.matches(tempPwd, dbPwd);
+			if(chk) {
+				String newPwd = bCryptPasswordEncoder.encode(changePwd);
+				selectOne.get().setUsrPwd(newPwd);
+				accountRepository.save(selectOne.get());
+				resultVo.setCode("success");
+				resultVo.setMsg("비밀번호가 변경 되었습니다.");
+			}else {
+				resultVo.setCode("fail");
+				resultVo.setMsg("임시 비밀번호가 틀렸습니다.");
+				return ResponseEntity.status(HttpStatus.OK).body(resultVo);
+			}
+		}else {
+			resultVo.setCode("fail");
+			resultVo.setMsg("존재하지 않는 회원 입니다.");
+			return ResponseEntity.status(HttpStatus.OK).body(resultVo);
+		}
+		
+		return ResponseEntity.ok(resultVo);
 	}
 
 
