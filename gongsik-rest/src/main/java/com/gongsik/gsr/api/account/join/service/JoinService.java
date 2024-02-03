@@ -188,6 +188,8 @@ public class JoinService {
 				if(!"".equals(redisPhoneNumber) && !redisPhoneNumber.equals(map.get("phoneNumber"))) {
 					resultVo.setCode("fail");
 					resultVo.setMsg("다시 인증 요청 해주세요.");
+					redisTemplate.delete(redisTemplate.keys("authNo"));
+					redisTemplate.delete(redisTemplate.keys("phoneNumber"));
 					return ResponseEntity.status(HttpStatus.OK).body(resultVo);
 					
 				}
@@ -195,6 +197,8 @@ public class JoinService {
 				if(!redisAuthNo.equals(map.get("authNo")) && !"".equals(redisAuthNo)){ //인증번호 다를경우 오류 메세지
 					resultVo.setCode("fail");
 					resultVo.setMsg("인증번호가 틀렸습니다. 다시 인증 요청 해주세요.");
+					redisTemplate.delete(redisTemplate.keys("authNo"));
+					redisTemplate.delete(redisTemplate.keys("phoneNumber"));
 					return ResponseEntity.status(HttpStatus.OK).body(resultVo);
 				
 				}else {

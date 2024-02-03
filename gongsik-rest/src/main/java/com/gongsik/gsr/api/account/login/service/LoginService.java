@@ -30,6 +30,7 @@ public class LoginService {
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
 	
+	/* 회원 로그인 */
 	public Map<String, Object> accountData(String usrId, String refreshToken) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		//로그인시 해당 계정 로그인 시간 업데이트

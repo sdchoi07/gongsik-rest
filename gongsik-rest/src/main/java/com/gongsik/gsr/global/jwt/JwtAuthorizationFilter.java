@@ -14,17 +14,16 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gongsik.gsr.api.account.join.entity.AccountEntity;
 import com.gongsik.gsr.api.account.join.repository.AccountRepository;
-import com.gongsik.gsr.api.account.join.service.JoinService;
 import com.gongsik.gsr.api.jwt.PrincipalDetails;
+import com.gongsik.gsr.global.vo.ResultVO;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 
 //시큐리티가 filter가지고 있는데 그 필터중에 BasicAuthenticationFilter 라는 것이 있음.
@@ -81,17 +80,29 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter{
 	}
 	 private void handleJwtVerificationException(HttpServletResponse response, JWTVerificationException e) throws IOException {
 		 	final Logger log =LoggerFactory.getLogger(JwtAuthorizationFilter.class);
-		 	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		    response.getWriter().write("Authentication failed.");
+		 	ResultVO resultVo = new ResultVO();
+		 	ObjectMapper objectMapper = new ObjectMapper();
+            
+            
+		 	 if (e instanceof TokenExpiredException) {
+		            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		            response.setCharacterEncoding("UTF-8");
+		            resultVo.setCode("2");
+		            String jsonResponse = objectMapper.writeValueAsString(resultVo);
+		            response.setContentType("text/plain; charset=UTF-8");
+		            response.getWriter().write("로그아웃 되었습니다. 다시 로그인 해주세요.");
+	        }else {
+	        	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+	        	resultVo.setCode("1");
+	        	String jsonResponse = objectMapper.writeValueAsString(resultVo);
+	        	response.getWriter().write(jsonResponse);
+		        }
 		 	if (log.isDebugEnabled()) {
 		        log.debug(String.format("exception: %s, message: %s", e.getClass().getName(), e.getMessage()));
 		    }
 
 //	        // 예외에 따른 응답 처리
-//	        if (e instanceof SignatureVerificationException) {
-//	            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//	            response.getWriter().write("Invalid signature in JWT token.");
-//	        } else if (e instanceof TokenExpiredException) {
+//	        else if (e instanceof TokenExpiredException) {
 //	            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 //	            response.getWriter().write("JWT token has expired.");
 //	        } else if (e instanceof UnsupportedJwtException) {

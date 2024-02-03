@@ -1,10 +1,9 @@
-package com.gongsik.gsr.api.account.join.entity;
+package com.gongsik.gsr.api.mypage.profile.entity;
 
-import java.io.Serializable;
+import com.gongsik.gsr.api.account.join.entity.AccountEntity;
+import com.gongsik.gsr.api.account.join.entity.AccountMultiKey;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -16,7 +15,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,7 +22,7 @@ import lombok.ToString;
 @Data	
 @IdClass(AccountMultiKey.class)	
 @Table(name = "GS_ACCOUNT_INF")
-public class AccountEntity {
+public class ProfileEntity {
 	
 	@Id
 	@Column(name = "USR_ID", nullable = false)
@@ -84,11 +82,5 @@ public class AccountEntity {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "USR_LOG_OUT_DT")
 	private String usrLogOutDt;
-	
-
-
 
 }
-   
-
-
