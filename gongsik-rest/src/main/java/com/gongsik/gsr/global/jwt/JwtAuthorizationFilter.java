@@ -88,9 +88,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter{
 		            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		            response.setCharacterEncoding("UTF-8");
 		            resultVo.setCode("2");
+		            resultVo.setMsg("로그아웃 되었습니다. 다시 로그인 해주세요.");
 		            String jsonResponse = objectMapper.writeValueAsString(resultVo);
 		            response.setContentType("text/plain; charset=UTF-8");
-		            response.getWriter().write("로그아웃 되었습니다. 다시 로그인 해주세요.");
+		            response.getWriter().write(jsonResponse);
 	        }else {
 	        	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 	        	resultVo.setCode("1");

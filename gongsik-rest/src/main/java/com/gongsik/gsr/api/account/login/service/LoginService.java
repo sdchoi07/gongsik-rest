@@ -43,20 +43,21 @@ public class LoginService {
 			list.get().setUsrLogInDt(formatterDate);
 			accountRepository.save(list.get());
 		}
-		map.put("result",list);
+		map.put("usrId",list.get().getUsrId());
+		map.put("logTp", list.get().getLogTp());
 		return map;
 	}
 
 	public void logout(Map<String, String> map) {
-		Date now = new Date(System.currentTimeMillis()+ (600000*10));
-		String refreshToken = map.get("refreshToken");
-		
-		Optional<AccountEntity> list = accountRepository.findByUsrId(map.get("usrId"));
-		if(!list.isPresent()) {
-                new LoginException();
-		}
-        //**로그아웃 구분하기 위해 redis에 저장**
-		redisTemplate.opsForValue().set("logout", refreshToken, Duration.ofMillis(now.getTime()));
+//		Date now = new Date(System.currentTimeMillis()+ (600000*10));
+//		String refreshToken = map.get("refreshToken");
+//		
+//		Optional<AccountEntity> list = accountRepository.findByUsrId(map.get("usrId"));
+//		if(!list.isPresent()) {
+//                new LoginException();
+//		}
+//        //**로그아웃 구분하기 위해 redis에 저장**
+//		redisTemplate.opsForValue().set("logout", refreshToken, Duration.ofMillis(now.getTime()));
 	}
 
 	public ResultVO SNSLogin(Map<String, String> map) {

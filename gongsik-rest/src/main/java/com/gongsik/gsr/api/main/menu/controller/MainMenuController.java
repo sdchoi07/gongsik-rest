@@ -43,6 +43,22 @@ public class MainMenuController {
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 	
+	@GetMapping("/loginInOut")
+	@Operation(summary = "로그인 유무", description = "메인 화면의 메뉴 조회")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "성공")
+		})
+	public ResponseEntity loginInOut() {
+		 boolean validationCondition = true; // 예시 조건
+
+		    if (validationCondition) {
+		        return new ResponseEntity(HttpStatus.OK);
+		    } else {
+		        return ResponseEntity.status(HttpStatus.FOUND).header("Location", "/account/login").build();
+		    }
+	}
+	
+	
 	@GetMapping("/chk")
 	@Operation(summary = "검증 체크", description = "검증 체크")
 	public ResponseEntity chk() {

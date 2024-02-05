@@ -26,6 +26,7 @@ public class ProfileDto {
 	private String usrPurchaseCnt;
 	private String usrStatus;
 	private String usrRole;
+	private String countryPh;
 	private LocalDateTime usrLogInDt;
 	private LocalDateTime usrLogOutDt;
 	private String logTp;

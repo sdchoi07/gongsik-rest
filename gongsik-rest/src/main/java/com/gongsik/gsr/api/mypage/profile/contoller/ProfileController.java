@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/mypage")
+@RequestMapping("/api/mypage/profile")
 @Tag(name = "Profile Controller", description = "마이페이지 프로필")
 @RequiredArgsConstructor
 public class ProfileController {
@@ -34,7 +34,7 @@ public class ProfileController {
 	private ProfileService profileService;
 	
 	//회원 정보  
-	@PostMapping("/profile/list")
+	@PostMapping("/list")
 	@Operation(summary = "프로필 조회", description = "프로필 조회 하기")
 	@Parameters({
         @Parameter(description = "사용자아이디", name = "usrId", example = "test"),
@@ -57,7 +57,7 @@ public class ProfileController {
 			
 	
 	// 회원가입
-	@PostMapping("/profile/modify")
+	@PostMapping("/modify")
 	@Operation(summary = "프로필 수정", description = "프로필 수정 하기")
 	@Parameters({ @Parameter(description = "인증 번호", name = "authNo", example = "1111"),
 			@Parameter(description = "사용자 생년월일", name = "usrNo", example = "19990101"),

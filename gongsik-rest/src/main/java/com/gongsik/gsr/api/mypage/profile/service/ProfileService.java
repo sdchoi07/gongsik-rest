@@ -53,19 +53,18 @@ public class ProfileService {
 		String usrId = map.get("usrId");
 		String logTp = map.get("logTp");
 		Optional<ProfileEntity> list = profileepository.findByUsrIdAndLogTp(usrId, logTp);
-	    List<ProfileDto> data = list.stream()
-								    .map(profileList -> {
-								    	ProfileDto dto = new ProfileDto();
-								        dto.setUsrNm(list.get().getUsrNm());
-								        dto.setUsrGrade(list.get().getUsrGrade());
-								        dto.setUsrId(list.get().getUsrId());
-								        dto.setLogTp(list.get().getLogTp());
-								        dto.setUsrNo(list.get().getUsrNo());
-								        dto.setUsrPhone(list.get().getUsrPhone());
-								        dto.setUsrSex(list.get().getUsrSex());
-								        return dto;
-								    })
-								    .collect(Collectors.toList());
+	    ProfileDto data = list.map(profile -> {
+	        ProfileDto resultDto = new ProfileDto();
+	        resultDto.setUsrNm(profile.getUsrNm());
+	        resultDto.setUsrGrade(profile.getUsrGrade());
+	        resultDto.setUsrId(profile.getUsrId());
+	        resultDto.setLogTp(profile.getLogTp());
+	        resultDto.setUsrNo(profile.getUsrNo());
+	        resultDto.setUsrPhone(profile.getUsrPhone());
+	        resultDto.setUsrSex(profile.getUsrSex());
+	        resultDto.setCountryPh(profile.getCountryPh());
+	        return resultDto;
+	    }).orElse(null);
 	    
 	    resultMap.put("result", data);
 		
@@ -119,7 +118,7 @@ public class ProfileService {
 					String encPassword = bCryptPasswordEncoder.encode(rawPassowrd);
 					profileEntity.setUsrPwd(encPassword);
 				}
-			} else {
+			} 
 				
 				profileEntity.setUsrNm(map.get("usrNm"));
 				profileEntity.setUsrSex(map.get("gender"));
@@ -128,10 +127,6 @@ public class ProfileService {
 				// 회원가입 등록
 				result = profileepository.save(profileEntity);
 				
-				
-				// 업데이트 된 회원 정보 불러오기
-				Optional<ProfileEntity> list = profileepository.findByUsrId(map.get("usrId"));
-				resultVo.setObject(list);
 				if (result != null) {
 
 					// 문자인증 받은 번호로 select
@@ -151,7 +146,7 @@ public class ProfileService {
 						}
 					}
 				}
-			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			resultVo.setCode("error");
