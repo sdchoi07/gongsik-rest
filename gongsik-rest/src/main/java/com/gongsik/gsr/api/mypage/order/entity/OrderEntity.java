@@ -1,0 +1,63 @@
+package com.gongsik.gsr.api.mypage.order.entity;
+
+import com.gongsik.gsr.api.common.entity.CommonEntity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+@Data	
+@IdClass(OrderMultiKey.class)	
+@Table(name = "GS_ORDER_INF")
+public class OrderEntity {
+	
+	@Id
+	@Column(name = "ORDER_SEQ", nullable = false)
+	private long orderSeq;
+	
+	@Id
+	@Column(name = "USR_ID", nullable = false)
+	private String usrId;
+	
+	@Id
+	@Column(name = "USR_NM")
+	private String usrNm;
+	
+	@Column(name = "ITEM_NM")
+	private String itemNm;
+
+	@Column(name = "ITEM_NO")
+    private String itemNo;
+	
+	@Column(name = "ITEM_CNT")
+	private Integer itemCnt;
+	
+	@Column(name = "ORDER_ST")
+	private String orderSt;
+	
+	@Column(name = "ORDER_DT")
+	private String orderDt;
+
+	@Column(name = "ARRV_DT")
+	private String arrvDt;
+	
+	@Column(name = "CANCEL_DT")
+	private String cancelDt;
+
+	@Embedded
+    private CommonEntity comonEntity;
+
+}
