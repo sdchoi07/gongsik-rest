@@ -36,6 +36,9 @@ public class OrderEntity {
 	@Column(name = "USR_NM")
 	private String usrNm;
 	
+	@Column(name = "ITEM_IMG")
+	private String itemImg;
+	
 	@Column(name = "ITEM_NM")
 	private String itemNm;
 

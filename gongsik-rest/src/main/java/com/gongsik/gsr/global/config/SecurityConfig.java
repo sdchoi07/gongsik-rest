@@ -74,7 +74,7 @@ public class SecurityConfig {
 					authorizeRequests
 							.requestMatchers("/api/login").permitAll()
 							.requestMatchers("/api/main/chk").hasAuthority("USER")
-							.requestMatchers("/api/account/test/").authenticated()
+							.requestMatchers("/api/mypage/**").authenticated()
 							.requestMatchers("/api/account/admin").hasAuthority("USER")
 							.requestMatchers("/user/**", "/api/v1/posts/**").hasRole("USER")
 							.anyRequest().permitAll()

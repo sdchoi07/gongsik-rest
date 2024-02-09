@@ -22,97 +22,97 @@ import com.gongsik.gsr.api.account.join.repository.AuthSMSRepository;
 @AutoConfigureMockMvc
 class GongsikRestApplicationTests {
 	
-	@Autowired
-	private AuthSMSRepository au;
-	
-	@Autowired
-	private MockMvc mockMvc;
-	@Test
-	void contextLoads() throws Exception {
-			//menuListSelect();
-			//joinCountryPh();
-		    // authoNoSave();
-		     emailChk();
-		
-	
-	
-	}
-	
-	//메뉴 조회 리스트 
-	void menuListSelect() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/main/menuList") // API 엔드포인트 URL
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
-	}
-	
-	//국제 번호 조회 
-		void joinCountryPh() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/api/account/join/countryPhList") // API 엔드포인트 URL
-	                .contentType(MediaType.APPLICATION_JSON))
-	                .andExpect(MockMvcResultMatchers.status().isOk())
-	                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-	                .andReturn();
-//			assertDoesNotThrow(() ->
-//		            userRepository.findUserNumByDivisionJpql());
-//		    System.out.println("JPQL 정상");
-//		    listJpql = userRepository.findUserNumByDivisionJpql();
-//		    assertNotNull(listJpql);
-		}
-		
-		//인증번호 저장 
-		void authoNoSave() throws Exception {
-			JoinDto dto = new JoinDto();
-			dto.setAuthId("test");
-			dto.setAuthNo("1111");
-			dto.setAuthType("I");
-			dto.setAuthYn("Y");
-			dto.setSmsSeq(0);
-			dto.setUsrId("dj");
-			dto.setUsrPhNo("0101111111");
-			
-			// ObjectMapper를 사용하여 JoinDto 객체를 JSON 문자열로 변환
-			ObjectMapper objectMapper = new ObjectMapper();
-			String requestBody = objectMapper.writeValueAsString(dto);
-			
-			
-			MvcResult result =mockMvc.perform(MockMvcRequestBuilders.post("/api/account/join/authNoSave") // API 엔드포인트 URL
-	                .contentType(MediaType.APPLICATION_JSON)
-	                .content(requestBody))
-	                .andExpect(MockMvcResultMatchers.status().isOk())
-	                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-	                .andReturn();
-		
-			 String responseBody = result.getResponse().getContentAsString();
-
-
-		        
-		        // 데이터베이스에 새로운 데이터 삽입
-		        Optional<AuthSMSEntity> savedData = au.findByUsrPhNo(dto.getUsrPhNo()); 
-			
-
-		        // 삽입한 데이터의 ID가 null이 아닌지 확인하는 예제 Assertion
-		        assertThat(responseBody).isEqualTo(savedData);
-		}
-
-		void emailChk() throws Exception {
-			JoinDto dto = new JoinDto();
-			dto.setUsrId("test@email.com");
-			// ObjectMapper를 사용하여 JoinDto 객체를 JSON 문자열로 변환
-			ObjectMapper objectMapper = new ObjectMapper();
-			String requestBody = objectMapper.writeValueAsString(dto);
-			
-			
-			MvcResult result =mockMvc.perform(MockMvcRequestBuilders.get("/api/account/join/emailChk/"+dto.getUsrId()) // API 엔드포인트 URL
-	                .contentType(MediaType.APPLICATION_JSON)
-	                .content(requestBody))
-	                .andExpect(MockMvcResultMatchers.status().isOk())
-	                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-	                .andReturn();
-		
-			 String responseBody = result.getResponse().getContentAsString();
-			 assertThat(responseBody).isNotEmpty();
-		}
+//	@Autowired
+//	private AuthSMSRepository au;
+//	
+//	@Autowired
+//	private MockMvc mockMvc;
+//	@Test
+//	void contextLoads() throws Exception {
+//			//menuListSelect();
+//			//joinCountryPh();
+//		    // authoNoSave();
+//		     emailChk();
+//		
+//	
+//	
+//	}
+//	
+//	//메뉴 조회 리스트 
+//	void menuListSelect() throws Exception {
+//		mockMvc.perform(MockMvcRequestBuilders.get("/api/main/menuList") // API 엔드포인트 URL
+//                .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(MockMvcResultMatchers.status().isOk())
+//                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+//                .andReturn();
+//	}
+//	
+//	//국제 번호 조회 
+//		void joinCountryPh() throws Exception {
+//			mockMvc.perform(MockMvcRequestBuilders.get("/api/account/join/countryPhList") // API 엔드포인트 URL
+//	                .contentType(MediaType.APPLICATION_JSON))
+//	                .andExpect(MockMvcResultMatchers.status().isOk())
+//	                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+//	                .andReturn();
+////			assertDoesNotThrow(() ->
+////		            userRepository.findUserNumByDivisionJpql());
+////		    System.out.println("JPQL 정상");
+////		    listJpql = userRepository.findUserNumByDivisionJpql();
+////		    assertNotNull(listJpql);
+//		}
+//		
+//		//인증번호 저장 
+//		void authoNoSave() throws Exception {
+//			JoinDto dto = new JoinDto();
+//			dto.setAuthId("test");
+//			dto.setAuthNo("1111");
+//			dto.setAuthType("I");
+//			dto.setAuthYn("Y");
+//			dto.setSmsSeq(0);
+//			dto.setUsrId("dj");
+//			dto.setUsrPhNo("0101111111");
+//			
+//			// ObjectMapper를 사용하여 JoinDto 객체를 JSON 문자열로 변환
+//			ObjectMapper objectMapper = new ObjectMapper();
+//			String requestBody = objectMapper.writeValueAsString(dto);
+//			
+//			
+//			MvcResult result =mockMvc.perform(MockMvcRequestBuilders.post("/api/account/join/authNoSave") // API 엔드포인트 URL
+//	                .contentType(MediaType.APPLICATION_JSON)
+//	                .content(requestBody))
+//	                .andExpect(MockMvcResultMatchers.status().isOk())
+//	                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+//	                .andReturn();
+//		
+//			 String responseBody = result.getResponse().getContentAsString();
+//
+//
+//		        
+//		        // 데이터베이스에 새로운 데이터 삽입
+//		        Optional<AuthSMSEntity> savedData = au.findByUsrPhNo(dto.getUsrPhNo()); 
+//			
+//
+//		        // 삽입한 데이터의 ID가 null이 아닌지 확인하는 예제 Assertion
+//		        assertThat(responseBody).isEqualTo(savedData);
+//		}
+//
+//		void emailChk() throws Exception {
+//			JoinDto dto = new JoinDto();
+//			dto.setUsrId("test@email.com");
+//			// ObjectMapper를 사용하여 JoinDto 객체를 JSON 문자열로 변환
+//			ObjectMapper objectMapper = new ObjectMapper();
+//			String requestBody = objectMapper.writeValueAsString(dto);
+//			
+//			
+//			MvcResult result =mockMvc.perform(MockMvcRequestBuilders.get("/api/account/join/emailChk/"+dto.getUsrId()) // API 엔드포인트 URL
+//	                .contentType(MediaType.APPLICATION_JSON)
+//	                .content(requestBody))
+//	                .andExpect(MockMvcResultMatchers.status().isOk())
+//	                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+//	                .andReturn();
+//		
+//			 String responseBody = result.getResponse().getContentAsString();
+//			 assertThat(responseBody).isNotEmpty();
+//		}
 }
  

@@ -14,18 +14,15 @@ public class OrderDto {
 	/* 주문 내역 */
 	private String itemNm;
 	private Integer itemCnt;
+	private String orderDt;
 	private String orderSt;
 	private String usrId;
 	private String usrNm;
 	private Long orderSeq;
 	private String itemNo;
-	private String orderDt;
 	private String arrvDt;
 	private String cancelDt;
+	private String itemImg;
+	private String orderStNm;
 	
-	public OrderDto(String itemNm, Integer itemCnt, String orderSt) {
-        this.itemNm = itemNm;
-        this.itemCnt = itemCnt;
-        this.orderSt = orderSt;
-    }
 }

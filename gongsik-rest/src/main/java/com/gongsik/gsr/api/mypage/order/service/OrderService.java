@@ -27,33 +27,41 @@ public class OrderService {
 	@Autowired
 	private OrderRepository orderRepository;
 	
-	public Map<String, Object> orderList(Map<String, String> map) {
+	public Map<String, Object> orderList(Map<String, Object> map) {
 		
 		Map<String , Object> resultData = new HashMap<String, Object>();
 		
-		String usrNm = map.get("usrNm");
-		String usrId = map.get("usrId");
-		String orderCode = map.get("orderDt");
+		//String usrNm = map.get("usrNm").toString();
+		String usrId = map.get("usrId").toString();
+		String orderCode = map.get("orderDt").toString();
 		
 		//날짜 구하기
 		String orderDt = getDate(orderCode);
 		// 페이징 처리를 위한 Pageable 객체 생성
-		int pageNumber = 0;
-		int pageSize = 10;
-		Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("orderDt"));
+		int currentPage = Integer.parseInt(map.get("currentPage").toString());
+		int pageSize = Integer.parseInt(map.get("pageSize").toString());
 		
-		Page<OrderDto> entity = orderRepository.findByUsrNmAndUsrIdAndOrderDt( usrId, orderDt, pageable);
+		Pageable pageable = PageRequest.of((currentPage -1), pageSize, Sort.by("ORDER_DT").descending());
 		
-		List<OrderDto> list = new ArrayList<>();
-		for(OrderDto result : entity) {
-			OrderDto orderDto = new OrderDto(orderDt, pageSize, orderDt);
-			orderDto.setItemNm(result.getItemNm());
-			orderDto.setItemCnt(result.getItemCnt());
-			orderDto.setOrderSt(result.getOrderSt());
+		Page<Object[]> entity = orderRepository.findByUsrIdAndOrderDt( usrId, orderDt, pageable);
+		log.info("entity 결과 : {}" , entity.get().toArray());
+		ArrayList<OrderDto> list = new ArrayList<>();
+		for(Object[] result : entity) {
+			OrderDto orderDto = new OrderDto();
+			orderDto.setItemNm(result[0].toString());
+			orderDto.setItemCnt(Integer.parseInt(result[1].toString()));
+			
+			String afterOrderDt = result[2].toString();
+			afterOrderDt = afterOrderDt.substring(0, 4) + "." + afterOrderDt.substring(4, 6) + "." + afterOrderDt.substring(6,8);
+			orderDto.setOrderDt(afterOrderDt);
+			
+			orderDto.setItemImg(result[3].toString());
+			orderDto.setOrderStNm(result[4].toString());
+			orderDto.setOrderSt(result[5].toString());
 			list.add(orderDto);
 		}
 		log.info("orderDto : {}" , list);
-		resultData.put("result", entity);
+		resultData.put("result", list);
 		resultData.put("cnt", list.size());
 		
 		return resultData;
