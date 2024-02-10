@@ -17,8 +17,12 @@ public class DeliveryDto {
 	private String delvUsrNm;
 	private String delvAreaAddr;
 	private String delvAreaNm;
-    private String delvUsrYn;
-	private Integer delvAreaNo;
+    private String delvUseYn;
+	private String delvAreaNo;
+	private String delvUseYnNm;
+	private String delvPhNo;
 	private String useYn;
 	private String delYn;
+	
+	private String usrPhone;
 }

@@ -42,11 +42,14 @@ public class DeliveryEntity {
 	@Column(name = "DELV_AREA_NM")
 	private String delvAreaNm;
 
-	@Column(name = "DELV_USR_YN")
-    private String delvUsrYn;
+	@Column(name = "DELV_USE_YN")
+    private String delvUseYn;
 	
 	@Column(name = "DELV_AREA_NO")
-	private Integer delvAreaNo;
+	private String delvAreaNo;
+
+	@Column(name = "DELV_PH_NO")
+	private String delvPhNo;
 	
 	@Column(name = "USE_YN")
 	private String useYn;
