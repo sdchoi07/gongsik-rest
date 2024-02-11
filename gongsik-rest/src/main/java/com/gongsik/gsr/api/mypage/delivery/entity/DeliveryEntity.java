@@ -51,6 +51,9 @@ public class DeliveryEntity {
 	@Column(name = "DELV_PH_NO")
 	private String delvPhNo;
 	
+	@Column(name = "DELV_AREA_DETAIL")
+	private String delvAreaDetail;
+	
 	@Column(name = "USE_YN")
 	private String useYn;
 	

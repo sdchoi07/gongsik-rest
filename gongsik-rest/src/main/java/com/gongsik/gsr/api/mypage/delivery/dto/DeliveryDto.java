@@ -21,6 +21,7 @@ public class DeliveryDto {
 	private String delvAreaNo;
 	private String delvUseYnNm;
 	private String delvPhNo;
+	private String delvAreaDetail;
 	private String useYn;
 	private String delYn;
 	

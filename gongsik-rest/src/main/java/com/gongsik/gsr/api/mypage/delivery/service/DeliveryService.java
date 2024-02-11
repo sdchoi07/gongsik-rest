@@ -48,6 +48,8 @@ public class DeliveryService {
 		JPAQueryFactory query = new JPAQueryFactory(em);
 		List<Tuple> list = query.select(qDeliveryEntity.delvAreaNm, qDeliveryEntity.delvAreaAddr, qDeliveryEntity.delvAreaNo, qDeliveryEntity.delvPhNo
 										,qDeliveryEntity.delvUseYn
+										,qDeliveryEntity.delvAreaSeq
+										,qDeliveryEntity.delvAreaDetail
 										, new CaseBuilder().when(qDeliveryEntity.delvUseYn.eq("Y")).then("기본배송지")
 										                    .otherwise("").as("delvUseYnNm"))
 							.from(qDeliveryEntity)
@@ -58,9 +60,11 @@ public class DeliveryService {
 		List<DeliveryDto> result = new ArrayList<>();
 		for(Tuple tuple : list) {
 			DeliveryDto dto = new DeliveryDto();
+			dto.setDelvAreaSeq(tuple.get(qDeliveryEntity.delvAreaSeq));
 			dto.setDelvAreaAddr(tuple.get(qDeliveryEntity.delvAreaAddr));
 			dto.setDelvAreaNm(tuple.get(qDeliveryEntity.delvAreaNm));
 			dto.setDelvAreaNo(tuple.get(qDeliveryEntity.delvAreaNo));
+			dto.setDelvAreaDetail(tuple.get(qDeliveryEntity.delvAreaDetail));
 			dto.setUsrPhone(tuple.get(qAccountEntity.usrPhone));
 			dto.setDelvUseYn(tuple.get(qDeliveryEntity.delvUseYn));
 			dto.setDelvPhNo(tuple.get(qDeliveryEntity.delvPhNo));
@@ -78,11 +82,14 @@ public class DeliveryService {
 		ResultVO resultVo = new ResultVO();
 		
 		String usrId = request.get("usrId");
+		
+		//해당 유저 이름 검색
 		Optional<AccountEntity> account = accountRepository.findByUsrId(usrId);
 		String usrNm = "";
 		if(account.isPresent()) {
 			usrNm = account.get().getUsrNm();
 		}
+		//클라이언트에서 가져온 정보 저장
 		String addressNm = request.get("addressNm");
 		String phoneNumber = request.get("phoneNumber");
 		String zipCode = request.get("zipCode");
@@ -90,22 +97,38 @@ public class DeliveryService {
 		String addressDetail = request.get("addressDetail");
 		String addressYn = request.get("addressYn");
 		
+		//중복된 주소 검사
 		Optional<DeliveryEntity> delivery = deliveryRepository.findByDelvUsrIdAndDelvAreaNo(usrId, zipCode);
-		if(delivery.isPresent()) {
+		if(delivery.isPresent()) { //중복되어있으면 return
 			resultVo.setCode("fail");
 			resultVo.setMsg("이미 등록된 지역 입니다.");
 			map.put("result", resultVo);
 			return map;
 		}else {
+			//중복 안되어있을 경우 저장
 			DeliveryEntity deliveryEntity = new DeliveryEntity();
-			deliveryEntity.setDelvAreaAddr(address + addressDetail);
+			deliveryEntity.setDelvAreaAddr(address);
 			deliveryEntity.setDelvAreaNm(addressNm);
+			deliveryEntity.setDelvAreaDetail(addressDetail);
 			deliveryEntity.setDelvAreaNo(zipCode);
 			deliveryEntity.setDelvUseYn(addressYn);
 			deliveryEntity.setDelvUsrId(usrId);
 			deliveryEntity.setDelvUsrNm(usrNm);
 			deliveryEntity.setDelvPhNo(phoneNumber);
+			deliveryEntity.setUseYn("Y");
+			deliveryEntity.setDelYn("N");
 			
+			//새로운 추가 배송지에서 기본배송지 체크 되어있을시 다른 지역 기본배송지 "N"으로 변경 
+			if("Y".equals(addressYn)) {
+				Optional<DeliveryEntity> searchAdressYn = deliveryRepository.findByDelvUsrIdAndDelvUsrNmAndDelvUseYn(usrId,usrNm,addressYn);
+				if(searchAdressYn.isPresent()) {
+					DeliveryEntity updateYn = searchAdressYn.get();
+					updateYn.setDelvUseYn("N");
+					deliveryRepository.save(updateYn);
+				}
+				
+			}
+			//저장 검사
 			DeliveryEntity result = deliveryRepository.save(deliveryEntity);
 			if(result != null) {
 				resultVo.setCode("success");
@@ -114,6 +137,78 @@ public class DeliveryService {
 			}else {
 				resultVo.setMsg("");
 			}
+		}
+		map.put("result", resultVo);
+		return map;
+	}
+
+	public Map<String, Object> modifyAddress(Map<String, String> request) {
+		Map<String, Object> map = new HashMap<>();
+		ResultVO resultVo = new ResultVO();
+		
+		//클라이언트 가져온 값 저장
+		String usrId = request.get("usrId");
+		long seq = Long.parseLong(request.get("modalDelvAresSeq").toString());
+		
+		String addressNm = request.get("addressNm");
+		String phoneNumber = request.get("phoneNumber");
+		String zipCode = request.get("zipCode");
+		String address = request.get("address");
+		String addressDetail = request.get("addressDetail");
+		String addressYn = request.get("addressYn");
+		
+		//update하기
+		Optional<DeliveryEntity> delivery = deliveryRepository.findByDelvUsrIdAndDelvAreaSeq(usrId, seq);
+		
+		DeliveryEntity deliveryEntity = delivery.get();
+		deliveryEntity.setDelvAreaAddr(address);
+		deliveryEntity.setDelvAreaNm(addressNm);
+		deliveryEntity.setDelvAreaDetail(addressDetail);
+		deliveryEntity.setDelvAreaNo(zipCode);
+		deliveryEntity.setDelvUseYn(addressYn);
+		deliveryEntity.setDelvPhNo(phoneNumber);
+		
+		//새로운 추가 배송지에서 기본배송지 체크 되어있을시 다른 지역 기본배송지 "N"으로 변경 
+		if("Y".equals(addressYn)) {
+			Optional<DeliveryEntity> searchAdressYn = deliveryRepository.findByDelvUsrIdAndDelvUseYn(usrId, addressYn);
+			if(searchAdressYn.isPresent()) {
+				DeliveryEntity updateYn = searchAdressYn.get();
+				updateYn.setDelvUseYn("N");
+				deliveryRepository.save(updateYn);
+			}
+			
+		}
+		
+		DeliveryEntity result = deliveryRepository.save(deliveryEntity);
+		
+		if(result != null) {
+			resultVo.setCode("success");
+			resultVo.setMsg("변경 되었습니다.");
+			
+		}else {
+			resultVo.setMsg("");
+		}
+		map.put("result", resultVo);
+		return map;
+	}
+
+	public Map<String, Object> delvDel(String usrId, long seq) {
+		Map<String, Object> map = new HashMap<>();
+		ResultVO resultVo = new ResultVO();
+	
+		Optional<DeliveryEntity> delivery = deliveryRepository.findByDelvUsrIdAndDelvAreaSeq(usrId, seq);
+		DeliveryEntity deliveryEntity = delivery.get();
+		deliveryEntity.setDelYn("Y");
+		deliveryEntity.setUseYn("N");
+		
+		DeliveryEntity result = deliveryRepository.save(deliveryEntity);
+		
+		if(result != null) {
+			resultVo.setCode("success");
+			resultVo.setMsg("삭제 되었습니다.");
+			
+		}else {
+			resultVo.setMsg("");
 		}
 		map.put("result", resultVo);
 		return map;

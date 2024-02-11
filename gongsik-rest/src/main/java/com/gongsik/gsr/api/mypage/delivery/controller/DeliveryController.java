@@ -68,8 +68,31 @@ public class DeliveryController {
 	})
 	public ResponseEntity<Map<String, Object>> saveNewAddress(@RequestBody Map<String, String> request) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		map = deliveryService.saveNewAddress(request);
+		long seq = Long.parseLong(request.get("modalDelvAresSeq").toString());
+		if(seq > 0  ) {
+			map = deliveryService.modifyAddress(request);
+		}else {
+			map = deliveryService.saveNewAddress(request);
+		}
 		return ResponseEntity.ok(map);
 	}
-
+	
+	@GetMapping("/delvDel/{delvAresSeq}/{usrId}")
+	@Operation(summary = "배송 지역 삭제", description = "배송 지역 삭제 하기")
+	@Parameters({
+		@Parameter(description = "고유 번호 ", name = "seq", example = "seq"),
+	})
+	@ApiResponses(value = {
+			@ApiResponse(
+					responseCode = "200",
+					description = "배송 지역 삭제 성공",
+					content = @Content(
+							schema = @Schema(implementation = Map.class)))
+	})
+	public ResponseEntity<Map<String, Object>> delvDel(@PathVariable("usrId") String usrId ,@PathVariable("delvAresSeq") long seq) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map = deliveryService.delvDel(usrId,seq);
+		return ResponseEntity.ok(map);
+	}
+	
 }
