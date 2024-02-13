@@ -3,10 +3,8 @@ package com.gongsik.gsr.api.mypage.profile.service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,8 +21,12 @@ import com.gongsik.gsr.api.account.join.repository.AuthSMSRepository;
 import com.gongsik.gsr.api.mypage.profile.dto.ProfileDto;
 import com.gongsik.gsr.api.mypage.profile.entity.ProfileEntity;
 import com.gongsik.gsr.api.mypage.profile.repository.ProfileRepository;
+import com.gongsik.gsr.api.mypage.usrPoint.entity.QUsrPointEntity;
 import com.gongsik.gsr.global.vo.ResultVO;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -45,6 +47,9 @@ public class ProfileService {
 	
 	@Autowired
 	private AuthSMSHistRepository authSMSHistRepository;
+	
+	@Autowired
+	EntityManager em;
 	
 	/* 회원 정보 조회 */
 	public Map<String, Object> profileList(Map<String, String> map) {
@@ -156,6 +161,34 @@ public class ProfileService {
 		return ResponseEntity.ok(resultVo);
 	}
 	
+	/* 회원 포인트 */
+	public Map<String, Object> pointPt(Map<String, String> request) {
+		Map<String, Object> map = new HashMap<>();
+		//기본 셋팅
+		String usrId = request.get("usrId").toString();
+		JPAQueryFactory query = new JPAQueryFactory(em);
+		QUsrPointEntity qUsrPointEntity = QUsrPointEntity.usrPointEntity;
+		LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String expireDt = currentDateTime.format(formatter);
+        
+		//총 포인트 구하기
+		Integer total = 
+				query
+	            .select(
+	                    Expressions.numberTemplate(Integer.class,
+	                            "SUM(CASE WHEN {0} = 'S' THEN {1} ELSE 0 END) - " +
+	                            "SUM(CASE WHEN {0} = 'U' THEN {1} ELSE 0 END)",
+	                            qUsrPointEntity.pointSt, qUsrPointEntity.pointPt)
+	            )
+	            .from(qUsrPointEntity)
+	            .where(qUsrPointEntity.pointExpireDt.goe(expireDt).and(qUsrPointEntity.pointUsrId.eq(usrId)))
+	            .fetchOne();
+		map.put("poinTotal", total);
+		return map;
+	}
+	
+	
 	/* 인증요청 이력 */
 	public int authHistInsert(Optional<AuthSMSEntity> selectOne) {
 		//회원가입 등록 성공시
@@ -183,5 +216,6 @@ public class ProfileService {
 		}
 		return -1;
 	}
+
 
 }

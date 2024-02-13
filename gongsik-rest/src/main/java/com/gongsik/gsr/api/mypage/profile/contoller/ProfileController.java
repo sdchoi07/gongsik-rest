@@ -55,6 +55,26 @@ public class ProfileController {
 		return new ResponseEntity<>(resultMap, HttpStatus.OK); 
 	}
 			
+	//회원 포인트  
+	@PostMapping("/pointPt")
+	@Operation(summary = "회원포인트 조회", description = "회원포인트 조회 하기")
+	@Parameters({
+        @Parameter(description = "사용자아이디", name = "usrId", example = "test"),
+        @Parameter(description = "사용자전화번호", name = "usrPhNo", example = "01011111111")
+	})
+	@ApiResponses(value = {
+			 @ApiResponse(
+		               responseCode = "200",
+		               description = "회원포인트 조회 성공",
+		               content = @Content(
+		                    schema = @Schema(implementation = ResultVO.class)))
+		})
+	public ResponseEntity<Map<String, Object>> pointPt(@RequestBody Map<String,String> map){
+		
+		Map<String, Object> resultMap = profileService.pointPt(map);
+		resultMap.put("code", "success");
+		return new ResponseEntity<>(resultMap, HttpStatus.OK); 
+	}
 	
 	// 회원가입
 	@PostMapping("/modify")
