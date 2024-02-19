@@ -58,6 +58,7 @@ public class MainMenuService {
 										        dto.setMenuOrderNo(menu.getMenuOrderNo());
 										        dto.setMenuLevelNo(menu.getMenuLevelNo());
 										        dto.setMenuUrl(menu.getMenuUrl());
+										        dto.setMenuItemNo(menu.getMenuItemNo());
 										        return dto;
 										    })
 										    .collect(Collectors.toList());

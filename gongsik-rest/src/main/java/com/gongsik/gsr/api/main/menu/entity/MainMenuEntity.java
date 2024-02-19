@@ -39,6 +39,9 @@ public class MainMenuEntity{
     
     @Column(name = "MENU_URL", nullable = true)
     private String menuUrl;
+    
+    @Column(name = "MENU_ITEM_NO")
+    private String menuItemNo;
    	
     @Embedded
     private CommonEntity comonEntity;

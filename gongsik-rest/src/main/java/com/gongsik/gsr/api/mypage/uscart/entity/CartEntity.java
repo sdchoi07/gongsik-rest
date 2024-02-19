@@ -7,6 +7,8 @@ import com.gongsik.gsr.api.mypage.usrGrade.entity.UsrGradeMultiKey;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
@@ -25,6 +27,7 @@ import lombok.ToString;
 public class CartEntity {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "CART_NO")
 	private long cartNo;
 	
@@ -32,7 +35,6 @@ public class CartEntity {
 	@Column(name ="CART_USR_ID")
 	private String cartUsrId;
 	
-	@Id
 	@Column(name ="CART_ST")
 	private String cartSt;
 	
@@ -47,5 +49,8 @@ public class CartEntity {
 	
 	@Column(name = "DEL_YN")
 	private String delYn;
+	
+	@Column(name = "USE_YN")
+	private String useYn;
 
 }

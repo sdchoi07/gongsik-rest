@@ -19,6 +19,4 @@ public class CartMultiKey implements Serializable {
 	private long cartNo;
 	@Column(name ="CART_USR_ID")
 	private String cartUsrId;
-	@Column(name ="CART_ST")
-	private String cartSt;
 }

@@ -23,6 +23,7 @@ public class MainMenuDto extends CommonDto{
 	private int menuOrderNo;
 	private int menuLevelNo;
 	private String menuUrl;
+	private String menuItemNo;
 	
 	
 }
