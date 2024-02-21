@@ -26,7 +26,7 @@ public class CategoriesDto extends CommonDto{
     private String invenLClsNo;
     private String invenMClsNo;
     private String invenSClsNo;
-    private int invenPrice;
+    private String invenPrice;
     private int invenSaelsCnt;
     private int invenCnt;
     private String crgDate;
@@ -37,7 +37,7 @@ public class CategoriesDto extends CommonDto{
     
 	
     @QueryProjection
-	  public CategoriesDto(String invenSClsNm, String invenSClsNo, int invenPrice, int invenSaelsCnt, int invenCnt, String invenUrl, String delYn, String useYn) {
+	  public CategoriesDto(String invenSClsNm, String invenSClsNo, String invenPrice, int invenSaelsCnt, int invenCnt, String invenUrl, String delYn, String useYn) {
 	    this.invenSClsNm = invenSClsNm;
 	    this.invenSClsNo = invenSClsNo;
 	    this.invenPrice = invenPrice;
@@ -47,4 +47,6 @@ public class CategoriesDto extends CommonDto{
 	    this.delYn = delYn;
 	    this.useYn = useYn;
 	  }
+
+
 }

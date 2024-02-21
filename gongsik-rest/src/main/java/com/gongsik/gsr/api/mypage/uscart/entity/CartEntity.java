@@ -27,7 +27,6 @@ import lombok.ToString;
 public class CartEntity {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "CART_NO")
 	private long cartNo;
 	

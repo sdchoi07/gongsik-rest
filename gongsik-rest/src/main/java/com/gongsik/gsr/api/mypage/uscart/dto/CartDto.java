@@ -21,6 +21,8 @@ public class CartDto extends CommonDto{
 	private String cartItemNo;
 	private String cartItemNm;
 	private int cartItemCnt;
+	private String cartUrl;
+	private String cartPrice;
 	private String delYn;
 	private String useYn;
 }

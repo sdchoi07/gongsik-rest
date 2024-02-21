@@ -1,35 +1,31 @@
 package com.gongsik.gsr.api.main.categories.service;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gongsik.gsr.api.account.join.entity.QAccountEntity;
 import com.gongsik.gsr.api.main.categories.dto.CategoriesDto;
-import com.gongsik.gsr.api.main.categories.dto.QCategoriesDto;
 import com.gongsik.gsr.api.main.categories.entity.ChemistryEntity;
 import com.gongsik.gsr.api.main.categories.entity.ProductEntity;
-import com.gongsik.gsr.api.main.categories.entity.QCategoriesEntity;
-import com.gongsik.gsr.api.main.categories.entity.QChemistryEntity;
-import com.gongsik.gsr.api.main.categories.entity.QProductEntity;
-import com.gongsik.gsr.api.main.categories.entity.QSeedEntity;
 import com.gongsik.gsr.api.main.categories.entity.SeedEntity;
+import com.gongsik.gsr.api.main.categories.repository.CategoriesRepository;
 import com.gongsik.gsr.api.main.categories.repository.ChemistryRepository;
 import com.gongsik.gsr.api.main.categories.repository.ProductRepository;
 import com.gongsik.gsr.api.main.categories.repository.SeedRepository;
 import com.gongsik.gsr.api.mypage.uscart.entity.CartEntity;
-import com.gongsik.gsr.api.mypage.uscart.entity.QCartEntity;
 import com.gongsik.gsr.api.mypage.uscart.repository.CartRepository;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
@@ -40,268 +36,323 @@ public class CategoriesService {
 
 	@Autowired
 	EntityManager em;
-	
+
 	@Autowired
 	CartRepository cartRepository;
-	
+
 	@Autowired
 	ProductRepository productRepository;
-	
+
 	@Autowired
 	SeedRepository seedRepository;
-	
+
 	@Autowired
 	ChemistryRepository chemistryRepository;
-	
-	/* 카테고리 조회*/
+
+	@Autowired
+	CategoriesRepository categoriesRepository;
+
+	/* 카테고리 조회 */
 	public Map<String, Object> categoriesListAll(Map<String, Object> request) {
-		
+
 		// 기본 셋팅하기
 		String itemNo = request.get("itemkey").toString();
+		String endDate = "99991231";
 		String usrId = "";
 		String orderNo = request.get("orderBy").toString();
-		if(!"".equals(request.get("usrId")) && null != request.get("usrId")){
+		if (!"".equals(request.get("usrId")) && null != request.get("usrId")) {
 			usrId = request.get("usrId").toString();
 		}
-		QCategoriesEntity qCategoriesEntity = QCategoriesEntity.categoriesEntity;
-		QCartEntity qCartEntity = QCartEntity.cartEntity;
-		QAccountEntity qAccountEntity = QAccountEntity.accountEntity;
-		QProductEntity qProductEntity = QProductEntity.productEntity;
-		QSeedEntity qSeedEntity = QSeedEntity.seedEntity;
-		QChemistryEntity qChemistryEntity = QChemistryEntity.chemistryEntity;
-        
-		//paging 처리
-        int page = Integer.parseInt(request.get("currentPage").toString());
-        int size = 12;
-        int start = (page-1) * size;
-		
-		
+
+		// paging 처리
+		int page = Integer.parseInt(request.get("currentPage").toString());
+		int size = 12;
+		int start = page;
 
 		List<CategoriesDto> list = null;
-		//아이템 분류에 따른 쿼리 조회
-		if(itemNo.startsWith("1")) {
-			list = selectQueryItem(itemNo, usrId, orderNo, page, start, size ,qCategoriesEntity ,qCartEntity ,qAccountEntity ,qProductEntity);
-		}else if(itemNo.startsWith("2")){
-			list = selectQueryItem(itemNo, usrId, orderNo, page, start, size ,qCategoriesEntity ,qCartEntity ,qAccountEntity ,qSeedEntity);
-		}else {
-			list = selectQueryItem(itemNo, usrId, orderNo, page, start, size ,qCategoriesEntity ,qCartEntity ,qAccountEntity ,qChemistryEntity);
+		// 아이템 분류에 따른 쿼리 조회
+		if (itemNo.startsWith("1")) {
+			list = selectQueryProduct(itemNo, usrId, orderNo, page, start, size, endDate);
+		} else if (itemNo.startsWith("2")) {
+			list = selectQuerySeed(itemNo, usrId, orderNo, page, start, size, endDate);
+		} else {
+			list = selectQueryChemistry(itemNo, usrId, orderNo, page, start, size, endDate);
 		}
-		
-		Map<String,Object> map = new HashMap<>();
-		log.info("result : {}" , list);
-		log.info("cnt : {}" , list.size() );
+
+		Map<String, Object> map = new HashMap<>();
+		log.info("result : {}", list);
+		log.info("cnt : {}", list.size());
 		map.put("result", list);
 		map.put("cnt", list.size());
 		return map;
 	}
 
-	/* 약품 조회*/
-	private List<CategoriesDto> selectQueryItem(String itemNo, String usrId, String orderNo, int page, int start,
-			int size, QCategoriesEntity qCategoriesEntity, QCartEntity qCartEntity, QAccountEntity qAccountEntity,
-			QChemistryEntity qChemistryEntity) {
+	/* 약품 조회 */
+	private List<CategoriesDto> selectQueryChemistry(String itemNo, String usrId, String orderNo, int page, int start,
+			int size, String endDate) {
 		LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        String cur = currentDateTime.format(formatter);
-        
-        
-		JPAQueryFactory query = new JPAQueryFactory(em);
-		OrderSpecifier orderSpecifier = createOrderSpecifier(orderNo, qCategoriesEntity, qChemistryEntity);
-		List<CategoriesDto> list = query.select(
-				new QCategoriesDto(
-							 qCategoriesEntity.invenSClsNm
-							,qCategoriesEntity.invenSClsNo
-							,qChemistryEntity.chemistryPrice
-							,qChemistryEntity.chemistrySalesCnt
-							,qCategoriesEntity.invenCnt
-							,qChemistryEntity.chemistryUrl
-							,qCartEntity.delYn
-							,qCartEntity.useYn
-							)
-				)
-				.from(qCategoriesEntity)
-				.join(qChemistryEntity).on(qCategoriesEntity.invenSClsNo.eq(qChemistryEntity.chemistryNo))
-				.leftJoin(qCartEntity).on(qCategoriesEntity.invenSClsNo.eq(qCartEntity.cartItemNo))
-				.leftJoin(qAccountEntity).on(qCartEntity.cartUsrId.eq(qAccountEntity.usrId).and(qAccountEntity.usrId.eq(usrId)))
-				.where(qCategoriesEntity.invenMClsNo.eq(itemNo), qCategoriesEntity.crgDate.loe(cur), qCategoriesEntity.endDate.eq("99991231"))
-				.orderBy(orderSpecifier)
-				.offset(start)
-			    .limit(page * size)
-				.fetch();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		String cur = currentDateTime.format(formatter);
+
+		Pageable pageable;
+		// order by 순서
+		switch (orderNo) {
+		case "1" -> pageable = PageRequest.of((start - 1), size, Sort.by("INVEN_S_CLS_NM").descending());
+		case "2" -> pageable = PageRequest.of((start - 1), size, Sort.by("D.CHEMISTRY_PRICE").ascending());
+		case "3" -> pageable = PageRequest.of((start - 1), size, Sort.by("D.CHEMISTRY_PRICE").descending());
+		case "4" -> pageable = PageRequest.of((start - 1), size, Sort.by("D.CHEMISTRY_SALES_CNT").descending());
+		default -> pageable = PageRequest.of((start - 1), size, Sort.by("INVEN_L_CLS_NM").descending());
+		}
+
+		// 조회
+		List<Object[]> entityList = categoriesRepository.findAllChemistry(usrId, itemNo, cur, endDate, pageable);
+
+		ArrayList<CategoriesDto> list = new ArrayList<>();
+		for (Object[] result : entityList) {
+			CategoriesDto categoriesDto = new CategoriesDto();
+			categoriesDto.setInvenSClsNm(result[0].toString());
+			categoriesDto.setInvenSClsNo(result[1].toString());
+			
+			int price = Integer.parseInt(result[2].toString());
+			DecimalFormat krFormat = new DecimalFormat("###,###원");
+			String cartPrice = krFormat.format(price);
+			categoriesDto.setInvenPrice(cartPrice);
+			
+			categoriesDto.setInvenSaelsCnt(Integer.parseInt(result[3].toString()));
+			categoriesDto.setInvenCnt(Integer.parseInt(result[4].toString()));
+			categoriesDto.setInvenUrl(result[5].toString());
+			if (result[6] != null) {
+				categoriesDto.setDelYn(result[6].toString());
+			}
+			if (result[7] != null) {
+				categoriesDto.setUseYn(result[7].toString());
+			}
+			list.add(categoriesDto);
+		}
 		return list;
 	}
 
-	/* 씨앗 조회*/
-	private List<CategoriesDto> selectQueryItem(String itemNo, String usrId, String orderNo, int page, int start,
-			int size, QCategoriesEntity qCategoriesEntity, QCartEntity qCartEntity, QAccountEntity qAccountEntity,
-			QSeedEntity qSeedEntity) {
+	/* 씨앗 조회 */
+	private List<CategoriesDto> selectQuerySeed(String itemNo, String usrId, String orderNo, int page, int start,
+			int size, String endDate) {
 		LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        String cur = currentDateTime.format(formatter);
-        
-        
-		JPAQueryFactory query = new JPAQueryFactory(em);
-		OrderSpecifier orderSpecifier = createOrderSpecifier(orderNo, qCategoriesEntity, qSeedEntity);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		String cur = currentDateTime.format(formatter);
 
-		List<CategoriesDto> list = query.select(
-				new QCategoriesDto(
-							 qCategoriesEntity.invenSClsNm
-							,qCategoriesEntity.invenSClsNo
-							,qSeedEntity.seedPrice
-							,qSeedEntity.seedSalesCnt
-							,qCategoriesEntity.invenCnt
-							,qSeedEntity.seedUrl
-							,qCartEntity.delYn
-							,qCartEntity.useYn
-							)
-				)
-				.from(qCategoriesEntity)
-				.join(qSeedEntity).on(qCategoriesEntity.invenSClsNo.eq(qSeedEntity.seedNo))
-				.leftJoin(qCartEntity).on(qCategoriesEntity.invenSClsNo.eq(qCartEntity.cartItemNo))
-				.leftJoin(qAccountEntity).on(qCartEntity.cartUsrId.eq(qAccountEntity.usrId).and(qAccountEntity.usrId.eq(usrId)))
-				.where(qCategoriesEntity.invenMClsNo.eq(itemNo), qCategoriesEntity.crgDate.loe(cur), qCategoriesEntity.endDate.eq("99991231"))
-				.orderBy(orderSpecifier)
-				.offset(start)
-			    .limit(page * size)
-				.fetch();
+		Pageable pageable;
+		// order by 순서
+		switch (orderNo) {
+		case "1" -> pageable = PageRequest.of((start - 1), size, Sort.by("INVEN_S_CLS_NM").descending());
+		case "2" -> pageable = PageRequest.of((start - 1), size, Sort.by("D.SEED_PRICE").ascending());
+		case "3" -> pageable = PageRequest.of((start - 1), size, Sort.by("D.SEED_PRICE").descending());
+		case "4" -> pageable = PageRequest.of((start - 1), size, Sort.by("D.SEED_SALES_CNT").descending());
+		default -> pageable = PageRequest.of((start - 1), size, Sort.by("INVEN_L_CLS_NM").descending());
+		}
+
+		// 조회
+		List<Object[]> entityList = categoriesRepository.findAllSeed(usrId, itemNo, cur, endDate, pageable);
+
+		ArrayList<CategoriesDto> list = new ArrayList<>();
+		for (Object[] result : entityList) {
+			CategoriesDto categoriesDto = new CategoriesDto();
+			categoriesDto.setInvenSClsNm(result[0].toString());
+			categoriesDto.setInvenSClsNo(result[1].toString());
+			
+			int price = Integer.parseInt(result[2].toString());
+			DecimalFormat krFormat = new DecimalFormat("###,###원");
+			String cartPrice = krFormat.format(price);
+			categoriesDto.setInvenPrice(cartPrice);
+			
+			categoriesDto.setInvenSaelsCnt(Integer.parseInt(result[3].toString()));
+			categoriesDto.setInvenCnt(Integer.parseInt(result[4].toString()));
+			categoriesDto.setInvenUrl(result[5].toString());
+			if (result[6] != null) {
+				categoriesDto.setDelYn(result[6].toString());
+			}
+			if (result[7] != null) {
+				categoriesDto.setUseYn(result[7].toString());
+			}
+			list.add(categoriesDto);
+		}
 		return list;
 	}
 
-	/* 구성품 조회*/
-	private List<CategoriesDto> selectQueryItem(String itemNo, String usrId, String orderNo, int page, int start,
-			int size, QCategoriesEntity qCategoriesEntity, QCartEntity qCartEntity, QAccountEntity qAccountEntity, QProductEntity qProductEntity) {
-		
-		LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        String cur = currentDateTime.format(formatter);
-        
-        
-		JPAQueryFactory query = new JPAQueryFactory(em);
+	/* 구성품 조회 */
+	private List<CategoriesDto> selectQueryProduct(String itemNo, String usrId, String orderNo, int page, int start,
+			int size, String endDate) {
 
-		OrderSpecifier orderSpecifier = createOrderSpecifier(orderNo, qCategoriesEntity, qProductEntity);
-		
-		List<CategoriesDto> list = query.select(
-				new QCategoriesDto(
-							 qCategoriesEntity.invenSClsNm
-							,qCategoriesEntity.invenSClsNo
-							,qProductEntity.productPrice
-							,qProductEntity.productSalesCnt
-							,qCategoriesEntity.invenCnt
-							,qProductEntity.productUrl
-							,qCartEntity.delYn
-							,qCartEntity.useYn
-							)
-				)
-				.from(qCategoriesEntity)
-				.join(qProductEntity).on(qCategoriesEntity.invenSClsNo.eq(qProductEntity.productNo))
-				.leftJoin(qCartEntity).on(qCategoriesEntity.invenSClsNo.eq(qCartEntity.cartItemNo))
-				.leftJoin(qAccountEntity).on(qCartEntity.cartUsrId.eq(qAccountEntity.usrId).and(qAccountEntity.usrId.eq(usrId)))
-				.where(qCategoriesEntity.invenMClsNo.eq(itemNo), qCategoriesEntity.crgDate.loe(cur), qCategoriesEntity.endDate.eq("99991231"))
-				.orderBy(orderSpecifier)
-				.offset(start)
-			    .limit(page * size)
-				.fetch();
+		LocalDateTime currentDateTime = LocalDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		String cur = currentDateTime.format(formatter);
+
+		Pageable pageable;
+		// order by 순서
+		switch (orderNo) {
+		case "1" -> pageable = PageRequest.of((start - 1), size, Sort.by("INVEN_S_CLS_NM").descending());
+		case "2" -> pageable = PageRequest.of((start - 1), size, Sort.by("D.PRODUCT_PRICE").ascending());
+		case "3" -> pageable = PageRequest.of((start - 1), size, Sort.by("D.PRODUCT_PRICE").descending());
+		case "4" -> pageable = PageRequest.of((start - 1), size, Sort.by("D.PRODUCT_SALES_CNT").descending());
+		default -> pageable = PageRequest.of((start - 1), size, Sort.by("INVEN_L_CLS_NM").descending());
+		}
+
+		// 조회
+		List<Object[]> entityList = categoriesRepository.findAllProduct(usrId, itemNo, cur, endDate, pageable);
+
+		ArrayList<CategoriesDto> list = new ArrayList<>();
+		for (Object[] result : entityList) {
+			CategoriesDto categoriesDto = new CategoriesDto();
+			categoriesDto.setInvenSClsNm(result[0].toString());
+			categoriesDto.setInvenSClsNo(result[1].toString());
+			
+			int price = Integer.parseInt(result[2].toString());
+			DecimalFormat krFormat = new DecimalFormat("###,###원");
+			String cartPrice = krFormat.format(price);
+			categoriesDto.setInvenPrice(cartPrice);
+			
+			categoriesDto.setInvenSaelsCnt(Integer.parseInt(result[3].toString()));
+			categoriesDto.setInvenCnt(Integer.parseInt(result[4].toString()));
+			categoriesDto.setInvenUrl(result[5].toString());
+			if (result[6] != null) {
+				categoriesDto.setDelYn(result[6].toString());
+			}
+			if (result[7] != null) {
+				categoriesDto.setUseYn(result[7].toString());
+			}
+			list.add(categoriesDto);
+		}
+
+//		List<CategoriesDto> list = query.select(
+//				new QCategoriesDto(
+//						 qCategoriesEntity.invenSClsNm
+//						,qCategoriesEntity.invenSClsNo
+//						,qProductEntity.productPrice
+//						,qProductEntity.productSalesCnt
+//						,qCategoriesEntity.invenCnt
+//						,qProductEntity.productUrl
+//						,qCartEntity.delYn
+//						,qCartEntity.useYn
+//						)
+//			)
+//			.from(qCategoriesEntity)
+//			.join(qProductEntity).on(qCategoriesEntity.invenSClsNo.eq(qProductEntity.productNo))
+//			.leftJoin(
+//				        JPAExpressions.select(qCartEntity.useYn, qCartEntity.delYn, qCartEntity.cartItemNo, qCartEntity.cartUsrId)
+//				            .from(qCartEntity)
+//				            .join(qAccountEntity)
+//				            .on(qCartEntity.cartUsrId.eq(qAccountEntity.usrId).and(qAccountEntity.usrId.eq(usrId)))
+//				    ).as(qCartEntity)
+//			.on(qCategoriesEntity.invenSClsNo.eq(qCartEntity.cartItemNo))
+//			.where(qCategoriesEntity.invenMClsNo.eq(itemNo), qCategoriesEntity.crgDate.loe(cur), qCategoriesEntity.endDate.eq("99991231"))
+//			.orderBy(orderSpecifier)
+//			.offset(start)
+//		    .limit(page * size)
+//			.fetch();
 		return list;
 	}
-	
-	/* 구성품 순서 */
-	private OrderSpecifier createOrderSpecifier(String orderNo, QCategoriesEntity qCategoriesEntity, QProductEntity qProductEntity) {
-		 return switch (orderNo) {
-         case "1" -> new OrderSpecifier<>(Order.DESC,qCategoriesEntity.invenSClsNm);
-         case "2" -> new OrderSpecifier<>(Order.ASC, qProductEntity.productPrice);
-         case "3" -> new OrderSpecifier<>(Order.DESC, qProductEntity.productPrice);
-         case "4" -> new OrderSpecifier<>(Order.DESC, qProductEntity.productSalesCnt );
-         default -> new OrderSpecifier<>(Order.DESC, qCategoriesEntity.invenLClsNm);
-     };
-	}
-	
-	/* 씨앗 순서 */
-	private OrderSpecifier createOrderSpecifier(String orderNo, QCategoriesEntity qCategoriesEntity,
-			QSeedEntity qSeedEntity) {
-		 return switch (orderNo) {
-         case "1" -> new OrderSpecifier<>(Order.DESC,qCategoriesEntity.invenSClsNm);
-         case "2" -> new OrderSpecifier<>(Order.ASC, qSeedEntity.seedPrice);
-         case "3" -> new OrderSpecifier<>(Order.DESC, qSeedEntity.seedPrice);
-         case "4" -> new OrderSpecifier<>(Order.DESC, qSeedEntity.seedSalesCnt);
-         default -> new OrderSpecifier<>(Order.DESC, qCategoriesEntity.invenLClsNm);
-		 };
-	}
-	
-	/* 약품 순서 */
-	private OrderSpecifier createOrderSpecifier(String orderNo, QCategoriesEntity qCategoriesEntity,
-			QChemistryEntity qChemistryEntity) {
-		return switch (orderNo) {
-        case "1" -> new OrderSpecifier<>(Order.DESC,qCategoriesEntity.invenSClsNm);
-        case "2" -> new OrderSpecifier<>(Order.ASC, qChemistryEntity.chemistryPrice);
-        case "3" -> new OrderSpecifier<>(Order.DESC, qChemistryEntity.chemistryPrice);
-        case "4" -> new OrderSpecifier<>(Order.DESC, qChemistryEntity.chemistrySalesCnt);
-        default -> new OrderSpecifier<>(Order.DESC, qCategoriesEntity.invenLClsNm);
-		 };
-	}
-	
+
 	@Transactional
 	public Map<String, Object> intoCart(Map<String, Object> request) {
 		Map<String, Object> map = new HashMap<>();
-		//기본 셋팅
+		// 기본 셋팅
 		String cartItemNo = request.get("invenNo").toString();
 		String usrId = request.get("usrId").toString();
-		String useYn = "Y";
-		String delYn = "N";
+		String useYn = "";
+		String delYn = "";
 		String cartSt = "L";
-		
-		
-		//해당 항목 조회
-		if(cartItemNo.startsWith("1")){
-			Optional<ProductEntity> productEntity = productRepository.findByProductNo(cartItemNo);
-			//카트 테이블에 저장
-			CartEntity cartEntity = new CartEntity();
-			if(productEntity.isPresent()) {
-				
-				cartEntity.setCartItemNm(productEntity.get().getProductNm());
-				cartEntity.setCartItemNo(productEntity.get().getProductNo());
-				cartEntity.setCartSt(cartSt);
-				cartEntity.setDelYn(delYn);
-				cartEntity.setUseYn(useYn);
-				cartEntity.setCartUsrId(usrId);
-				
-				cartRepository.save(cartEntity);
-				map.put("code", "success");
-				map.put("msg", "찜 리스트에 등록 되었습니다.");
-			}
-		}else if(cartItemNo.startsWith("2")) {
-			Optional<SeedEntity> seedEntity = seedRepository.findBySeedNo(cartItemNo);
-			//카트 테이블에 저장
-			CartEntity cartEntity = new CartEntity();
-			if(seedEntity.isPresent()) {
-				cartEntity.setCartItemNm(seedEntity.get().getSeedNm());
-				cartEntity.setCartItemNo(seedEntity.get().getSeedNo());
-				cartEntity.setCartSt(cartSt);
-				cartEntity.setDelYn(delYn);
-				cartEntity.setUseYn(useYn);
-				cartEntity.setCartUsrId(usrId);
-				
-				cartRepository.save(cartEntity);
-				map.put("code", "success");
-				map.put("msg", "찜 리스트에 등록 되었습니다.");
-			}
-		}else {
-			Optional<ChemistryEntity> chemistryEntity = chemistryRepository.findByChemistryNo(cartItemNo);
-			//카트 테이블에 저장
-			CartEntity cartEntity = new CartEntity();
-			if(chemistryEntity.isPresent()) {
-				cartEntity.setCartItemNm(chemistryEntity.get().getChemistryNm());
-				cartEntity.setCartItemNo(chemistryEntity.get().getChemistryNo());
-				cartEntity.setCartSt(cartSt);
-				cartEntity.setDelYn(delYn);
-				cartEntity.setUseYn(useYn);
-				cartEntity.setCartUsrId(usrId);
-				
-				cartRepository.save(cartEntity);
-				map.put("code", "success");
-				map.put("msg", "찜 리스트에 등록 되었습니다.");
+		if ("Y".equals(request.get("useYn"))) {
+			useYn = "N";
+			delYn = "Y";
+				// 카트 테이블에 저장
+				Optional<CartEntity> entity = cartRepository.findByCartItemNoAndCartStAndCartUsrIdAndUseYnAndDelYn(cartItemNo,cartSt, usrId , "Y" , "N");
+				if (entity.isPresent()) {
+					CartEntity cartEntity = entity.get();
+					cartEntity.setDelYn(delYn);
+					cartEntity.setUseYn(useYn);
+
+					cartRepository.save(cartEntity);
+					map.put("code", "success");
+					map.put("msg", "찜 등록 취소 되었습니다.");
+				}
+		} else {
+			// cartNo 최신 값 가져오기
+			int cartNo = cartRepository.findOne();
+			useYn = "Y";
+			delYn = "N";
+			// 해당 항목 조회
+			if (cartItemNo.startsWith("1")) {
+				Optional<ProductEntity> productEntity = productRepository.findByProductNo(cartItemNo);
+				// 카트 테이블에 저장
+				CartEntity cartEntity = new CartEntity();
+				if (productEntity.isPresent()) {
+
+					cartEntity.setCartItemNm(productEntity.get().getProductNm());
+					cartEntity.setCartItemNo(productEntity.get().getProductNo());
+					cartEntity.setCartSt(cartSt);
+					cartEntity.setDelYn(delYn);
+					cartEntity.setUseYn(useYn);
+					cartEntity.setCartUsrId(usrId);
+					cartEntity.setCartNo(cartNo + 1);
+
+					cartRepository.save(cartEntity);
+					map.put("code", "success");
+					map.put("msg", "찜 리스트에 등록 되었습니다.");
+				}
+			} else if (cartItemNo.startsWith("2")) {
+				Optional<SeedEntity> seedEntity = seedRepository.findBySeedNo(cartItemNo);
+				// 카트 테이블에 저장
+				CartEntity cartEntity = new CartEntity();
+				if (seedEntity.isPresent()) {
+					cartEntity.setCartItemNm(seedEntity.get().getSeedNm());
+					cartEntity.setCartItemNo(seedEntity.get().getSeedNo());
+					cartEntity.setCartSt(cartSt);
+					cartEntity.setDelYn(delYn);
+					cartEntity.setUseYn(useYn);
+					cartEntity.setCartUsrId(usrId);
+					cartEntity.setCartNo(cartNo + 1);
+
+					cartRepository.save(cartEntity);
+					map.put("code", "success");
+					map.put("msg", "찜 리스트에 등록 되었습니다.");
+				}
+			} else {
+				Optional<ChemistryEntity> chemistryEntity = chemistryRepository.findByChemistryNo(cartItemNo);
+				// 카트 테이블에 저장
+				CartEntity cartEntity = new CartEntity();
+				if (chemistryEntity.isPresent()) {
+					cartEntity.setCartItemNm(chemistryEntity.get().getChemistryNm());
+					cartEntity.setCartItemNo(chemistryEntity.get().getChemistryNo());
+					cartEntity.setCartSt(cartSt);
+					cartEntity.setDelYn(delYn);
+					cartEntity.setUseYn(useYn);
+					cartEntity.setCartUsrId(usrId);
+					cartEntity.setCartNo(cartNo + 1);
+
+					cartRepository.save(cartEntity);
+					map.put("code", "success");
+					map.put("msg", "찜 리스트에 등록 되었습니다.");
+				}
 			}
 		}
+		return map;
+	}
+
+	public Map<String, Object> categorieDetail(String itemKey) {
+		Map<String, Object> map = new HashMap<>();
+		CategoriesDto dto = new CategoriesDto();
+		if(itemKey.startsWith("1")) {
+			Optional<ProductEntity> entity = productRepository.findByProductNo(itemKey);
+			dto.setInvenUrl(entity.get().getProductUrl());
+			dto.setInvenSClsNm(entity.get().getProductNm());
+			
+			int price = entity.get().getProductPrice();
+			DecimalFormat krFormat = new DecimalFormat("###,###원");
+			String itemPrice = krFormat.format(price);
 		
+			dto.setInvenPrice(itemPrice);
+			
+		}
 		
+		map.put("result", dto);
 		return map;
 	}
 

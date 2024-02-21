@@ -1,5 +1,6 @@
 package com.gongsik.gsr.api.mypage.uscart.service;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.gongsik.gsr.api.mypage.delivery.entity.DeliveryEntity;
 import com.gongsik.gsr.api.mypage.uscart.dto.CartDto;
 import com.gongsik.gsr.api.mypage.uscart.entity.CartEntity;
 import com.gongsik.gsr.api.mypage.uscart.repository.CartRepository;
@@ -17,7 +17,7 @@ import com.gongsik.gsr.global.vo.ResultVO;
 
 @Service
 public class CartService {
-
+	
 	@Autowired
 	CartRepository cartRepository;
 	
@@ -28,8 +28,12 @@ public class CartService {
 		//장바구니 조회
 		String usrId = request.get("usrId");
 		String cartSt = request.get("cartSt");
+		String delYn = "N";
+		String useYn = "Y";
 		
-		List<CartEntity> cartEntity =  cartRepository.findByCartUsrIdAndCartStAndDelYnOrderByCartNoDesc(usrId, cartSt, "N");
+		List<Object[]> cartEntity =  cartRepository.findByCartUsrIdAndCartStAndDelYnAndUseYnOrderByCartNoDesc(usrId, cartSt, delYn, useYn);
+		
+		
 		
 		if(cartEntity.isEmpty()) {
 			resultVo.setCode("fail");
@@ -38,11 +42,21 @@ public class CartService {
 			return map;
 		}else {
 			List<CartDto> list = new ArrayList<>();
-			for(CartEntity entity : cartEntity) {
+			for(Object[] object: cartEntity) {
 				CartDto cartDto = new CartDto();
-				cartDto.setCartItemCnt(entity.getCartItemCnt());
-				cartDto.setCartItemNm(entity.getCartItemNm());
-				cartDto.setCartNo(entity.getCartNo());
+				cartDto.setCartNo(Integer.parseInt(object[0].toString()));
+				cartDto.setCartUsrId(object[1].toString());
+				cartDto.setCartItemCnt(Integer.parseInt(object[2].toString()));
+				cartDto.setCartItemNm(object[3].toString());
+				cartDto.setCartItemNo(object[4].toString());
+				cartDto.setCartSt(object[5].toString());
+				cartDto.setCartUrl(object[6].toString());
+				int price = Integer.parseInt(object[7].toString());
+				DecimalFormat krFormat = new DecimalFormat("###,###원");
+				String cartPrice = krFormat.format(price);
+				cartDto.setCartPrice(cartPrice);
+				cartDto.setUseYn(object[8].toString());
+				cartDto.setDelYn(object[9].toString());;
 				list.add(cartDto);
 			}
 			map.put("result", list);
@@ -59,6 +73,7 @@ public class CartService {
 		Optional<CartEntity> cartEntity = cartRepository.findByCartUsrIdAndCartNo(usrId, cartNo);
 		CartEntity entity = cartEntity.get();
 		entity.setDelYn("Y");
+		entity.setUseYn("N");
 		
 		CartEntity result = cartRepository.save(entity);
 		
