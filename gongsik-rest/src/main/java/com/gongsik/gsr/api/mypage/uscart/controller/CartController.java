@@ -47,7 +47,7 @@ public class CartController {
 		               content = @Content(
 		                    schema = @Schema(implementation = ResultVO.class)))
 		})
-	public ResponseEntity<Map<String, Object>> wishList(@RequestBody Map<String,String> map){
+	public ResponseEntity<Map<String, Object>> wishList(@RequestBody Map<String,Object> map){
 		
 		Map<String, Object> resultMap = cartService.wishList(map);
 		resultMap.put("code", "success");
@@ -55,7 +55,7 @@ public class CartController {
 		return new ResponseEntity<>(resultMap, HttpStatus.OK); 
 	}
 	
-	@GetMapping("/cartDel/{cartNo}/{usrId}")
+	@PostMapping("/cartDel")
 	@Operation(summary = "장바구니 목록 삭제", description = "장바구니 목록 삭제 하기")
 	@Parameters({
 		@Parameter(description = "장바구니 번호 ", name = "cartNo", example = "1"),
@@ -68,9 +68,9 @@ public class CartController {
 					content = @Content(
 							schema = @Schema(implementation = Map.class)))
 	})
-	public ResponseEntity<Map<String, Object>> cartDel(@PathVariable("usrId") String usrId ,@PathVariable("cartNo") long cartNo) {
+	public ResponseEntity<Map<String, Object>> cartDel(@RequestBody Map<String,Object> request) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		map = cartService.cartDel(usrId,cartNo);
+		map = cartService.cartDel(request);
 		return ResponseEntity.ok(map);
 	}
 	

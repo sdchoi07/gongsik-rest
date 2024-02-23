@@ -34,6 +34,7 @@ public class CategoriesDto extends CommonDto{
     private String delYn;
     private String useYn;
 	private String invenUrl;
+	private String invenText;
     
 	
     @QueryProjection

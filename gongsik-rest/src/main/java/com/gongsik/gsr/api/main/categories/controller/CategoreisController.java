@@ -53,14 +53,16 @@ public class CategoreisController {
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 	
-	@GetMapping("/categorieDetail/{itemKey}")
+	@PostMapping("/categorieDetail")
 	@Operation(summary = "상품 디테일 정보", description = "상품 디테일 정보")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "성공")
 		})
-	public ResponseEntity<Map<String,Object>> categorieDetail(@PathVariable("itemKey") String itemKey) {
+	public ResponseEntity<Map<String,Object>> categorieDetail(@RequestBody Map<String,Object> request) {
 		Map<String, Object> map = new HashMap<>();
-		map = categoriesService.categorieDetail(itemKey);
+		map = categoriesService.categorieDetail(request);
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
+	
+
 }

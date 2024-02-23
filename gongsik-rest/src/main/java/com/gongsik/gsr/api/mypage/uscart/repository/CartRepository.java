@@ -3,6 +3,7 @@ package com.gongsik.gsr.api.mypage.uscart.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,13 +27,13 @@ public interface CartRepository  extends JpaRepository<CartEntity, Long>{
 			+ "	        WHEN C.SEED_URL IS NOT NULL THEN C.SEED_URL																							"
 			+ "	        WHEN D.CHEMISTRY_URL IS NOT NULL THEN D.CHEMISTRY_URL																			    "
 			+ "        ELSE ''																															    "
-			+ "	    END AS CART_URL,																															    "
+			+ "	    END AS CART_URL,																														"
 			+ "         CASE																																"
 			+ "	        WHEN B.PRODUCT_PRICE IS NOT NULL THEN B.PRODUCT_PRICE																				"
 			+ "	        WHEN C.SEED_PRICE IS NOT NULL THEN C.SEED_PRICE																						"
 			+ "	        WHEN D.CHEMISTRY_URL IS NOT NULL THEN D.CHEMISTRY_PRICE																		        "
 			+ "        ELSE 0																															    "
-			+ "	    END AS CART_PRICE,																															"
+			+ "	    END AS CART_PRICE,																														"
 			+ "        A.DEL_YN,																															"
 			+ "        A.USE_YN 																															"
 			+ "    FROM																																	    "
@@ -41,24 +42,27 @@ public interface CartRepository  extends JpaRepository<CartEntity, Long>{
 			+ "    LEFT JOIN (SELECT SEED_URL, SEED_PRICE, SEED_NO FROM GS_SEED_INF) C ON A.CART_ITEM_NO = C.SEED_NO  									    "
 			+ "    LEFT JOIN (SELECT CHEMISTRY_URL, CHEMISTRY_PRICE, CHEMISTRY_NO FROM GS_CHEMISTRY_INF) D ON A.CART_ITEM_NO = D.CHEMISTRY_NO  				"
 			+ "    WHERE																																	"
-			+ "        A.CART_USR_ID= :usrId 																										"
-			+ "        AND A.CART_ST= :cartSt 																											        "
-			+ "        AND A.DEL_YN= :delYn																													    "
-			+ "		   AND A.USE_YN= :useYn 																													    "
+			+ "        A.CART_USR_ID= :usrId 																												"
+			+ "        AND A.CART_ST IN (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX( :cartSt, ',', n), ',', -1) AS part											"
+			+ "								FROM (SELECT 1 AS n UNION SELECT 2) AS numbers) 														        "
+			+ "        AND A.DEL_YN= :delYn																													"
+			+ "		   AND A.USE_YN= :useYn 																												"
 			+ "    ORDER BY																																	"
-			+ "        A.CART_NO DESC"
+			+ "        A.CART_NO DESC																														"
 																															,nativeQuery=true)
-	List<Object[]> findByCartUsrIdAndCartStAndDelYnAndUseYnOrderByCartNoDesc(@Param("usrId")String usrId, @Param("cartSt")String cartSt, @Param("delYn")String delYn, @Param("useYn")String useYn);
+	List<Object[]> findByCartUsrIdAndCartStAndDelYnAndUseYnOrderByCartNoDesc(@Param("usrId")String usrId, @Param("cartSt")String cartSt, @Param("delYn")String delYn, @Param("useYn")String useYn, Pageable pageable);
 
-	Optional<CartEntity> findByCartUsrIdAndCartNo(String usrId, long cartNo);
-	
 	@Query(value=
 		      "	SELECT IFNULL(MAX(CART_NO),0) AS CART_NO "
 			+ "	FROM GS_CART_INF A	"
 																															,nativeQuery=true)
 	int findOne();
 
-	Optional<CartEntity> findByCartItemNoAndCartStAndCartUsrIdAndUseYnAndDelYn(String cartItemNo, String cartSt,
-			String usrId, String string, String string2);
+	Optional<CartEntity> findByCartUsrIdAndCartNoAndDelYnAndUseYn(String usrId, long cartNo, String string,
+			String string2);
+
+	Optional<CartEntity> findByCartItemNoAndCartUsrIdAndUseYnAndDelYn(String cartItemNo, String usrId, String string,
+			String string2);
+
 
 }

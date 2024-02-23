@@ -1,14 +1,10 @@
 package com.gongsik.gsr.api.mypage.uscart.entity;
 
-import java.time.LocalDateTime;
-
-import com.gongsik.gsr.api.mypage.usrGrade.entity.GradeMstEntity;
-import com.gongsik.gsr.api.mypage.usrGrade.entity.UsrGradeMultiKey;
+import com.gongsik.gsr.api.common.entity.CommonEntity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
@@ -52,4 +48,6 @@ public class CartEntity {
 	@Column(name = "USE_YN")
 	private String useYn;
 
+	@Embedded
+    private CommonEntity commonEntity;
 }

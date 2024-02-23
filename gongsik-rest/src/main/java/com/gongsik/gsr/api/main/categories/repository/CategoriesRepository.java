@@ -1,6 +1,7 @@
 package com.gongsik.gsr.api.main.categories.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,7 +21,7 @@ public interface CategoriesRepository extends JpaRepository<CategoriesEntity, Lo
 			+ "	LEFT JOIN (SELECT A.DEL_YN , A.USE_YN , A.CART_ITEM_NO, A.CART_USR_ID															 "
 			+ "			FROM GS_CART_INF A																									     "
 			+ "			JOIN GS_ACCOUNT_INF B ON A.CART_USR_ID = B.USR_ID AND USR_ID = :usrId													 "
-			+ "			WHERE A.USE_YN = 'Y' AND A.DEL_YN = 'N' ) F ON F.CART_ITEM_NO = A.INVEN_S_CLS_NO	 									 "
+			+ "			WHERE A.USE_YN = 'Y' AND A.DEL_YN = 'N'  AND A.CART_ST != 'W') F ON F.CART_ITEM_NO = A.INVEN_S_CLS_NO	 									 "
 			+ "	WHERE INVEN_M_CLS_NO = :itemNo 																									 "
 			+ "	AND CRG_DATE <= :cur 																										     "
 			+ "	AND END_DATE = :endDate 																										 "
@@ -34,7 +35,7 @@ public interface CategoriesRepository extends JpaRepository<CategoriesEntity, Lo
 			+ "	LEFT JOIN (SELECT A.DEL_YN , A.USE_YN , A.CART_ITEM_NO, A.CART_USR_ID															 "
 			+ "			FROM GS_CART_INF A																									     "
 			+ "			JOIN GS_ACCOUNT_INF B ON A.CART_USR_ID = B.USR_ID AND USR_ID = :usrId													 "
-			+ "			WHERE A.USE_YN = 'Y' AND A.DEL_YN = 'N' ) F ON F.CART_ITEM_NO = A.INVEN_S_CLS_NO	 									 "
+			+ "			WHERE A.USE_YN = 'Y' AND A.DEL_YN = 'N' AND A.CART_ST != 'W') F ON F.CART_ITEM_NO = A.INVEN_S_CLS_NO	 									 "
 			+ "	WHERE INVEN_M_CLS_NO = :itemNo 																					        "
 			+ "	AND CRG_DATE <= :cur 																								    "
 			+ "	AND END_DATE = :endDate 																								"
@@ -48,11 +49,13 @@ public interface CategoriesRepository extends JpaRepository<CategoriesEntity, Lo
 			+ "	LEFT JOIN (SELECT A.DEL_YN , A.USE_YN , A.CART_ITEM_NO, A.CART_USR_ID															 "
 			+ "			FROM GS_CART_INF A																									     "
 			+ "			JOIN GS_ACCOUNT_INF B ON A.CART_USR_ID = B.USR_ID AND USR_ID = :usrId													 "
-			+ "			WHERE A.USE_YN = 'Y' AND A.DEL_YN = 'N' ) F ON F.CART_ITEM_NO = A.INVEN_S_CLS_NO	 									 "
+			+ "			WHERE A.USE_YN = 'Y' AND A.DEL_YN = 'N' AND A.CART_ST != 'W') F ON F.CART_ITEM_NO = A.INVEN_S_CLS_NO	 									 "
 			+ "	WHERE INVEN_M_CLS_NO = :itemNo 																									       "
 			+ "	AND CRG_DATE <= :cur 																												   "
 			+ "	AND END_DATE = :endDate 																										       "
 																															,nativeQuery=true)
 	List<Object[]> findAllChemistry(@Param("usrId")String usrId, @Param("itemNo")String itemNo, @Param("cur")String cur, @Param("endDate")String endDate, Pageable pageable);
+
+	Optional<CategoriesEntity> findByInvenSClsNo(String itemKey);
 
 }

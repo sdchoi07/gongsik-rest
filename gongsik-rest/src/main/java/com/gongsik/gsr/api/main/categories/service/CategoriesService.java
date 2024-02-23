@@ -16,7 +16,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gongsik.gsr.api.account.join.entity.AccountEntity;
+import com.gongsik.gsr.api.account.join.repository.AccountRepository;
 import com.gongsik.gsr.api.main.categories.dto.CategoriesDto;
+import com.gongsik.gsr.api.main.categories.entity.CategoriesEntity;
 import com.gongsik.gsr.api.main.categories.entity.ChemistryEntity;
 import com.gongsik.gsr.api.main.categories.entity.ProductEntity;
 import com.gongsik.gsr.api.main.categories.entity.SeedEntity;
@@ -26,6 +29,7 @@ import com.gongsik.gsr.api.main.categories.repository.ProductRepository;
 import com.gongsik.gsr.api.main.categories.repository.SeedRepository;
 import com.gongsik.gsr.api.mypage.uscart.entity.CartEntity;
 import com.gongsik.gsr.api.mypage.uscart.repository.CartRepository;
+import com.gongsik.gsr.global.vo.ResultVO;
 
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +55,9 @@ public class CategoriesService {
 
 	@Autowired
 	CategoriesRepository categoriesRepository;
+
+	@Autowired
+	AccountRepository accountRepository;
 
 	/* 카테고리 조회 */
 	public Map<String, Object> categoriesListAll(Map<String, Object> request) {
@@ -112,12 +119,12 @@ public class CategoriesService {
 			CategoriesDto categoriesDto = new CategoriesDto();
 			categoriesDto.setInvenSClsNm(result[0].toString());
 			categoriesDto.setInvenSClsNo(result[1].toString());
-			
+
 			int price = Integer.parseInt(result[2].toString());
 			DecimalFormat krFormat = new DecimalFormat("###,###원");
 			String cartPrice = krFormat.format(price);
 			categoriesDto.setInvenPrice(cartPrice);
-			
+
 			categoriesDto.setInvenSaelsCnt(Integer.parseInt(result[3].toString()));
 			categoriesDto.setInvenCnt(Integer.parseInt(result[4].toString()));
 			categoriesDto.setInvenUrl(result[5].toString());
@@ -157,12 +164,12 @@ public class CategoriesService {
 			CategoriesDto categoriesDto = new CategoriesDto();
 			categoriesDto.setInvenSClsNm(result[0].toString());
 			categoriesDto.setInvenSClsNo(result[1].toString());
-			
+
 			int price = Integer.parseInt(result[2].toString());
 			DecimalFormat krFormat = new DecimalFormat("###,###원");
 			String cartPrice = krFormat.format(price);
 			categoriesDto.setInvenPrice(cartPrice);
-			
+
 			categoriesDto.setInvenSaelsCnt(Integer.parseInt(result[3].toString()));
 			categoriesDto.setInvenCnt(Integer.parseInt(result[4].toString()));
 			categoriesDto.setInvenUrl(result[5].toString());
@@ -203,12 +210,12 @@ public class CategoriesService {
 			CategoriesDto categoriesDto = new CategoriesDto();
 			categoriesDto.setInvenSClsNm(result[0].toString());
 			categoriesDto.setInvenSClsNo(result[1].toString());
-			
+
 			int price = Integer.parseInt(result[2].toString());
 			DecimalFormat krFormat = new DecimalFormat("###,###원");
 			String cartPrice = krFormat.format(price);
 			categoriesDto.setInvenPrice(cartPrice);
-			
+
 			categoriesDto.setInvenSaelsCnt(Integer.parseInt(result[3].toString()));
 			categoriesDto.setInvenCnt(Integer.parseInt(result[4].toString()));
 			categoriesDto.setInvenUrl(result[5].toString());
@@ -258,21 +265,26 @@ public class CategoriesService {
 		String usrId = request.get("usrId").toString();
 		String useYn = "";
 		String delYn = "";
-		String cartSt = "L";
+		String cartSt = request.get("cartSt").toString();
 		if ("Y".equals(request.get("useYn"))) {
 			useYn = "N";
 			delYn = "Y";
-				// 카트 테이블에 저장
-				Optional<CartEntity> entity = cartRepository.findByCartItemNoAndCartStAndCartUsrIdAndUseYnAndDelYn(cartItemNo,cartSt, usrId , "Y" , "N");
-				if (entity.isPresent()) {
-					CartEntity cartEntity = entity.get();
+			// 카트 테이블에 저장
+			Optional<CartEntity> entity = cartRepository
+					.findByCartItemNoAndCartUsrIdAndUseYnAndDelYn(cartItemNo, usrId, "Y", "N");
+			if (entity.isPresent()) {
+				CartEntity cartEntity = entity.get();
+				String st = entity.get().getCartSt();
+				if("A".equals(st)) {
+					cartEntity.setCartSt("W");
+				}else {
 					cartEntity.setDelYn(delYn);
 					cartEntity.setUseYn(useYn);
-
-					cartRepository.save(cartEntity);
-					map.put("code", "success");
-					map.put("msg", "찜 등록 취소 되었습니다.");
 				}
+				cartRepository.save(cartEntity);
+				map.put("code", "success");
+				map.put("msg", "찜 등록 취소 되었습니다.");
+			}
 		} else {
 			// cartNo 최신 값 가져오기
 			int cartNo = cartRepository.findOne();
@@ -292,10 +304,14 @@ public class CategoriesService {
 					cartEntity.setUseYn(useYn);
 					cartEntity.setCartUsrId(usrId);
 					cartEntity.setCartNo(cartNo + 1);
+					if("W".equals(cartSt)) {
+						int count = Integer.parseInt(request.get("count").toString());
+						cartEntity.setCartItemCnt(count);
+					}
 
 					cartRepository.save(cartEntity);
 					map.put("code", "success");
-					map.put("msg", "찜 리스트에 등록 되었습니다.");
+					map.put("msg", "장바구니 리스트에 등록 되었습니다.");
 				}
 			} else if (cartItemNo.startsWith("2")) {
 				Optional<SeedEntity> seedEntity = seedRepository.findBySeedNo(cartItemNo);
@@ -309,10 +325,13 @@ public class CategoriesService {
 					cartEntity.setUseYn(useYn);
 					cartEntity.setCartUsrId(usrId);
 					cartEntity.setCartNo(cartNo + 1);
-
+					if("W".equals(cartSt)) {
+						int count = Integer.parseInt(request.get("count").toString());
+						cartEntity.setCartItemCnt(count);
+					}
 					cartRepository.save(cartEntity);
 					map.put("code", "success");
-					map.put("msg", "찜 리스트에 등록 되었습니다.");
+					map.put("msg", "장바구니 리스트에 등록 되었습니다.");
 				}
 			} else {
 				Optional<ChemistryEntity> chemistryEntity = chemistryRepository.findByChemistryNo(cartItemNo);
@@ -326,34 +345,166 @@ public class CategoriesService {
 					cartEntity.setUseYn(useYn);
 					cartEntity.setCartUsrId(usrId);
 					cartEntity.setCartNo(cartNo + 1);
-
+					if("W".equals(cartSt)) {
+						int count = Integer.parseInt(request.get("count").toString());
+						cartEntity.setCartItemCnt(count);
+					}
 					cartRepository.save(cartEntity);
 					map.put("code", "success");
-					map.put("msg", "찜 리스트에 등록 되었습니다.");
+					map.put("msg", "장바구니 리스트에 등록 되었습니다.");
 				}
 			}
 		}
 		return map;
 	}
 
-	public Map<String, Object> categorieDetail(String itemKey) {
+	public Map<String, Object> categorieDetail(Map<String, Object> request) {
 		Map<String, Object> map = new HashMap<>();
 		CategoriesDto dto = new CategoriesDto();
-		if(itemKey.startsWith("1")) {
+		int gradePrice = 0;
+		String gdPrice = "";
+		String itemKey = request.get("itemKey").toString();
+		String usrId = "";
+		if (request.get("usrId") != null && !"".equals(request.get("usrId"))) {
+			usrId = request.get("usrId").toString();
+		}
+		if (itemKey.startsWith("1")) {
 			Optional<ProductEntity> entity = productRepository.findByProductNo(itemKey);
 			dto.setInvenUrl(entity.get().getProductUrl());
 			dto.setInvenSClsNm(entity.get().getProductNm());
-			
+			dto.setInvenText(entity.get().getProductText());
+
 			int price = entity.get().getProductPrice();
 			DecimalFormat krFormat = new DecimalFormat("###,###원");
 			String itemPrice = krFormat.format(price);
-		
+
 			dto.setInvenPrice(itemPrice);
+			if (request.get("usrId") != null && !"".equals(request.get("usrId"))) {
+				Optional<AccountEntity> accountEntity = accountRepository.findByUsrId(usrId);
+				String usrGrade = accountEntity.get().getUsrGrade();
+
+				krFormat = new DecimalFormat("###,###p 적립");
+				switch (usrGrade) {
+				case "1":
+					gradePrice = (int) (price * 0.01);
+					gdPrice = krFormat.format(gradePrice);
+					break;
+				case "2":
+					gradePrice = (int) (price * 0.02);
+					gdPrice = krFormat.format(gradePrice);
+					break;
+				case "3":
+					gradePrice = (int) (price * 0.05);
+					gdPrice = krFormat.format(gradePrice);
+					break;
+				case "4":
+					gradePrice = (int) (price * 0.1);
+					gdPrice = krFormat.format(gradePrice);
+					break;
+				case "5":
+					gradePrice = (int) (price * 0.2);
+					gdPrice = krFormat.format(gradePrice);
+					break;
+				default:
+					gdPrice = "0";
+				}
+			}
+			Optional<CategoriesEntity> categoriesEntity = categoriesRepository.findByInvenSClsNo(itemKey);
+			dto.setInvenCnt(categoriesEntity.get().getInvenCnt());
 			
+		}else if(itemKey.startsWith("2")) {
+			Optional<SeedEntity> entity = seedRepository.findBySeedNo(itemKey);
+			dto.setInvenUrl(entity.get().getSeedUrl());
+			dto.setInvenSClsNm(entity.get().getSeedNm());
+			dto.setInvenText(entity.get().getSeedText());
+
+			int price = entity.get().getSeedPrice();
+			DecimalFormat krFormat = new DecimalFormat("###,###원");
+			String itemPrice = krFormat.format(price);
+
+			dto.setInvenPrice(itemPrice);
+			if (request.get("usrId") != null && !"".equals(request.get("usrId"))) {
+				Optional<AccountEntity> accountEntity = accountRepository.findByUsrId(usrId);
+				String usrGrade = accountEntity.get().getUsrGrade();
+
+				krFormat = new DecimalFormat("###,###p 적립");
+				switch (usrGrade) {
+				case "1":
+					gradePrice = (int) (price * 0.01);
+					gdPrice = krFormat.format(gradePrice);
+					break;
+				case "2":
+					gradePrice = (int) (price * 0.02);
+					gdPrice = krFormat.format(gradePrice);
+					break;
+				case "3":
+					gradePrice = (int) (price * 0.05);
+					gdPrice = krFormat.format(gradePrice);
+					break;
+				case "4":
+					gradePrice = (int) (price * 0.1);
+					gdPrice = krFormat.format(gradePrice);
+					break;
+				case "5":
+					gradePrice = (int) (price * 0.2);
+					gdPrice = krFormat.format(gradePrice);
+					break;
+				default:
+					gdPrice = "0";
+				}
+			}
+			Optional<CategoriesEntity> categoriesEntity = categoriesRepository.findByInvenSClsNo(itemKey);
+			dto.setInvenCnt(categoriesEntity.get().getInvenCnt());
+		}else {
+			Optional<ChemistryEntity> entity = chemistryRepository.findByChemistryNo(itemKey);
+			dto.setInvenUrl(entity.get().getChemistryUrl());
+			dto.setInvenSClsNm(entity.get().getChemistryNm());
+			dto.setInvenText(entity.get().getChemistryText());
+
+			int price = entity.get().getChemistryPrice();
+			DecimalFormat krFormat = new DecimalFormat("###,###원");
+			String itemPrice = krFormat.format(price);
+
+			dto.setInvenPrice(itemPrice);
+			if (request.get("usrId") != null && !"".equals(request.get("usrId"))) {
+				Optional<AccountEntity> accountEntity = accountRepository.findByUsrId(usrId);
+				String usrGrade = accountEntity.get().getUsrGrade();
+
+				krFormat = new DecimalFormat("###,###p 적립");
+				switch (usrGrade) {
+				case "1":
+					gradePrice = (int) (price * 0.01);
+					gdPrice = krFormat.format(gradePrice);
+					break;
+				case "2":
+					gradePrice = (int) (price * 0.02);
+					gdPrice = krFormat.format(gradePrice);
+					break;
+				case "3":
+					gradePrice = (int) (price * 0.05);
+					gdPrice = krFormat.format(gradePrice);
+					break;
+				case "4":
+					gradePrice = (int) (price * 0.1);
+					gdPrice = krFormat.format(gradePrice);
+					break;
+				case "5":
+					gradePrice = (int) (price * 0.2);
+					gdPrice = krFormat.format(gradePrice);
+					break;
+				default:
+					gdPrice = "0";
+				}
+			}
+			Optional<CategoriesEntity> categoriesEntity = categoriesRepository.findByInvenSClsNo(itemKey);
+			dto.setInvenCnt(categoriesEntity.get().getInvenCnt());
 		}
-		
+
 		map.put("result", dto);
+		map.put("benfit", gdPrice);
 		return map;
 	}
+
+
 
 }
