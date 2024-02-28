@@ -36,9 +36,15 @@ public class UsrPointService {
 	public Map<String, Object> pointList(Map<String, Object> request) {
 		//기본 셋팅
 		String usrId = request.get("usrId").toString();
-		String pointSt = request.get("pointSt").toString();
-		String searchDate = request.get("searchDate").toString();
+		String pointSt = "";
+		if (request.get("pointSt") != null && !request.get("pointSt").equals("")) {
+			pointSt = request.get("pointSt").toString();
+		}
+		String searchDate = "";
 		
+		if (request.get("searchDate") != null && !request.get("searchDate").equals("")) {
+			searchDate = request.get("searchDate").toString();
+		}
 		//날짜 구하기
 		String searchDt = getDate(searchDate);
 		LocalDateTime currentDateTime = LocalDateTime.now();

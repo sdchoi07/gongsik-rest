@@ -257,6 +257,7 @@ public class CategoriesService {
 		return list;
 	}
 
+	/* 카트 담기 */
 	@Transactional
 	public Map<String, Object> intoCart(Map<String, Object> request) {
 		Map<String, Object> map = new HashMap<>();
@@ -357,7 +358,8 @@ public class CategoriesService {
 		}
 		return map;
 	}
-
+	
+	/* 상품 상제 조회 */
 	public Map<String, Object> categorieDetail(Map<String, Object> request) {
 		Map<String, Object> map = new HashMap<>();
 		CategoriesDto dto = new CategoriesDto();
