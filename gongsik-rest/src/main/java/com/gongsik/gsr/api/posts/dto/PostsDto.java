@@ -3,6 +3,7 @@ package com.gongsik.gsr.api.posts.dto;
 import com.gongsik.gsr.api.common.dto.CommonDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import lombok.Data;
 import lombok.ToString;
 
@@ -10,7 +11,8 @@ import lombok.ToString;
 @ToString
 @Schema(description = "PostDto")
 public class PostsDto extends CommonDto{
-
+	
+	/* posts */
 	private long postsSeq;
 	private String postsUsrId;
 	private String postsUsrNm;
@@ -26,4 +28,16 @@ public class PostsDto extends CommonDto{
 	private String postsTime;
 	private String postsModDt;
 	private String delYn;
+	
+	/* review */
+	private int reviewNo;
+	private int postNo;
+	private String reviewId;
+	private String reviewNm;
+    private String reviewText;
+	private int reviewMiniNo;
+	private String reviewDt;
+	private String reviewYMD;
+	private String reviewTime;
+
 }

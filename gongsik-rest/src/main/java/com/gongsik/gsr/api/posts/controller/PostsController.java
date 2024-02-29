@@ -66,17 +66,49 @@ public class PostsController {
 	@Parameters({
         @Parameter(description = "게시물 번호", name = "postNo", example = "1"),
 	})
-	@ApiResponses(value = {
-			 @ApiResponse(
-		               responseCode = "200",
-		               description = "게시물 저장  성공",
-		               content = @Content(
-		                    schema = @Schema(implementation = Map.class)))
-		})
 	public ResponseEntity<Map<String, Object>> postsDetail(@PathVariable("itemKey") int postsNo) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map = postsService.postsDetail(postsNo);
 		return ResponseEntity.ok(map);
 	}
+	
+	@GetMapping("/postsDel/{itemKey}")
+	@Operation(summary = "게시물 삭제", description = "게시물 삭제 하기")
+	@Parameters({
+        @Parameter(description = "게시물 번호", name = "postNo", example = "1"),
+	})
+	public ResponseEntity<Map<String, Object>> postsDel(@PathVariable("itemKey") int postsNo) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map = postsService.postsDel(postsNo);
+		return ResponseEntity.ok(map);
+	}
 
+		
+	@GetMapping("/selectReview/{itemKey}")
+	@Operation(summary = "댓글 조회", description = "댓글 조회 하기")
+	public ResponseEntity<Map<String, Object>> selectPosts(@PathVariable("itemKey") int postsNo) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map = postsService.selectPosts(postsNo);
+		return ResponseEntity.ok(map);
+	}
+
+	
+	@PostMapping("/reviewSave")
+	@Operation(summary = "댓글 저장", description = "댓굴 저장 하기")
+	@Parameters({
+		@Parameter(description = "게시물 번호", name = "postNo", example = "1"),
+		@Parameter(description = "댓글 내용", name = "reviewText", example = "댓글완료"),
+	})
+	@ApiResponses(value = {
+			 @ApiResponse(
+		               responseCode = "200",
+		               description = "댓글 저장  성공",
+		               content = @Content(
+		                    schema = @Schema(implementation = Map.class)))
+		})
+	public ResponseEntity<Map<String, Object>> reviewSave(@RequestBody Map<String, Object> request) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map = postsService.reviewSave(request);
+		return ResponseEntity.ok(map);
+	}
 }
