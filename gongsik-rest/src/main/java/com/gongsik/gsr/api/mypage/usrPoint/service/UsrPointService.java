@@ -1,5 +1,6 @@
 package com.gongsik.gsr.api.mypage.usrPoint.service;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -72,16 +73,19 @@ public class UsrPointService {
                 .where(qUsrPointEntity.pointExpireDt.goe(expireDt).and(qUsrPointEntity.pointUsrId.eq(usrId)))
                 .fetchOne();
 
+		
 		log.info("total : {}" , total );
-		if(total <=0) {
-			total = 0;
-		}
+		total = (total != null) ? total : 0;
+		DecimalFormat krFormat = new DecimalFormat("###,###");
+		String totalPoint = krFormat.format(total);
+//		if(total <=0) {
+//			total = 0;
+//		}
 		//분류 상태가 전체일경우
 		BooleanBuilder builder = new BooleanBuilder();
 		builder.and(qUsrPointEntity.pointExpireDt.goe(expireDt))
 		       .and(qUsrPointEntity.pointUsrId.eq(usrId))
-		       .and(qUsrPointEntity.pointCrtDt.goe(searchDt))
-			   .or(qUsrPointEntity.pointUsedDt.goe(searchDt));
+		       .and(qUsrPointEntity.pointCrtDt.goe(searchDt).or(qUsrPointEntity.pointUsedDt.goe(searchDt)));
 		
 		List<UsrPointDto> result = null;
 		//분류 상태가 사용 또는 적립일 경우
@@ -106,7 +110,7 @@ public class UsrPointService {
 		
 		log.info("result : {}" , result );
 		
-		map.put("total", total);
+		map.put("total", totalPoint);
 		map.put("result", result);
 		return map;
 	}

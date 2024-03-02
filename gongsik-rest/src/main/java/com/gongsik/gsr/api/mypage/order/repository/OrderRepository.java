@@ -30,6 +30,13 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>{
 			+ "       AND ORDER_DT  >= :orderDt									 "
 														, nativeQuery = true)
 	Page<Object[]> findByUsrIdAndOrderDt(@Param("usrId")String usrId, @Param("orderDt")String orderDt, Pageable pageable);
+	
+	@Query(value=
+		      "	SELECT IFNULL(COUNT(*),0) AS COUNT  "
+			+ "	FROM GS_ORDER_INF A				    "
+			+ " WHERE USR_ID = :usrId 				"
+																															,nativeQuery=true)
+	int findByUsrId(@Param("usrId")String usrId);
 
 
 

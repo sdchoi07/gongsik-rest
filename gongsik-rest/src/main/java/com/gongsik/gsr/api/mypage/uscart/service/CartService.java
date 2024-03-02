@@ -42,8 +42,8 @@ public class CartService {
 		
 		List<Object[]> cartEntity =  cartRepository.findByCartUsrIdAndCartStAndDelYnAndUseYnOrderByCartNoDesc(usrId, cartSt, delYn, useYn, pageable);
 		
-		
-		
+		int totalCnt = cartRepository.findByCartUsrIdAndCartSt(usrId, cartSt);
+		map.put("totalCnt", totalCnt);
 		if(cartEntity.isEmpty()) {
 			resultVo.setCode("fail");
 			resultVo.setMsg("장바구니 내역이 없습니다.");

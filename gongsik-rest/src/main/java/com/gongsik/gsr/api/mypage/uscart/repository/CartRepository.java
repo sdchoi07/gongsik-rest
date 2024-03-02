@@ -63,6 +63,16 @@ public interface CartRepository  extends JpaRepository<CartEntity, Long>{
 
 	Optional<CartEntity> findByCartItemNoAndCartUsrIdAndUseYnAndDelYn(String cartItemNo, String usrId, String string,
 			String string2);
+	
+	@Query(value=
+		      "	SELECT IFNULL(COUNT(*),0) AS COUNT  																				"
+			+ "	FROM GS_CART_INF A				    																				"
+			+ " WHERE CART_USR_ID = :usrId 																							"
+			+ "   AND CART_ST IN (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX( :cartSt, ',', n), ',', -1) AS part						"
+			+ "					FROM (SELECT 1 AS n UNION SELECT 2) AS numbers)  													"
+			+ "   AND DEL_YN = 'N'                 																				    "
+																															,nativeQuery=true)
+	int findByCartUsrIdAndCartSt(@Param("usrId")String usrId, @Param("cartSt")String cartSt);
 
 
 }

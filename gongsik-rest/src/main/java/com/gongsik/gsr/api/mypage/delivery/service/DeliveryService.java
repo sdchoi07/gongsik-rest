@@ -71,7 +71,11 @@ public class DeliveryService {
 
 			result.add(dto);
 		}
+		
+		int totalCnt = deliveryRepository.findByDelvUsrId(usrId);
+		
 		map.put("result", result);
+		map.put("totalCnt", totalCnt);
 		log.info("dto : {} " , result);
 		return map;
 	}

@@ -17,9 +17,9 @@ import com.gongsik.gsr.api.account.join.entity.AccountEntity;
 import com.gongsik.gsr.api.account.join.repository.AccountRepository;
 import com.gongsik.gsr.api.posts.dto.PostsDto;
 import com.gongsik.gsr.api.posts.entity.PostsEntity;
-import com.gongsik.gsr.api.posts.entity.ReviewEntity;
+import com.gongsik.gsr.api.posts.entity.ReplyEntity;
 import com.gongsik.gsr.api.posts.repository.PostsRepository;
-import com.gongsik.gsr.api.posts.repository.ReviewRepository;
+import com.gongsik.gsr.api.posts.repository.ReplyRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +34,7 @@ public class PostsService {
 	AccountRepository accountRepository;
 
 	@Autowired
-	ReviewRepository reviewRepository;
+	ReplyRepository replyRepository;
 
 	/* 게시물 조회 */
 	public Map<String, Object> selectPosts(Map<String, Object> request) {
@@ -254,6 +254,9 @@ public class PostsService {
 
 		// 게시물 상세 조회
 		PostsEntity postsEntity = postsRepository.findByPostsNo(postsNo);
+		postsEntity.setPostsViewCnt(postsEntity.getPostsViewCnt()+1);
+		postsRepository.save(postsEntity);
+		
 		PostsDto postsDto = new PostsDto();
 		postsDto.setPostsNm(postsEntity.getPostsNm());
 		postsDto.setPostsGubun(postsEntity.getPostsGubun());
@@ -265,8 +268,9 @@ public class PostsService {
 		DecimalFormat krFormat = new DecimalFormat("###,###");
 		String postsViewCnt = krFormat.format(viewCnt);
 		postsDto.setPostsViewCnt(postsViewCnt);
-
+		
 		String gubunNm = postsEntity.getPostsGubun();
+		
 		if ("01".equals(gubunNm)) {
 			postsDto.setPostsGubunNm("일반");
 		} else if ("02".equals(gubunNm)) {
@@ -282,8 +286,10 @@ public class PostsService {
 		String postsTime = postsDt.substring(11, 16);
 		postsDto.setPostsYMD(postsYMD);
 		postsDto.setPostsTime(postsTime);
-
+		
 		map.put("result", postsDto);
+		
+
 		return map;
 	}
 
@@ -305,21 +311,21 @@ public class PostsService {
 	public Map<String, Object> selectPosts(int postsNo) {
 		Map<String, Object> map = new HashMap<>();
 
-		// 댓글 조회											
-		List<ReviewEntity> ReviewEntity = reviewRepository.findByPostNoAndDelYnOrderByReviewNo(postsNo,"N");
+		// 댓글 조회
+		List<ReplyEntity> ReplyEntity = replyRepository.findByPostNoAndDelYnOrderByReplyNo(postsNo, "N");
 		List<PostsDto> dto = new ArrayList<>();
-		for (ReviewEntity entity : ReviewEntity) {
+		for (ReplyEntity entity : ReplyEntity) {
 			PostsDto reviewDto = new PostsDto();
-			reviewDto.setReviewNm(entity.getReviewNm());
-			reviewDto.setReviewText(entity.getReviewText());
-			reviewDto.setReviewNo(entity.getReviewNo());
-			reviewDto.setReviewMiniNo(entity.getReviewMiniNo());
-			reviewDto.setReviewId(entity.getReviewId());
-			String reviewDt = entity.getReviewDt();
+			reviewDto.setReplyNm(entity.getReplyNm());
+			reviewDto.setReplyText(entity.getReplyText());
+			reviewDto.setReplyNo(entity.getReplyNo());
+			reviewDto.setReplyMiniNo(entity.getReplyMiniNo());
+			reviewDto.setReplyId(entity.getReplyId());
+			String reviewDt = entity.getReplyDt();
 			String reviewYMD = reviewDt.substring(0, 10).replaceAll("-", ".");
 			String reviewTime = reviewDt.substring(11, 16);
-			reviewDto.setReviewYMD(reviewYMD);
-			reviewDto.setReviewTime(reviewTime);
+			reviewDto.setReplyYMD(reviewYMD);
+			reviewDto.setReplyTime(reviewTime);
 			dto.add(reviewDto);
 
 		}
@@ -332,54 +338,100 @@ public class PostsService {
 		Map<String, Object> map = new HashMap<>();
 		int postNo = Integer.parseInt(request.get("postsNo").toString());
 		int replyNo = 0;
-		
+
 		String usrId = request.get("usrId").toString();
 		Optional<AccountEntity> account = accountRepository.findByUsrId(usrId);
-
+		String replyTtile = request.get("postsNm").toString();
 		String usrNm = "";
 		if (account.isPresent()) {
 			usrNm = account.get().getUsrNm();
 		}
-		//대댓글
+		// 대댓글
 		if (request.get("replyNo") != null && !"".equals(request.get("replyNo"))) {
 			replyNo = Integer.parseInt(request.get("replyNo").toString());
-			
-			
+
 		}
-		
-		//대댓글
+
+		// 대댓글
 		if (replyNo > 0) {
 			String replyText = request.get("replyText").toString();
-			int reviewMiniNo = reviewRepository.findOneByPostNoByReviewNo(postNo, replyNo);
-			ReviewEntity reviewEntity = new ReviewEntity();
-			reviewEntity.setPostNo(postNo);
-			reviewEntity.setReviewNo(replyNo);
-			reviewEntity.setReviewId(usrId);
-			reviewEntity.setReviewNm(usrNm);
-			reviewEntity.setReviewText(replyText);
-			reviewEntity.setReviewMiniNo(reviewMiniNo+1);
-			reviewEntity.setDelYn("N");
-			reviewRepository.save(reviewEntity);
+			int reviewMiniNo = replyRepository.findOneByPostNoByReplyNo(postNo, replyNo);
+			ReplyEntity replyEntity = new ReplyEntity();
+			replyEntity.setPostNo(postNo);
+			replyEntity.setReplyNo(replyNo);
+			replyEntity.setReplyId(usrId);
+			replyEntity.setReplyNm(usrNm);
+			replyEntity.setReplyText(replyText);
+			replyEntity.setReplyMiniNo(reviewMiniNo + 1);
+			replyEntity.setDelYn("N");
+			replyRepository.save(replyEntity);
 			map.put("code", "success");
 			map.put("msg", "대댓글 등록 되었습니다.");
-			
-			
-		} else { //댓글
+			map.put("replyNo", postNo);
+			map.put("replyTitle", replyTtile);
+
+		} else { // 댓글
 			String reviewText = request.get("reviewText").toString();
-			
-			int reviewNo = reviewRepository.findOneByPostNo(postNo);
 
-			ReviewEntity reviewEntity = new ReviewEntity();
-			reviewEntity.setPostNo(postNo);
-			reviewEntity.setReviewNo(reviewNo + 1);
-			reviewEntity.setReviewId(usrId);
-			reviewEntity.setReviewNm(usrNm);
-			reviewEntity.setReviewText(reviewText);
-			reviewEntity.setDelYn("N");
+			int reviewNo = replyRepository.findOneByPostNo(postNo);
 
-			reviewRepository.save(reviewEntity);
+			ReplyEntity replyEntity = new ReplyEntity();
+			replyEntity.setPostNo(postNo);
+			replyEntity.setReplyNo(reviewNo + 1);
+			replyEntity.setReplyId(usrId);
+			replyEntity.setReplyNm(usrNm);
+			replyEntity.setReplyText(reviewText);
+			replyEntity.setDelYn("N");
+
+			replyRepository.save(replyEntity);
 			map.put("code", "success");
 			map.put("msg", "댓글 등록 되었습니다.");
+			map.put("replyNo", postNo);
+			map.put("replyTitle", replyTtile);
+		}
+
+		return map;
+	}
+
+	/* 댓글 및 대댓글 삭제 */
+	public Map<String, Object> replyDel(Map<String, Object> request) {
+		Map<String, Object> map = new HashMap<>();
+		int postNo = Integer.parseInt(request.get("postsNo").toString());
+		int replyNo = Integer.parseInt(request.get("replyNo").toString());
+		int replyMiniNo = 0;
+		String usrId = request.get("usrId").toString();
+		String replyTitle = request.get("postsNm").toString();
+		// 대댓글
+		if (request.get("replyMiniNo") != null && !"".equals(request.get("replyMiniNo"))) {
+			replyMiniNo = Integer.parseInt(request.get("replyMiniNo").toString());
+
+		}
+
+		// 대댓글
+		if (replyMiniNo > 0) {
+
+			ReplyEntity replyEntity = replyRepository.findByPostNoAndReplyNoAndReplyMiniNo(postNo, replyNo,
+					replyMiniNo);
+
+			replyEntity.setDelYn("Y");
+			replyRepository.save(replyEntity);
+
+			map.put("code", "success");
+			map.put("msg", "대댓글 삭제 되었습니다.");
+			map.put("replyNo", postNo);
+			map.put("replyTitle", replyTitle);
+		} else { // 댓글
+
+			List<ReplyEntity> replyEntity = replyRepository.findByPostNoAndReplyNo(postNo, replyNo);
+			for (ReplyEntity entity : replyEntity) {
+				entity.setDelYn("Y");
+				replyRepository.save(entity);
+			}
+
+			map.put("code", "success");
+			map.put("msg", "댓글 삭제 되었습니다.");
+			map.put("replyNo", postNo);
+			map.put("replyTitle", replyTitle);
 		}
 
 		return map;

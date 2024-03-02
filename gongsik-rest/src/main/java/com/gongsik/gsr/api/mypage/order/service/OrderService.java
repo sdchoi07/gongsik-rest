@@ -43,6 +43,8 @@ public class OrderService {
 		
 		Pageable pageable = PageRequest.of((currentPage -1), pageSize, Sort.by("ORDER_DT").descending());
 		
+		int totalCnt = orderRepository.findByUsrId(usrId);
+		
 		Page<Object[]> entity = orderRepository.findByUsrIdAndOrderDt( usrId, orderDt, pageable);
 		log.info("entity 결과 : {}" , entity.get().toArray());
 		ArrayList<OrderDto> list = new ArrayList<>();
@@ -63,6 +65,7 @@ public class OrderService {
 		log.info("orderDto : {}" , list);
 		resultData.put("result", list);
 		resultData.put("cnt", list.size());
+		resultData.put("totalCnt", totalCnt);
 		
 		return resultData;
 		

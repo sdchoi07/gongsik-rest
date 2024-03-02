@@ -111,4 +111,17 @@ public class PostsController {
 		map = postsService.reviewSave(request);
 		return ResponseEntity.ok(map);
 	}
+	
+	@PostMapping("/replyDel")
+	@Operation(summary = "댓글 및 대댓글 삭제", description = "댓글 및 대댓글 삭제")
+	@Parameters({
+        @Parameter(description = "게시물 번호", name = "postNo", example = "1"),
+        @Parameter(description = "댓글 번호", name = "replyNo", example = "1"),
+        @Parameter(description = "대댓글 번호", name = "replyMiniNo", example = "1"),
+	})
+	public ResponseEntity<Map<String, Object>> replyDel(@RequestBody Map<String, Object> request) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map = postsService.replyDel(request);
+		return ResponseEntity.ok(map);
+	}
 }

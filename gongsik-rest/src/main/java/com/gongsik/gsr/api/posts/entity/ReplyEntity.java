@@ -19,37 +19,37 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Data	
-@Table(name = "GS_REVIEW_INF")
-public class ReviewEntity {
+@Table(name = "GS_REPLY_INF")
+public class ReplyEntity {
 	
 	@Id
-	@Column(name = "REVIEW_SEQ", nullable = false)
-	private long postsSeq;
+	@Column(name = "REPLY_SEQ", nullable = false)
+	private long replySeq;
 	
-	@Column(name = "REVIEW_NO")
-	private int reviewNo;
+	@Column(name = "REPLY_NO")
+	private int replyNo;
 	
 	@Column(name = "POST_NO")
 	private int postNo;
 	
-	@Column(name = "REVIEW_ID")
-	private String reviewId;
+	@Column(name = "REPLY_ID")
+	private String replyId;
 	
-	@Column(name = "REVIEW_NM")
-	private String reviewNm;
+	@Column(name = "REPLY_NM")
+	private String replyNm;
 
-	@Column(name = "REVIEW_TEXT")
-    private String reviewText;
+	@Column(name = "REPLY_TEXT")
+    private String replyText;
 	
-	@Column(name = "REVIEW_MINI_NO")
-	private int reviewMiniNo;
+	@Column(name = "REPLY_MINI_NO")
+	private int replyMiniNo;
 
 	@Column(name = "DEL_YN")
 	private String delYn;
 	
 	@CreatedDate
-	@Column(name = "REVIEW_DT", insertable = false, columnDefinition = "datetime default CURRENT_TIMESTAMP")
-	private String reviewDt;
+	@Column(name = "REPLY_DT", insertable = false, columnDefinition = "datetime default CURRENT_TIMESTAMP")
+	private String replyDt;
 
 	@Embedded
     private CommonEntity comonEntity;

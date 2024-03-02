@@ -1,5 +1,6 @@
 package com.gongsik.gsr.api.mypage.profile.service;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -184,7 +185,10 @@ public class ProfileService {
 	            .from(qUsrPointEntity)
 	            .where(qUsrPointEntity.pointExpireDt.goe(expireDt).and(qUsrPointEntity.pointUsrId.eq(usrId)))
 	            .fetchOne();
-		map.put("poinTotal", total);
+		total = (total != null) ? total : 0;
+		DecimalFormat krFormat = new DecimalFormat("###,###");
+		String totalPoint = krFormat.format(total);
+		map.put("poinTotal", totalPoint);
 		return map;
 	}
 	

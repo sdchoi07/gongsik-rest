@@ -30,14 +30,15 @@ public class PostsDto extends CommonDto{
 	private String delYn;
 	
 	/* review */
-	private int reviewNo;
+	private int ReplySeq;
+	private int ReplyNo;
 	private int postNo;
-	private String reviewId;
-	private String reviewNm;
-    private String reviewText;
-	private int reviewMiniNo;
-	private String reviewDt;
-	private String reviewYMD;
-	private String reviewTime;
+	private String replyId;
+	private String replyNm;
+    private String replyText;
+	private int replyMiniNo;
+	private String replyDt;
+	private String replyYMD;
+	private String replyTime;
 
 }

@@ -37,6 +37,7 @@ public class UsrGradeService {
 			GradeMstDto dto = new GradeMstDto();
 			dto.setGradeLevel(entity.getGradeLevel());
 			dto.setGradeDesc(entity.getGradeDesc());
+			resultVo.setCode("success");
 			mstDto.add(dto);
 		}
 		map.put("gradeMst", mstDto);
@@ -54,9 +55,10 @@ public class UsrGradeService {
 			UsrGradeDto usrGradeDto = new UsrGradeDto();
 			usrGradeDto.setGradeLevel(usrGradeEntity.get().getGradeLevel());
 			usrGradeDto.setGradeUsrNm(usrGradeEntity.get().getGradeUsrNm());
+			resultVo.setCode("success");
 			map.put("usrGradeDto", usrGradeDto);
 		}
-		
+		map.put("result", resultVo);
 		return map;
 	}
 
