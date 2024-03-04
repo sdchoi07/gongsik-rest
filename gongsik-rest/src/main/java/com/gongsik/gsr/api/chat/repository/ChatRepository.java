@@ -19,14 +19,26 @@ public interface ChatRepository extends JpaRepository<ChatEntity, Long> {
 			+ "      			    ,A.CHAT_INV_USR_NM 										"
 			+ "      				,A.CHAT_CRT_USR_ID 										"
 			+ "      				,A.CHAT_CRT_USR_NM 										"
-			+ "      				,B.CHAT_SEND_DT  										"
-			+ "      				,B.CHAT_ROOM_READ_CHK 									"
+			+ "                     ,IFNULL(B.CHAT_ROOM_TEXT,'') AS CHAT_ROOM_TEXT			"
+			+ "						,A.CHAT_CRT_DT 											" 
+	        + "                     ,CASE WHEN B.CHAT_SEND_DT IS NULL THEN A.CHAT_CRT_DT    "
+	        + "                        ELSE IFNULL(B.CHAT_SEND_DT, '') END  AS CHAT_SEND_DT "  
+			+ "      				,IFNULL(B.CHAT_ROOM_READ_CHK,'') AS CHAT_BOOK_READ_CHK	"
 			+ "		  FROM GS_CHAT_INF A													"
-			+ "       LEFT JOIN GS_CHAT_ROOM_INF B ON A.CHAT_ROOM_NO = B.CHAT_ROOM_NO 		"
+			+ "       LEFT JOIN 															"
+			+ "         (SELECT  CHAT_ROOM_NO												"
+			+ "                 ,CHAT_ROOM_TEXT												"
+			+ "                 ,CHAT_SEND_DT												"
+			+ "                 ,CHAT_ROOM_READ_CHK											"
+			+ "            FROM GS_CHAT_ROOM_INF 										    "
+			+ "           WHERE CHAT_SEND_DT = ( SELECT MAX(CHAT_SEND_DT)                   "
+			+ "								       FROM GS_CHAT_ROOM_INF))  			    "
+			+ "              B ON A.CHAT_ROOM_NO = B.CHAT_ROOM_NO 							"
 			+ "      WHERE (A.CHAT_INV_USR_ID = :invUsrId									"
 			+ "        OR A.CHAT_CRT_USR_ID = :crtUsrId)									"
 			+ "       AND A.USE_YN = 'Y'													"
-			+ "       AND A.DEL_YN = 'N'													"   , nativeQuery = true)
+			+ "       AND A.DEL_YN = 'N'													"
+			+ "    ORDER BY A.CHAT_ROOM_NO, B.CHAT_SEND_DT DESC, A.CHAT_CRT_DT							"   , nativeQuery = true)
 	List<Object[]> findByChatInvUsrIdAndChatCrtUsrId(@Param("invUsrId") String invUsrId,
 			@Param("crtUsrId") String crtUsrId);
 }

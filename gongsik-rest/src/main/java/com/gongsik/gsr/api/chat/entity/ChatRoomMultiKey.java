@@ -21,6 +21,6 @@ public class ChatRoomMultiKey implements Serializable{
 	private long chatRoomNo;
 	
 	@Column(name = "CHAT_ROOM_TEXT_NO")
-	private String chatRoomTextNo;
+	private int chatRoomTextNo;
 
 }

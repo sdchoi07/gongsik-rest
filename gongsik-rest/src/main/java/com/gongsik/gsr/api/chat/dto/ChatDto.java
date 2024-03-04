@@ -23,9 +23,11 @@ public class ChatDto extends CommonDto{
 	private String chatDelDt;
 	private String useYn;
 	private String delYn;
+	private String chatYMD;
+	private String chatTime;
 	
 	/* 채팅 방 테이블 */
-	private String chatRoomTextNo;
+	private int chatRoomTextNo;
 	private String chatRoomSender;
 	private String chatRoomReciver;
 	private String chatRoomText;

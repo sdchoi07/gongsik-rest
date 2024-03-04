@@ -22,7 +22,7 @@ import lombok.ToString;
 @ToString
 @Data	
 @IdClass(ChatRoomMultiKey.class)	
-@Table(name = "GS_CHAT_ROON_INF")
+@Table(name = "GS_CHAT_ROOM_INF")
 public class ChatRoomEntity {
 	
 	@Id
@@ -31,7 +31,7 @@ public class ChatRoomEntity {
 	
 	@Id
 	@Column(name = "CHAT_ROOM_TEXT_NO")
-	private String chatRoomTextNo;
+	private int chatRoomTextNo;
 	
 	@Column(name = "CHAT_ROOM_SENDER")
 	private String chatRoomSender;
