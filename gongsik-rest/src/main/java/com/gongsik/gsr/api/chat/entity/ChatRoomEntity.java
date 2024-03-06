@@ -45,8 +45,7 @@ public class ChatRoomEntity {
 	@Column(name = "CHAT_ROOM_READ_CHK")
     private String chatRoomReadChk;
 	
-	@CreatedDate
-    @Column(name = "CHAT_SEND_DT",  insertable = false, columnDefinition = "datetime default CURRENT_TIMESTAMP")
+    @Column(name = "CHAT_SEND_DT")
 	private String chatSendDt;
 	
 	@Embedded

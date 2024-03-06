@@ -1,5 +1,6 @@
 package com.gongsik.gsr.api.account.join.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,6 +25,8 @@ public interface AccountRepository extends JpaRepository<AccountEntity, String>{
 	Optional<AccountEntity> findByUsrPhone(String phoneNumber);
 
 	Optional<AccountEntity> findByUsrIdAndLogTpAndUsrNm(String usrId, String logTp, String usrNm);
+
+	Optional<List<AccountEntity>> findByChatYn(String string);
 
 }
 

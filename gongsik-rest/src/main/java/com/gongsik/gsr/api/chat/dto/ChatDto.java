@@ -10,7 +10,7 @@ import lombok.ToString;
 
 @Data
 @ToString
-@Schema(description = "DeliveryDto")
+@Schema(description = "ChatDto")
 public class ChatDto extends CommonDto{
 	
 	/* 채팅 테이블 */
@@ -25,6 +25,7 @@ public class ChatDto extends CommonDto{
 	private String delYn;
 	private String chatYMD;
 	private String chatTime;
+	private String usrNm;
 	
 	/* 채팅 방 테이블 */
 	private int chatRoomTextNo;
@@ -33,6 +34,6 @@ public class ChatDto extends CommonDto{
 	private String chatRoomText;
     private String chatRoomReadChk;
 	private String chatSendDt;
-
+	private String withUsrNm;
 
 }
