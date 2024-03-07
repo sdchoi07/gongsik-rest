@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,12 +33,11 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoomEntity, Long>{
 		      + "       		,CHAT_ROOM_READ_CHK 																"
 		      + "       		,CHAT_SEND_DT 																		"
 		      + "		FROM GS_CHAT_ROOM_INF A																	    "
-		      + "		WHERE CHAT_ROOM_NO = :chatRoomNo 															"
-		      + "  		AND   CHAT_SEND_DT <= :endDate															"
-		      + "  		AND   CHAT_SEND_DT >= :startDate 														        "
+		      + "		WHERE CHAT_ROOM_NO = :chatRoomNo 									"
+		      + "		ORDER BY CHAT_ROOM_TEXT_NO DESC						"
+		      + "       LIMIT :page																					"
 																															,nativeQuery=true)
-	Optional<List<Object[]>> findByChatRoomNoAndChatSendDtAndChatSendDtOrderByChatSendDt(@Param("chatRoomNo")int chatRoomNo,
-			@Param("startDate")String startDate, @Param("endDate")String endDate);
+	List<Object[]> findByChatRoomNo(@Param("chatRoomNo")int chatRoomNo, @Param("page")int page);
 	
 	@Query(value=
 		      "	SELECT COUNT(*) 																							 "
@@ -46,6 +46,16 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoomEntity, Long>{
 			+ "   AND CHAT_SEND_DT <= :chkDt																					 "
 																															,nativeQuery=true)
 	int countAll(@Param("chkDt")String chkDt,@Param("chatRoomNo")int chatRoomNo);
+	
+	@Query(value=
+		      "	SELECT COUNT(*) 																							 "
+			+ "	FROM GS_CHAT_ROOM_INF A																				         "
+			+ " WHERE CHAT_ROOM_NO = :chatRoomNo 																	         "
+			+ "   AND CHAT_ROOM_SENDER = :usrNm																					 "
+																															,nativeQuery=true)
+	int countAll(@Param("chatRoomNo")int chatRoomNo, @Param("usrNm")String usrNm);
+
+
 
 
 

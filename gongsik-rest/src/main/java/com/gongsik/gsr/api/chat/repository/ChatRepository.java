@@ -40,14 +40,15 @@ public interface ChatRepository extends JpaRepository<ChatEntity, Long> {
 			+ "                 ,CHAT_SEND_DT												"
 			+ "                 ,CHAT_ROOM_READ_CHK											"
 			+ "            FROM GS_CHAT_ROOM_INF 										    "
-			+ "           WHERE CHAT_SEND_DT = ( SELECT MAX(CHAT_SEND_DT)                   "
-			+ "								       FROM GS_CHAT_ROOM_INF))  			    "
+			+ "           WHERE CHAT_SEND_DT IN ( SELECT MAX(CHAT_SEND_DT)                  "
+			+ "								       FROM GS_CHAT_ROOM_INF                    "
+			+ "									   GROUP BY CHAT_ROOM_NO))  			    "
 			+ "              C ON A.CHAT_ROOM_NO = C.CHAT_ROOM_NO 							"
 			+ "      WHERE (A.CHAT_INV_USR_ID = :invUsrId									"
 			+ "        OR A.CHAT_CRT_USR_ID = :crtUsrId)									"
 			+ "       AND A.USE_YN = 'Y'													"
 			+ "       AND A.DEL_YN = 'N'													"
-			+ "    ORDER BY A.CHAT_ROOM_NO, C.CHAT_SEND_DT DESC, A.CHAT_CRT_DT							"   , nativeQuery = true)
+			+ "    ORDER BY C.CHAT_SEND_DT DESC, A.CHAT_ROOM_NO DESC, A.CHAT_CRT_DT							"   , nativeQuery = true)
 	List<Object[]> findByChatInvUsrIdAndChatCrtUsrId(@Param("invUsrId") String invUsrId,
 			@Param("crtUsrId") String crtUsrId);
 	
@@ -56,6 +57,15 @@ public interface ChatRepository extends JpaRepository<ChatEntity, Long> {
 			+ "	FROM GS_CHAT_INF A																				         "
 																															,nativeQuery=true)
 	int find();
+	
+	@Query(value=
+		      "	SELECT DISTINCT(CHAT_INV_USR_NM) AS CHAT_INV_USR_NM												         "
+			+ "	FROM GS_CHAT_INF A																						 "
+			+ "	WHERE CHAT_ROOM_NO = :chatRoomNo																		 "
+			+ "  AND DEL_YN = 'N'																						 "
+			+ "  AND USE_YN = 'Y'											         									 "
+																															,nativeQuery=true)
+	String findByChatRoomNo(@Param("chatRoomNo")int chatRoomNo);
 	
 
 }
