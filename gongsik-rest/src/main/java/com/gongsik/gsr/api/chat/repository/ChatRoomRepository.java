@@ -40,12 +40,13 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoomEntity, Long>{
 	List<Object[]> findByChatRoomNo(@Param("chatRoomNo")int chatRoomNo, @Param("page")int page);
 	
 	@Query(value=
-		      "	SELECT COUNT(*) 																							 "
+		      "	SELECT CHAT_ROOM_TEXT_NO 																							 "
 			+ "	FROM GS_CHAT_ROOM_INF A																				         "
 			+ " WHERE CHAT_ROOM_NO = :chatRoomNo 																	         "
-			+ "   AND CHAT_SEND_DT <= :chkDt																					 "
+			+ "   limit :limit                                    "
+			+ "   offset :offset 																					 "
 																															,nativeQuery=true)
-	int countAll(@Param("chkDt")String chkDt,@Param("chatRoomNo")int chatRoomNo);
+	List<Integer> countAll(@Param("limit")int limit ,@Param("offset")int offset, @Param("chatRoomNo")int chatRoomNo);
 	
 	@Query(value=
 		      "	SELECT COUNT(*) 																							 "
@@ -54,6 +55,8 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoomEntity, Long>{
 			+ "   AND CHAT_ROOM_SENDER = :usrNm																					 "
 																															,nativeQuery=true)
 	int countAll(@Param("chatRoomNo")int chatRoomNo, @Param("usrNm")String usrNm);
+
+	ChatRoomEntity findByChatRoomNoAndChatRoomTextNo(long chatRoomNo, int chatRoomTextNo);
 
 
 

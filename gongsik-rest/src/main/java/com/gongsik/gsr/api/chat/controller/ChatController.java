@@ -78,4 +78,14 @@ public class ChatController {
 		resultVo = chatService.chatCreatRoom(request);
 		return ResponseEntity.ok(resultVo);
 	}
+	
+	@GetMapping("/delCahtRoom/{chatRoomNo}")
+	@Operation(summary = "채팅 방 저장", description = "채팅 방 저장 하기")
+	@Parameters({
+			@Parameter(description = "방번호", name = "chatRoomSender", example = "2")})
+	public ResponseEntity<ResultVO> delCahtRoom(@PathVariable("chatRoomNo") int chatRoomNo) {
+		ResultVO resultVo = new ResultVO();
+		resultVo = chatService.delCahtRoom(chatRoomNo);
+		return ResponseEntity.ok(resultVo);
+	}
 }

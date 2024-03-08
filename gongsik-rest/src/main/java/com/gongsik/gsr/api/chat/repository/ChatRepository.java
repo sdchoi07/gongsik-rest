@@ -22,9 +22,8 @@ public interface ChatRepository extends JpaRepository<ChatEntity, Long> {
 			+ "      				,A.CHAT_CRT_USR_NM 										"
 			+ "                     ,IFNULL(C.CHAT_ROOM_TEXT,'') AS CHAT_ROOM_TEXT			"
 			+ "						,A.CHAT_CRT_DT 											" 
-	        + "                     ,CASE WHEN C.CHAT_SEND_DT IS NULL THEN A.CHAT_CRT_DT    "
-	        + "                        ELSE IFNULL(C.CHAT_SEND_DT, '') END  AS CHAT_SEND_DT "  
-			+ "      				,IFNULL(C.CHAT_ROOM_READ_CHK,'') AS CHAT_BOOK_READ_CHK	"
+			+ "                     ,C.CHAT_SEND_DT                                         "
+	        + "                     ,IFNULL(D.CHAT_ROOM_READ_CHK,0) AS CHAT_ROOM_READ_CHK   "
 			+ "						,B.USR_NM                                               "
 			+ "		  FROM GS_CHAT_INF A													"
 			+ "       JOIN(																	"
@@ -35,15 +34,26 @@ public interface ChatRepository extends JpaRepository<ChatEntity, Long> {
 			+ "              ON (B.USR_ID = A.CHAT_INV_USR_ID 								"
 			+ "              OR B.USR_ID = A.CHAT_CRT_USR_ID) 								"
 			+ "       LEFT JOIN 															"
-			+ "         (SELECT  CHAT_ROOM_NO												"
-			+ "                 ,CHAT_ROOM_TEXT												"
-			+ "                 ,CHAT_SEND_DT												"
-			+ "                 ,CHAT_ROOM_READ_CHK											"
-			+ "            FROM GS_CHAT_ROOM_INF 										    "
+			+ "         (SELECT  A.CHAT_ROOM_NO												"
+			+ "					,A.CHAT_ROOM_RECIVER 										"
+			+ "                 ,A.CHAT_ROOM_TEXT											"
+			+ "                 ,A.CHAT_SEND_DT												"
+			+ "                 ,A.CHAT_ROOM_SENDER											"
+			+ "            FROM GS_CHAT_ROOM_INF A 										    "
 			+ "           WHERE CHAT_SEND_DT IN ( SELECT MAX(CHAT_SEND_DT)                  "
 			+ "								       FROM GS_CHAT_ROOM_INF                    "
-			+ "									   GROUP BY CHAT_ROOM_NO))  			    "
+			+ "									   GROUP BY CHAT_ROOM_NO)) 				    "
 			+ "              C ON A.CHAT_ROOM_NO = C.CHAT_ROOM_NO 							"
+			+ "     LEFT JOIN																"
+			+ "            (     SELECT													    "
+			+ "                          COUNT(CHAT_ROOM_READ_CHK) CHAT_ROOM_READ_CHK		"
+			+ "                         ,CHAT_ROOM_NO										"
+			+ "                         ,CHAT_ROOM_RECIVER                					"
+			+ "            	      FROM  GS_CHAT_ROOM_INF                                    "
+			+ "                  WHERE  CHAT_ROOM_READ_CHK = 'N'                            "
+			+ "                  GROUP  BY CHAT_ROOM_NO										"
+			+ "                        ,CHAT_ROOM_RECIVER  )D 								"
+			+ "                ON A.CHAT_ROOM_NO = D.CHAT_ROOM_NO AND USR_NM = D.CHAT_ROOM_RECIVER    			    "
 			+ "      WHERE (A.CHAT_INV_USR_ID = :invUsrId									"
 			+ "        OR A.CHAT_CRT_USR_ID = :crtUsrId)									"
 			+ "       AND A.USE_YN = 'Y'													"
@@ -66,6 +76,30 @@ public interface ChatRepository extends JpaRepository<ChatEntity, Long> {
 			+ "  AND USE_YN = 'Y'											         									 "
 																															,nativeQuery=true)
 	String findByChatRoomNo(@Param("chatRoomNo")int chatRoomNo);
+
+	ChatEntity findByChatRoomNoAndUseYnAndDelYn(int chatRoomNo, String string, String string2);
+	
+	@Query(value=
+		      "    SELECT															"
+		      + "  (SELECT count(*)													"
+		      + "   FROM GS_CHAT_INF A												"
+		      + "   WHERE CHAT_CRT_USR_ID = :chatCrtUsrId						    "
+		      + "     AND CHAT_CRT_USR_NM = :chatCrtUsrNm							"
+		      + "     AND CHAT_INV_USR_ID = :chatInvUsrId						    "
+		      + "     AND CHAT_INV_USR_NM = :chatInvUsrNm							"
+		      + "     AND USE_YN = 'Y'												"
+		      + "     AND DEL_YN = 'N') +											"
+		      + "  (SELECT count(*)													"
+		      + "   FROM GS_CHAT_INF A												"
+		      + "   WHERE CHAT_CRT_USR_ID = :chatInvUsrId					        "
+		      + "     AND CHAT_CRT_USR_NM = :chatInvUsrNm							"
+		      + "     AND CHAT_INV_USR_ID = :chatCrtUsrId					  		"
+		      + "     AND CHAT_INV_USR_NM = :chatCrtUsrNm							"
+		      + "	  AND USE_YN = 'Y'												"
+		      + "     AND DEL_YN = 'N') AS total_count				         									 "
+																															,nativeQuery=true)
+	int findByChatCrtUsrNmAndChatCrtUsrIdAndChatInvUsrNmAndChatInvUsrId(@Param("chatCrtUsrNm")String chatCrtUsrNm, @Param("chatCrtUsrId")String chatCrtUsrId,
+			@Param("chatInvUsrNm")String chatInvUsrNm, @Param("chatInvUsrId")String chatInvUsrId);
 	
 
 }

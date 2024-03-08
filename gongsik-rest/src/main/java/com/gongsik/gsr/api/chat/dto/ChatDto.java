@@ -35,5 +35,6 @@ public class ChatDto extends CommonDto{
     private String chatRoomReadChk;
 	private String chatSendDt;
 	private String withUsrNm;
+	private int    chatRoomReadChkNo;
 
 }
