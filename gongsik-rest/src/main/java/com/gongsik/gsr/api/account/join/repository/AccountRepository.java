@@ -26,7 +26,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, String>{
 
 	Optional<AccountEntity> findByUsrIdAndLogTpAndUsrNm(String usrId, String logTp, String usrNm);
 
-	Optional<List<AccountEntity>> findByChatYn(String string);
+	Optional<List<AccountEntity>> findByChatYnAndUsrIdNot(String string, String usrId);
 
 }
 

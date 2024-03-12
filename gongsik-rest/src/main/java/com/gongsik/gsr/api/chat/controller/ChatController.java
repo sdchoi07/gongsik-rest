@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gongsik.gsr.api.chat.service.ChatService;
+import com.gongsik.gsr.global.config.WebClients;
 import com.gongsik.gsr.global.vo.ResultVO;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +25,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -29,6 +35,10 @@ public class ChatController {
 
 	@Autowired
 	private ChatService chatService;
+	
+	@Autowired
+	private RedisTemplate<String, String> redisTemplate;
+	
 
 	@GetMapping("/chatList/{usrId}")
 	@Operation(summary = "채팅 목록 조회", description = "채팅 목록 조회 하기")
@@ -57,14 +67,26 @@ public class ChatController {
 	public ResponseEntity<ResultVO> chatTextSave(@RequestBody Map<String, Object> request) {
 		ResultVO resultVo = new ResultVO();
 		resultVo = chatService.chatTextSave(request);
+		
+		// B의 클라이언트 서버에 SSE 이벤트를 전송하는 POST 요청
+		WebClients webClients = new WebClients();
+		Mono<Object> responseMono = webClients.callApi(Object.class, "/alramMsg", "test@gmail.com");
+		// 결과 값 가져오기
+		
+		responseMono.subscribe(response -> {
+			System.out.println("여기 오냐 ?");
+		    // 반환된 응답(response)을 이용하여 처리
+		}, error -> {
+		    // 에러 처리
+		});
 		return ResponseEntity.ok(resultVo);
 	}
 	
-	@GetMapping("/accountLists")
+	@GetMapping("/accountLists/{usrId}")
 	@Operation(summary = "채팅 회원 조회", description = "채팅 회원 조회 하기")
-	public ResponseEntity<Map<String, Object>> accountLists() {
+	public ResponseEntity<Map<String, Object>> accountLists(@PathVariable("usrId") String usrId) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		map = chatService.accountLists();
+		map = chatService.accountLists(usrId);
 		return ResponseEntity.ok(map);
 	}
 	
@@ -88,4 +110,5 @@ public class ChatController {
 		resultVo = chatService.delCahtRoom(chatRoomNo);
 		return ResponseEntity.ok(resultVo);
 	}
+
 }

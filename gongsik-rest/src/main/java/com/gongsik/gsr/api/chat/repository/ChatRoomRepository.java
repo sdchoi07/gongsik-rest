@@ -60,6 +60,4 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoomEntity, Long>{
 
 
 
-
-
 }

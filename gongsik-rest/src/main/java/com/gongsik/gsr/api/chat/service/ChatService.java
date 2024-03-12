@@ -1,7 +1,6 @@
 package com.gongsik.gsr.api.chat.service;
 
-import java.net.http.HttpClient;
-import java.net.http.HttpResponse;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -11,12 +10,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.format.datetime.DateFormatter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gongsik.gsr.api.account.join.entity.AccountEntity;
 import com.gongsik.gsr.api.account.join.repository.AccountRepository;
 import com.gongsik.gsr.api.chat.dto.ChatDto;
@@ -25,6 +22,8 @@ import com.gongsik.gsr.api.chat.entity.ChatRoomEntity;
 import com.gongsik.gsr.api.chat.repository.ChatRepository;
 import com.gongsik.gsr.api.chat.repository.ChatRoomRepository;
 import com.gongsik.gsr.global.vo.ResultVO;
+
+import jakarta.persistence.EntityManager;
 
 @Service
 public class ChatService {
@@ -37,7 +36,9 @@ public class ChatService {
 
 	@Autowired
 	AccountRepository accountRepository;
-
+	
+	@Autowired
+    private EntityManager entityManager;
 	/* 채팅 목록 조회 */
 	public Map<String, Object> chatList(String usrId) {
 		Map<String, Object> map = new HashMap<>();
@@ -83,23 +84,25 @@ public class ChatService {
 		String usrNm = "";
 		String withUsrNm = "";
 		String type = "";
-		if(request.get("type") != null && !request.get("type").equals("")) {
-			type= request.get("type").toString();
+		if (request.get("type") != null && !request.get("type").equals("")) {
+			type = request.get("type").toString();
 		}
 		// 내역 조회전 중복 제거
 		int currentPage = Integer.parseInt(request.get("currentPage").toString());
-		LocalDateTime chkDate = LocalDateTime.now().minusDays(currentPage-1);
+		LocalDateTime chkDate = LocalDateTime.now().minusDays(currentPage - 1);
 		DateTimeFormatter formatChkDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		String chkDt = formatChkDate.format(chkDate);
-		
+
 		int cnt = currentPage * 15;
-		if (!"ENTER".equals(type)) {
-			List<Integer> count = chatRoomRepository.countAll(cnt, cnt-15, chatRoomNo);
+		if ("SCROLL".equals(type.toUpperCase())) {
+			List<Integer> count = chatRoomRepository.countAll(cnt, cnt - 15, chatRoomNo);
 			if (count.size() == 0) {
 				map.put("code", "stop");
+				chkDt = chkDt.substring(0, 10).replaceAll("-", ".");
+				map.put("chatYMD", chkDt);
 				return map;
 			}
-		}else {
+		} else {
 			map.put("type", type);
 		}
 		// 하루 단위 기준으로 조회
@@ -137,21 +140,24 @@ public class ChatService {
 				withUsrNm = (usrNm.equals(dto.getChatRoomSender())) ? dto.getChatRoomReciver()
 						: dto.getChatRoomSender();
 				list.add(dto);
-				
-				//채팅 읽은거 "Y" 처리
-				if(!"scroll".equals(request.get("type")) && !usrNm.equals(dto.getChatRoomSender())&& "N".equals(dto.getChatRoomReadChk())) {
-					ChatRoomEntity roomEntity = chatRoomRepository.findByChatRoomNoAndChatRoomTextNo(dto.getChatRoomNo(), dto.getChatRoomTextNo());
+
+				// 채팅 읽은거 "Y" 처리
+				if (!usrNm.equals(dto.getChatRoomSender())
+						&& "N".equals(dto.getChatRoomReadChk())) {
+					System.out.println("뭐야시발! : " + list);
+					ChatRoomEntity roomEntity = chatRoomRepository
+							.findByChatRoomNoAndChatRoomTextNo(dto.getChatRoomNo(), dto.getChatRoomTextNo());
 					roomEntity.setChatRoomReadChk("Y");
 					chatRoomRepository.save(roomEntity);
-					
+
 				}
 			}
 			map.put("code", "success");
 			map.put("result", list);
 			map.put("usrNm", usrNm);
 			map.put("withUsrNm", withUsrNm);
-			
-			
+			map.put("chatRoomNo", chatRoomNo);
+
 //			//첫 챗팅일경우(초대받은)
 //			int withCnt = chatRoomRepository.countAll(chatRoomNo,usrNm);
 //			if(withCnt == 1 ) {
@@ -163,6 +169,7 @@ public class ChatService {
 			map.put("code", "fail");
 			map.put("msg", "채팅 내역이 없습니다.");
 			map.put("chatRoomNo", chatRoomNo);
+			map.put("usrNm", usrNm);
 			map.put("withUsrNm", withUsrNm);
 			chkDt = chkDt.substring(0, 10).replaceAll("-", ".");
 			map.put("chatYMD", chkDt);
@@ -179,33 +186,48 @@ public class ChatService {
 		String chatRoomSender = request.get("sender").toString();
 		String chatRoomReciver = request.get("reciver").toString();
 		String chatRoomText = request.get("message").toString();
-		String sendDt = request.get("sendDt").toString();
-		int chatRoomTextNo = chatRoomRepository.findByChatRoomNo(chatRoomNo) + 1;
+//		String sendDt = request.get("sendDt").toString();
+		String readYn = request.get("readYn").toString();
+		ChatRoomEntity chk = null;
 
-		ChatRoomEntity chatRoomEntity = new ChatRoomEntity();
-		chatRoomEntity.setChatRoomNo(chatRoomNo);
-		chatRoomEntity.setChatRoomSender(chatRoomSender);
-		chatRoomEntity.setChatRoomReciver(chatRoomReciver);
-		chatRoomEntity.setChatRoomTextNo(chatRoomTextNo);
-		chatRoomEntity.setChatRoomText(chatRoomText);
-		chatRoomEntity.setChatSendDt(sendDt);
-		chatRoomEntity.setChatRoomReadChk("N");
-		ChatRoomEntity chk = chatRoomRepository.save(chatRoomEntity);
+		if ("N".equals(readYn)) {
+			int chatRoomTextNo = chatRoomRepository.findByChatRoomNo(chatRoomNo) + 1;
+
+			ChatRoomEntity chatRoomEntity = new ChatRoomEntity();
+			chatRoomEntity.setChatRoomNo(chatRoomNo);
+			chatRoomEntity.setChatRoomSender(chatRoomSender);
+			chatRoomEntity.setChatRoomReciver(chatRoomReciver);
+			chatRoomEntity.setChatRoomTextNo(chatRoomTextNo);
+			chatRoomEntity.setChatRoomText(chatRoomText);
+			LocalDateTime chkDate = LocalDateTime.now();
+			DateTimeFormatter formatter =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			String cur = formatter.format(chkDate);
+			chatRoomEntity.setChatSendDt(cur);
+			chatRoomEntity.setChatRoomReadChk(readYn);
+			chk = chatRoomRepository.saveAndFlush(chatRoomEntity);
+			
+		}else {
+			int chatRoomTextNo = chatRoomRepository.findByChatRoomNo(chatRoomNo);
+			ChatRoomEntity chatRoomEntity = chatRoomRepository.findByChatRoomNoAndChatRoomTextNo(chatRoomNo, chatRoomTextNo);
+			chatRoomEntity.setChatRoomReadChk("Y");
+			chk = chatRoomRepository.save(chatRoomEntity);
+			
+		}
 		if (chk != null) {
 			resultVo.setCode("success");
 			resultVo.setMsg("채팅 내역 저장 성공");
+			return resultVo;
 		} else {
 			resultVo.setCode("fail");
 			resultVo.setMsg("채팅내역 저장 실패");
+			return resultVo;
 		}
-		
-		return resultVo;
 	}
 
 	/* 채팅 가능 유저 조회 */
-	public Map<String, Object> accountLists() {
+	public Map<String, Object> accountLists(String usrId) {
 		Map<String, Object> map = new HashMap<>();
-		Optional<List<AccountEntity>> account = accountRepository.findByChatYn("Y");
+		Optional<List<AccountEntity>> account = accountRepository.findByChatYnAndUsrIdNot("Y",usrId);
 
 		if (account.isPresent()) {
 			List<AccountEntity> accountEntity = account.get();
@@ -236,9 +258,10 @@ public class ChatService {
 		String chatInvUsrNm = request.get("chatInvUsrNm").toString();
 		String chatInvUsrId = request.get("chatInvUsrId").toString();
 		chatRoomNo = chatRepository.find() + 1;
-		
-		int cnt = chatRepository.findByChatCrtUsrNmAndChatCrtUsrIdAndChatInvUsrNmAndChatInvUsrId(chatCrtUsrNm, chatCrtUsrId, chatInvUsrNm, chatInvUsrId);
-		if(cnt == 1) {
+
+		int cnt = chatRepository.findByChatCrtUsrNmAndChatCrtUsrIdAndChatInvUsrNmAndChatInvUsrId(chatCrtUsrNm,
+				chatCrtUsrId, chatInvUsrNm, chatInvUsrId);
+		if (cnt == 1) {
 			resultVo.setCode("fail");
 			resultVo.setMsg("이미 대화중 입니다.");
 			System.out.print("뭐애 왜 무시해");
@@ -252,8 +275,7 @@ public class ChatService {
 		chatEntity.setChatInvUsrNm(chatInvUsrNm);
 		chatEntity.setUseYn("Y");
 		chatEntity.setDelYn("N");
-		
-		
+
 		ChatEntity chk = chatRepository.save(chatEntity);
 		ChatDto chatDto = new ChatDto();
 		chatDto.setChatCrtUsrNm(chatCrtUsrNm);
@@ -271,7 +293,7 @@ public class ChatService {
 		}
 		return resultVo;
 	}
-	
+
 	/* 방 삭제 하기 */
 	@Transactional
 	public ResultVO delCahtRoom(int chatRoomNo) {
@@ -279,7 +301,7 @@ public class ChatService {
 		LocalDateTime chkDate = LocalDateTime.now();
 		DateTimeFormatter formatChkDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		String delDt = formatChkDate.format(chkDate);
-		ChatEntity chatEntity = chatRepository.findByChatRoomNoAndUseYnAndDelYn(chatRoomNo, "Y" ,"N");
+		ChatEntity chatEntity = chatRepository.findByChatRoomNoAndUseYnAndDelYn(chatRoomNo, "Y", "N");
 		chatEntity.setChatRoomNo(chatRoomNo);
 		chatEntity.setChatCrtUsrNm(chatEntity.getChatCrtUsrNm());
 		chatEntity.setChatCrtUsrId(chatEntity.getChatCrtUsrId());
@@ -287,8 +309,7 @@ public class ChatService {
 		chatEntity.setChatInvUsrNm(chatEntity.getChatInvUsrNm());
 		chatEntity.setUseYn("N");
 		chatEntity.setDelYn("Y");
-		
-		
+
 		ChatEntity chk = chatRepository.save(chatEntity);
 		if (chk != null) {
 			resultVo.setCode("success");
@@ -299,6 +320,7 @@ public class ChatService {
 		}
 		return resultVo;
 	}
+
 
 
 }
