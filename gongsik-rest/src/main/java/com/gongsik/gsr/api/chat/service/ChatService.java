@@ -37,8 +37,16 @@ public class ChatService {
 	@Autowired
 	AccountRepository accountRepository;
 	
-	@Autowired
-    private EntityManager entityManager;
+	/* 채팅 읽음 유무 조회 */
+	public Map<String, Object> chatReadYnLists(String usrId) {
+		Map<String, Object> map = new HashMap<>();
+		
+		Optional<AccountEntity> entity = accountRepository.findByUsrId(usrId);
+		String usrNm = entity.get().getUsrNm();
+		int chatReadYnCnt = chatRepository.countReadChk(usrNm, "N");
+		map.put("chatReadYnCnt", chatReadYnCnt);
+		return map;
+	}
 	/* 채팅 목록 조회 */
 	public Map<String, Object> chatList(String usrId) {
 		Map<String, Object> map = new HashMap<>();
@@ -75,10 +83,13 @@ public class ChatService {
 	}
 
 	// 채팅 내용 조회
+	@Transactional
 	public Map<String, Object> chatTextList(Map<String, Object> request) {
 		Map<String, Object> map = new HashMap<>();
-
+		
+		
 		String usrId = request.get("usrId").toString();
+		
 		int chatRoomNo = Integer.parseInt(request.get("chatRoomNo").toString());
 
 		String usrNm = "";
@@ -120,6 +131,7 @@ public class ChatService {
 			String chatDt = "";
 			String chatYMD = "";
 			String chatTime = "";
+			String sender = "";
 			for (int i = chatRoomEntity.size() - 1; i >= 0; i--) {
 				Object[] entity = chatRoomEntity.get(i);
 				ChatDto dto = new ChatDto();
@@ -140,17 +152,15 @@ public class ChatService {
 				withUsrNm = (usrNm.equals(dto.getChatRoomSender())) ? dto.getChatRoomReciver()
 						: dto.getChatRoomSender();
 				list.add(dto);
-
+				sender = dto.getChatRoomSender();
 				// 채팅 읽은거 "Y" 처리
-				if (!usrNm.equals(dto.getChatRoomSender())
-						&& "N".equals(dto.getChatRoomReadChk())) {
-					System.out.println("뭐야시발! : " + list);
-					ChatRoomEntity roomEntity = chatRoomRepository
-							.findByChatRoomNoAndChatRoomTextNo(dto.getChatRoomNo(), dto.getChatRoomTextNo());
-					roomEntity.setChatRoomReadChk("Y");
-					chatRoomRepository.save(roomEntity);
 
 				}
+			if (!usrNm.equals(sender)) {
+//				ChatRoomEntity roomEntity = chatRoomRepository
+//						.findByChatRoomNoAndChatRoomTextNo(chatRoomNo, "N");
+//				roomEntity.setChatRoomReadChk("Y");
+				int result = chatRoomRepository.updateReadChkYn(chatRoomNo,"N");
 			}
 			map.put("code", "success");
 			map.put("result", list);
@@ -174,7 +184,10 @@ public class ChatService {
 			chkDt = chkDt.substring(0, 10).replaceAll("-", ".");
 			map.put("chatYMD", chkDt);
 		}
-
+		Map<String, Object> readMap = chatReadYnLists(usrId);
+		int chatReadYnCnt = Integer.parseInt(readMap.get("chatReadYnCnt").toString());
+		map.put("chatReadYnCnt", chatReadYnCnt);
+		
 		return map;
 	}
 
@@ -189,7 +202,9 @@ public class ChatService {
 //		String sendDt = request.get("sendDt").toString();
 		String readYn = request.get("readYn").toString();
 		ChatRoomEntity chk = null;
-
+		
+		Optional<AccountEntity> entity = accountRepository.findByUsrNm(chatRoomReciver);
+		String usrId = entity.get().getUsrId();
 		if ("N".equals(readYn)) {
 			int chatRoomTextNo = chatRoomRepository.findByChatRoomNo(chatRoomNo) + 1;
 
@@ -214,8 +229,9 @@ public class ChatService {
 			
 		}
 		if (chk != null) {
+			
 			resultVo.setCode("success");
-			resultVo.setMsg("채팅 내역 저장 성공");
+			resultVo.setMsg(usrId);
 			return resultVo;
 		} else {
 			resultVo.setCode("fail");

@@ -35,10 +35,9 @@ public class ChatController {
 
 	@Autowired
 	private ChatService chatService;
-	
+
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
-	
 
 	@GetMapping("/chatList/{usrId}")
 	@Operation(summary = "채팅 목록 조회", description = "채팅 목록 조회 하기")
@@ -46,6 +45,15 @@ public class ChatController {
 	public ResponseEntity<Map<String, Object>> chatList(@PathVariable("usrId") String usrId) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map = chatService.chatList(usrId);
+		return ResponseEntity.ok(map);
+	}
+
+	@GetMapping("/chatReadYnLists/{usrId}")
+	@Operation(summary = "채팅 읽음 우무 조회", description = "채팅 읽음 유무 조회 하기")
+	@Parameters({ @Parameter(description = "사용자 아이디", name = "usrId", example = "test"), })
+	public ResponseEntity<Map<String, Object>> chatReadYnLists(@PathVariable("usrId") String usrId) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map = chatService.chatReadYnLists(usrId);
 		return ResponseEntity.ok(map);
 	}
 
@@ -67,21 +75,25 @@ public class ChatController {
 	public ResponseEntity<ResultVO> chatTextSave(@RequestBody Map<String, Object> request) {
 		ResultVO resultVo = new ResultVO();
 		resultVo = chatService.chatTextSave(request);
-		
+
 		// B의 클라이언트 서버에 SSE 이벤트를 전송하는 POST 요청
-		WebClients webClients = new WebClients();
-		Mono<Object> responseMono = webClients.callApi(Object.class, "/alramMsg", "test@gmail.com");
-		// 결과 값 가져오기
-		
-		responseMono.subscribe(response -> {
-			System.out.println("여기 오냐 ?");
-		    // 반환된 응답(response)을 이용하여 처리
-		}, error -> {
-		    // 에러 처리
-		});
+		String readYn = request.get("readYn").toString();
+		String usrId = resultVo.getMsg();
+		if ("N".equals(readYn)) {
+			WebClients webClients = new WebClients();
+			Mono<Object> responseMono = webClients.callApi(Object.class, "/alramChat", usrId);
+			// 결과 값 가져오기
+
+			responseMono.subscribe(response -> {
+				System.out.println("여기 오냐 ?");
+				// 반환된 응답(response)을 이용하여 처리
+			}, error -> {
+				// 에러 처리
+			});
+		}
 		return ResponseEntity.ok(resultVo);
 	}
-	
+
 	@GetMapping("/accountLists/{usrId}")
 	@Operation(summary = "채팅 회원 조회", description = "채팅 회원 조회 하기")
 	public ResponseEntity<Map<String, Object>> accountLists(@PathVariable("usrId") String usrId) {
@@ -89,22 +101,20 @@ public class ChatController {
 		map = chatService.accountLists(usrId);
 		return ResponseEntity.ok(map);
 	}
-	
+
 	@PostMapping("/chatCreatRoom")
 	@Operation(summary = "채팅 방 저장", description = "채팅 방 저장 하기")
-	@Parameters({
-			@Parameter(description = "수신자", name = "chatRoomReciver", example = "id"),
-			@Parameter(description = "송신자", name = "chatRoomSender", example = "id")})
+	@Parameters({ @Parameter(description = "수신자", name = "chatRoomReciver", example = "id"),
+			@Parameter(description = "송신자", name = "chatRoomSender", example = "id") })
 	public ResponseEntity<ResultVO> chatCreatRoom(@RequestBody Map<String, Object> request) {
 		ResultVO resultVo = new ResultVO();
 		resultVo = chatService.chatCreatRoom(request);
 		return ResponseEntity.ok(resultVo);
 	}
-	
+
 	@GetMapping("/delCahtRoom/{chatRoomNo}")
-	@Operation(summary = "채팅 방 저장", description = "채팅 방 저장 하기")
-	@Parameters({
-			@Parameter(description = "방번호", name = "chatRoomSender", example = "2")})
+	@Operation(summary = "채팅 방 삭제", description = "채팅 방 삭제 하기")
+	@Parameters({ @Parameter(description = "방번호", name = "chatRoomSender", example = "2") })
 	public ResponseEntity<ResultVO> delCahtRoom(@PathVariable("chatRoomNo") int chatRoomNo) {
 		ResultVO resultVo = new ResultVO();
 		resultVo = chatService.delCahtRoom(chatRoomNo);

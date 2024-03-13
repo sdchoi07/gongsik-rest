@@ -1,16 +1,13 @@
 package com.gongsik.gsr.api.chat.repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.gongsik.gsr.api.chat.entity.ChatEntity;
 import com.gongsik.gsr.api.chat.entity.ChatRoomEntity;
 
 @Repository
@@ -57,6 +54,16 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoomEntity, Long>{
 	int countAll(@Param("chatRoomNo")int chatRoomNo, @Param("usrNm")String usrNm);
 
 	ChatRoomEntity findByChatRoomNoAndChatRoomTextNo(long chatRoomNo, int chatRoomTextNo);
+	
+	@Modifying
+	@Query(value=
+		      "	UPDATE GS_CHAT_ROOM_INF																		 "
+			+ "	SET CHAT_ROOM_READ_CHK = 'Y'																         "
+			+ " WHERE CHAT_ROOM_READ_CHK = :chatRoomReadChk																         "
+			+ " AND   CHAT_ROOM_NO = :chatRoomNo																			 "
+																															,nativeQuery=true)
+	
+	int updateReadChkYn(@Param("chatRoomNo")int chatRoomNo, @Param("chatRoomReadChk")String chatRoomReadChk);
 
 
 

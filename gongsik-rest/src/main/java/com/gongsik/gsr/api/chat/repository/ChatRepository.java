@@ -40,7 +40,8 @@ public interface ChatRepository extends JpaRepository<ChatEntity, Long> {
 			+ "                 ,A.CHAT_SEND_DT												"
 			+ "                 ,A.CHAT_ROOM_SENDER											"
 			+ "            FROM GS_CHAT_ROOM_INF A 										    "
-			+ "           WHERE CHAT_SEND_DT IN ( SELECT MAX(CHAT_SEND_DT)                  "
+			+ "           WHERE (CHAT_SEND_DT, CHAT_ROOM_TEXT_NO) 							"
+			+ "								 IN ( SELECT MAX(CHAT_SEND_DT), MAX(CHAT_ROOM_TEXT_NO)  "
 			+ "								       FROM GS_CHAT_ROOM_INF                    "
 			+ "									   GROUP BY CHAT_ROOM_NO					"
 			+ "                                    ORDER BY CHAT_SEND_DT)                   "
@@ -106,6 +107,14 @@ public interface ChatRepository extends JpaRepository<ChatEntity, Long> {
 																															,nativeQuery=true)
 	int findByChatCrtUsrNmAndChatCrtUsrIdAndChatInvUsrNmAndChatInvUsrId(@Param("chatCrtUsrNm")String chatCrtUsrNm, @Param("chatCrtUsrId")String chatCrtUsrId,
 			@Param("chatInvUsrNm")String chatInvUsrNm, @Param("chatInvUsrId")String chatInvUsrId);
+
+	@Query(value=
+		      "	SELECT IFNULL(COUNT(CHAT_ROOM_READ_CHK),0) AS CHAT_ROOM_READ_CHK												         "
+			+ "	FROM GS_CHAT_ROOM_INF A																"
+			+ " WHERE CHAT_ROOM_RECIVER = :usrNm												"
+			+ " AND  CHAT_ROOM_READ_CHK = :chatRoomReadChk								         "
+																															,nativeQuery=true)
+	int countReadChk(@Param("usrNm")String usrNm, @Param("chatRoomReadChk")String chatRoomReadChk);
 	
 
 }

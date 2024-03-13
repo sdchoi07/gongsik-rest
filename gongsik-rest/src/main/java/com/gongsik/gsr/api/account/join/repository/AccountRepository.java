@@ -5,11 +5,10 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.gongsik.gsr.api.account.join.dto.JoinDto;
 import com.gongsik.gsr.api.account.join.entity.AccountEntity;
-import com.gongsik.gsr.api.account.join.entity.AccountMultiKey;
 
 @Repository
 public interface AccountRepository extends JpaRepository<AccountEntity, String>{
@@ -27,6 +26,39 @@ public interface AccountRepository extends JpaRepository<AccountEntity, String>{
 	Optional<AccountEntity> findByUsrIdAndLogTpAndUsrNm(String usrId, String logTp, String usrNm);
 
 	Optional<List<AccountEntity>> findByChatYnAndUsrIdNot(String string, String usrId);
+
+	Optional<AccountEntity> findByUsrNm(String chatRoomReciver);
+	
+	@Query(value=
+		      "	    SELECT																"
+		      + "	 		A.USR_ID													"
+		      + "	       ,A.USR_NM													"
+		      + "	       ,A.USR_PHONE													"
+		      + "		   ,B.DELV_AREA_ADDR											"
+		      + "     FROM																"
+		      + "	     ( 															    "
+		      + "			(															"
+		      + "	          SELECT													"
+		      + "					  USR_ID											"
+		      + "					 ,USR_NM											"
+		      + "					 ,USR_PHONE											"
+		      + "			   FROM	 GS_ACCOUNT_INF A								    "
+		      + "			  WHERE	 A.USR_ID = :usrId									"
+		      + "			)A															"
+		      + "       LEFT JOIN													    "
+	          + "		(																"
+		      + "			 SELECT														"
+		      + "					DELV_USR_ID 										"
+		      + "		           ,DELV_AREA_ADDR										"
+		      + "			  FROM GS_DELV_AREA_INF										"
+		      + "			 WHERE DELV_USR_ID = :usrId									"
+		      + "			   AND DELV_USE_YN = 'Y'									"
+		      + "		       AND USE_YN = 'Y'											"
+		      + "			   AND DEL_YN = 'N'											"
+		      + "			)B															"
+		      + "			ON A.USR_ID = B.DELV_USR_ID)								"
+																															,nativeQuery=true)
+	Optional<Object[]> findByUsrId2(@Param("usrId")String usrId);
 
 }
 
