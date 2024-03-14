@@ -20,6 +20,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven {url 'https://jitpack.io'}
 }
 
 dependencies {
@@ -56,6 +57,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	
+	//결제
+	implementation 'com.github.iamport:iamport-rest-client-java:0.2.22'
 }
 
 

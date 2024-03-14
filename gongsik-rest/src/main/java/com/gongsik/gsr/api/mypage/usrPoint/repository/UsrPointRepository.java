@@ -8,4 +8,8 @@ import com.gongsik.gsr.api.mypage.usrPoint.entity.UsrPointEntity;
 @Repository
 public interface UsrPointRepository extends JpaRepository<UsrPointEntity, Long>{
 
+	UsrPointEntity findByPointUsrId(String usrId);
+
+
+
 }
