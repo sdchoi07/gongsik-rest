@@ -24,5 +24,7 @@ public class OrderDto {
 	private String cancelDt;
 	private String itemImg;
 	private String orderStNm;
-	
+	private String orderNo;
+	private String orderAddr;
+	private String itemPrice;
 }

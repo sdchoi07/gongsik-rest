@@ -16,8 +16,8 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode		//equals, hashCode
 @Data
 public class UsrGradeMultiKey implements Serializable {
-	@Column(name = "GRADE_SEQ")
-	private long gradeSeq;
+	@Column(name = "GRADE_USR_NM")
+	private String gradeUsrNm;
 	@Column(name = "GRADE_USR_ID")
 	private String gradeUsrId;
 }

@@ -62,9 +62,9 @@ public class CartService {
 				cartDto.setCartSt(object[5].toString());
 				cartDto.setCartUrl(object[6].toString());
 				int price = Integer.parseInt(object[7].toString());
-				if(cartDto.getCartSt().equals("W")) {
-					price = price * Integer.parseInt(object[2].toString());
-				}
+//				if(cartDto.getCartSt().equals("W")) {
+//					price = price * Integer.parseInt(object[2].toString());
+//				}
 				DecimalFormat krFormat = new DecimalFormat("###,###원");
 				String cartPrice = krFormat.format(price);
 				cartDto.setCartPrice(cartPrice);

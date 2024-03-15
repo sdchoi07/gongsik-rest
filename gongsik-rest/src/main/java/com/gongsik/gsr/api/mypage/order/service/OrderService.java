@@ -1,5 +1,6 @@
 package com.gongsik.gsr.api.mypage.order.service;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -60,6 +61,11 @@ public class OrderService {
 			orderDto.setItemImg(result[3].toString());
 			orderDto.setOrderStNm(result[4].toString());
 			orderDto.setOrderSt(result[5].toString());
+			int price = Integer.parseInt(result[6].toString());
+			price = price * orderDto.getItemCnt();
+			DecimalFormat krFormat = new DecimalFormat("###,###원");
+			String cartPrice = krFormat.format(price);
+			orderDto.setItemPrice(cartPrice);
 			list.add(orderDto);
 		}
 		log.info("orderDto : {}" , list);

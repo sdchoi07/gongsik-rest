@@ -24,8 +24,18 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>{
 			+ "			   ,CASE WHEN ORDER_ST = '01' THEN '주문준비'               "
 			+ "			         WHEN ORDER_ST = '02' THEN '주문완료'               "
 			+ "			         ELSE '주문 취소'         END AS ORDER_ST_NM	     "
-			+ "            ,ORDER_ST                                             "
-			+ "      FROM GS_ORDER_INF a								         "
+			+ "            ,ORDER_ST                                            "
+			+ "			   ,CASE WHEN B.CHEMISTRY_PRICE IS NOT NULL THEN B.CHEMISTRY_PRICE						"
+			+ "        	        WHEN C.SEED_PRICE IS NOT NULL THEN C.SEED_PRICE									"
+			+ "        	        WHEN D.PRODUCT_PRICE IS NOT NULL THEN D.PRODUCT_PRICE ELSE 0 END				"
+			+ "        			AS ITEM_PRICE 																	"
+			+ "      FROM GS_ORDER_INF a										"
+			+ "      LEFT JOIN GS_CHEMISTRY_INF B								"
+			+ "             ON A.ITEM_NO = B.CHEMISTRY_NO 						"
+			+ "      LEFT JOIN GS_SEED_INF C									"
+			+ "            ON A.ITEM_NO = C.SEED_NO 							"
+			+ "      LEFT JOIN GS_PRODUCT_INF D									"
+			+ "            ON A.ITEM_NO = D.PRODUCT_NO 							"
 			+ "     WHERE USR_ID = :usrId										 "
 			+ "       AND ORDER_DT  >= :orderDt									 "
 														, nativeQuery = true)
@@ -37,8 +47,11 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>{
 			+ " WHERE USR_ID = :usrId 				"
 																															,nativeQuery=true)
 	int findByUsrId(@Param("usrId")String usrId);
-
-
-
+	
+	@Query(value= "								  "
+			+ "        SELECT MAX(ORDER_SEQ)+1	  "
+			+ "        FROM GS_ORDER_INF 		  "  ,nativeQuery=true)
+	long find();
+	
 
 }

@@ -3,7 +3,6 @@ package com.gongsik.gsr.api.mypage.usrPoint.service;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +10,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.gongsik.gsr.api.main.categories.entity.QChemistryEntity;
+import com.gongsik.gsr.api.main.categories.entity.QProductEntity;
+import com.gongsik.gsr.api.main.categories.entity.QSeedEntity;
 import com.gongsik.gsr.api.mypage.usrPoint.dto.QUsrPointDto;
 import com.gongsik.gsr.api.mypage.usrPoint.dto.UsrPointDto;
 import com.gongsik.gsr.api.mypage.usrPoint.entity.QUsrPointEntity;
@@ -18,7 +20,6 @@ import com.gongsik.gsr.api.mypage.usrPoint.repository.UsrPointRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.persistence.EntityManager;
@@ -59,7 +60,7 @@ public class UsrPointService {
 		Map<String, Object> map = new HashMap<>();
 		QUsrPointEntity qUsrPointEntity = QUsrPointEntity.usrPointEntity;
 		JPAQueryFactory query = new JPAQueryFactory(em);
-		
+			
 		//총 포인트 구하기
 		Integer total = 
 				query
@@ -104,7 +105,7 @@ public class UsrPointService {
 		    .from(qUsrPointEntity)
 		    .where(builder)
 		    .orderBy(qUsrPointEntity.pointCrtDt.desc())
-		    .offset(1)
+		    .offset(0)
 		    .limit(page * size)
 		    .fetch();
 		

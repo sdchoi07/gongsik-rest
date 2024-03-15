@@ -10,4 +10,5 @@ public class InvenDto {
 	private String itemNo;
 	private int invenCnt;
 	private int itemPrice;
+	private String itemUrl;
 }

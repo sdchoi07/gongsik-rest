@@ -20,46 +20,52 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Data	
-@IdClass(DeliveryMultikey.class)	
-@Table(name = "GS_DELV_AREA_INF")
+@Table(name = "GS_PAYMENT_INF")
 public class PaymentEntity {
 	
 	@Id
-	@Column(name = "DELV_AREA_SEQ", nullable = false)
-	private long delvAreaSeq;
+	@Column(name = "PAYMENT_SEQ", nullable = false)
+	private long paymentSeq;
 	
-	@Id
-	@Column(name = "DELV_USR_ID", nullable = false)
-	private String delvUsrId;
+	@Column(name = "PAYMENT_ORDER_NO", nullable = false)
+	private String paymentOrderNo;
 	
-	@Id
-	@Column(name = "DELV_USR_NM")
-	private String delvUsrNm;
+	@Column(name = "PAYMENT_USR_NM")
+	private String paymentUsrNm;
 	
-	@Column(name = "DELV_AREA_ADDR")
-	private String delvAreaAddr;
+	@Column(name = "PAYMENT_USR_ID")
+	private String paymentUsrId;
 	
-	@Column(name = "DELV_AREA_NM")
-	private String delvAreaNm;
+	@Column(name = "PAYMENT_ST")
+	private String paymentSt;
 
-	@Column(name = "DELV_USE_YN")
-    private String delvUseYn;
+	@Column(name = "PAYMENT_TYPE")
+    private String paymentType;
 	
-	@Column(name = "DELV_AREA_NO")
-	private String delvAreaNo;
+	@Column(name = "PAYMENT_AMOUNT")
+	private int paymentAmount;
 
-	@Column(name = "DELV_PH_NO")
-	private String delvPhNo;
+	@Column(name = "PAYMENT_CARD_NO")
+	private String paymentCardNo;
 	
-	@Column(name = "DELV_AREA_DETAIL")
-	private String delvAreaDetail;
+	@Column(name = "PAYMENT_CARD_TYPE")
+	private String paymentCardType;
 	
-	@Column(name = "USE_YN")
-	private String useYn;
+	@Column(name = "PAYMENT_BANK_NO")
+	private String paymentBankNo;
 	
-	@Column(name = "DEL_YN")
-	private String delYn;
+	@Column(name = "PAYMENT_BANK_TYPE")
+	private String paymentBankType;
+	
+	@Column(name = "PAYMENT_FIN_DT")
+	private String paymentFinDt;
+	
+	@Column(name = "PAYMENT_CANCEL_DT")
+	private String paymentCancelDt;
 
+	@Column(name = "PAYMENT_REASON")
+	private String paymentReason;
+	
 	@Embedded
     private CommonEntity comonEntity;
 

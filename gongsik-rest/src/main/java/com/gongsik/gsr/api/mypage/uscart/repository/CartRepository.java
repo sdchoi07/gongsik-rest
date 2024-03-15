@@ -74,5 +74,7 @@ public interface CartRepository  extends JpaRepository<CartEntity, Long>{
 																															,nativeQuery=true)
 	int findByCartUsrIdAndCartSt(@Param("usrId")String usrId, @Param("cartSt")String cartSt);
 
+	Optional<CartEntity> findByCartUsrIdAndCartItemNoAndDelYn(String usrId, String itemNo, String string);
+
 
 }

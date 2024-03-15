@@ -22,6 +22,8 @@ import com.gongsik.gsr.api.account.join.repository.AuthSMSRepository;
 import com.gongsik.gsr.api.mypage.profile.dto.ProfileDto;
 import com.gongsik.gsr.api.mypage.profile.entity.ProfileEntity;
 import com.gongsik.gsr.api.mypage.profile.repository.ProfileRepository;
+import com.gongsik.gsr.api.mypage.usrGrade.entity.UsrGradeEntity;
+import com.gongsik.gsr.api.mypage.usrGrade.repository.UsrGradeRepository;
 import com.gongsik.gsr.api.mypage.usrPoint.entity.QUsrPointEntity;
 import com.gongsik.gsr.global.vo.ResultVO;
 import com.querydsl.core.types.dsl.Expressions;
@@ -50,6 +52,9 @@ public class ProfileService {
 	private AuthSMSHistRepository authSMSHistRepository;
 	
 	@Autowired
+	private UsrGradeRepository usrGradeRepository;
+	
+	@Autowired
 	EntityManager em;
 	
 	/* 회원 정보 조회 */
@@ -62,7 +67,6 @@ public class ProfileService {
 	    ProfileDto data = list.map(profile -> {
 	        ProfileDto resultDto = new ProfileDto();
 	        resultDto.setUsrNm(profile.getUsrNm());
-	        resultDto.setUsrGrade(profile.getUsrGrade());
 	        resultDto.setUsrId(profile.getUsrId());
 	        resultDto.setLogTp(profile.getLogTp());
 	        resultDto.setUsrNo(profile.getUsrNo());
@@ -70,10 +74,14 @@ public class ProfileService {
 	        resultDto.setUsrSex(profile.getUsrSex());
 	        resultDto.setCountryPh(profile.getCountryPh());
 	        return resultDto;
+	        
 	    }).orElse(null);
-	    
+	    Optional<UsrGradeEntity> usrGradeEntity = usrGradeRepository.findByGradeUsrId(usrId);
+	    if(usrGradeEntity.isPresent()) {
+	    	String usrGrdLevel = usrGradeEntity.get().getGradeLevel();
+	    	resultMap.put("usrGrdLevel", usrGrdLevel);
+	    }
 	    resultMap.put("result", data);
-		
 		return resultMap;
 	}
 	

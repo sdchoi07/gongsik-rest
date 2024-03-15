@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.gongsik.gsr.api.mypage.usrGrade.entity.UsrGradeEntity;
 
 @Repository
-public interface UsrGradeRepository  extends JpaRepository<UsrGradeEntity, Long>{
+public interface UsrGradeRepository  extends JpaRepository<UsrGradeEntity, String>{
 
 	Optional<UsrGradeEntity> findByGradeUsrId(String usrId);
 

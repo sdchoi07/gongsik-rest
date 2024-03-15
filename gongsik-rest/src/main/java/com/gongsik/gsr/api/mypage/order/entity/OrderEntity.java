@@ -36,6 +36,9 @@ public class OrderEntity {
 	@Column(name = "USR_NM")
 	private String usrNm;
 	
+	@Column(name = "ORDER_NO")
+	private String orderNo;
+	
 	@Column(name = "ITEM_IMG")
 	private String itemImg;
 	
@@ -59,8 +62,12 @@ public class OrderEntity {
 	
 	@Column(name = "CANCEL_DT")
 	private String cancelDt;
+	
+	@Column(name = "ORDER_ADDR")
+	private String orderAddr;
 
 	@Embedded
     private CommonEntity comonEntity;
+
 
 }

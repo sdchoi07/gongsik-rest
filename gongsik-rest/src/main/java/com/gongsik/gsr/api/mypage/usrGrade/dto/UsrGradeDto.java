@@ -11,7 +11,6 @@ import lombok.ToString;
 @ToString
 @Schema(description = "UsrGradeDto")
 public class UsrGradeDto {
-	private long gradeSeq;
 	private String gradeUsrId;
 	private String gradeUsrNm;
 	private String gradeLevel;

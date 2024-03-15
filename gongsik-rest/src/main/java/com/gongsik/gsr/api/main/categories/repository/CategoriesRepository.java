@@ -61,26 +61,28 @@ public interface CategoriesRepository extends JpaRepository<CategoriesEntity, Lo
 	Optional<CategoriesEntity> findByInvenSClsNo(String itemKey);
 	
 	@Query(value=
-		      "			SELECT   A.INVEN_S_CLS_NM  AS ITEM_NM																"
-		      + "				,A.INVEN_S_CLS_NO  AS ITEM_NO																"
-		      + "				,A.INVEN_CNT 	   AS INVEN_CNT																"
-		      + "				,CASE WHEN B.CHEMISTRY_PRICE  IS NOT NULL THEN B.CHEMISTRY_PRICE 							"
-		      + "		      		WHEN C.PRODUCT_PRICE IS NOT NULL THEN C.PRODUCT_PRICE									"
-		      + "		      		WHEN D.SEED_PRICE IS NOT NULL THEN D.SEED_PRICE ELSE 0 END AS ITEM_PRICE				"
-		      + "		FROM GS_INVENTORY_MST A																				"
-		      + "		LEFT JOIN GS_CHEMISTRY_INF B ON A.INVEN_S_CLS_NO  = B.CHEMISTRY_NO 									"
-		      + "		LEFT JOIN GS_PRODUCT_INF C ON A.INVEN_S_CLS_NO = C.PRODUCT_NO 										"
-		      + "		LEFT JOIN GS_SEED_INF D ON A.INVEN_S_CLS_NO = D.SEED_NO 											"
-		      + "		WHERE A.INVEN_S_CLS_NO IN (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX( :itemNo, ',', n), ',', -1) AS part "
-		      + "											FROM (SELECT 1 AS n UNION SELECT 2) AS numbers)	  	 		  "
-																															,nativeQuery=true)
-	List<InvenDto> findByInvneSClsNo(@Param("itemNo")String itemNo);
+		      "			SELECT  new com.gongsik.gsr.api.payment.dto.InvenDto(                                                "
+		      + "				 A.invenSClsNm  AS itemNm																"
+		      + "				,A.invenSClsNo  AS itemNo																"
+		      + "				,A.invenCnt 	   AS invenCnt																"
+		      + "				,CASE WHEN B.chemistryPrice  IS NOT NULL THEN B.chemistryPrice								"
+		      + "		      		WHEN C.productPrice IS NOT NULL THEN C.productPrice									"
+		      + "		      		WHEN D.seedPrice IS NOT NULL THEN D.seedPrice ELSE 0 END AS itemPrice				"
+		      + "               ,CASE WHEN B.chemistryUrl  IS NOT NULL THEN B.chemistryUrl 								"
+		      + "      		       WHEN C.productUrl IS NOT NULL THEN C.productUrl										"
+		      + "      		       WHEN D.seedUrl IS NOT NULL THEN D.seedUrl ELSE 0 END AS itemUrl)						"
+		      + "		FROM CategoriesEntity A																				"
+		      + "		LEFT JOIN ChemistryEntity B ON A.invenSClsNo  = B.chemistryNo 									"
+		      + "		LEFT JOIN ProductEntity C ON A.invenSClsNo = C.productNo 										"
+		      + "		LEFT JOIN SeedEntity D ON A.invenSClsNo = D.seedNo 											"
+		      + "		WHERE A.invenSClsNo = :itemNo 																	"			,nativeQuery=false)
+	InvenDto findByInvneSClsNo(@Param("itemNo")String itemNo);
 	
 	@Modifying
 	@Query(value=
 		      "			UPDATE  GS_INVENTORY_MST 			"
 		      + "		   SET INVEN_CNT  = :invenCnt		"
-		      + "        WHERE INVEN_S_CLS_NO :itemNo  		"
+		      + "        WHERE INVEN_S_CLS_NO = :itemNo  		"
 																															,nativeQuery=true)
 	void updateItemCnt(@Param("itemNo")String itemNo, @Param("invenCnt")int invenCnt);
 }

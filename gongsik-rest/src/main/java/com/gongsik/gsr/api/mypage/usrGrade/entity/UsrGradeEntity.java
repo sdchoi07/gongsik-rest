@@ -20,14 +20,12 @@ import lombok.ToString;
 @IdClass(UsrGradeMultiKey.class)	
 @Table(name = "GS_GRADE_INF")
 public class UsrGradeEntity {
-	@Id
-	@Column(name = "GRADE_SEQ")
-	private long gradeSeq;
 	
 	@Id
 	@Column(name = "GRADE_USR_ID")
 	private String gradeUsrId;
 	
+	@Id
 	@Column(name = "GRADE_USR_NM")
 	private String gradeUsrNm;
 	
