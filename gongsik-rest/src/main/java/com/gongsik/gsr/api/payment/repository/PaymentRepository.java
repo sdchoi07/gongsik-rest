@@ -11,11 +11,11 @@ import com.gongsik.gsr.api.payment.entity.PaymentEntity;
 public interface PaymentRepository extends JpaRepository<PaymentEntity, Long>{
 	
 	@Query(value=""
-			+ "		SELECT IFNULL(SUM(PAYMENT_AMOUNT),0) PAYMENT_AMOUNT  "
-			+ "		  FROM GS_PAYMENT_INF   						"
-			+ "		 WHERE PAYMENT_USR_NM = :usrNm 					"
-			+ "		   AND PAYMENT_USR_ID = :usrId 					"
-			+ "		 GROUP BY PAYMENT_USR_ID, PAYMENT_USR_NM  						" ,nativeQuery= true)
+			+ "		SELECT COALESCE(SUM(PAYMENT_AMOUNT), 0) PAYMENT_AMOUNT  "
+			+ "		  FROM GS_PAYMENT_INF   							 "
+			+ "		 WHERE PAYMENT_USR_NM = :usrNm 						 "
+			+ "		   AND PAYMENT_USR_ID = :usrId 						 "
+			+ "		   AND PAYMENT_ST = '02'							 " ,nativeQuery= true)
 	int findByPaymentUsrIdAndPaymentUsrNm(@Param("usrId")String usrId, @Param("usrNm")String usrNm);
 
 //	Optional<List<Object[]>> findByUsrId2(String usrId);

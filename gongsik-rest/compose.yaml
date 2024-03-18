@@ -1,7 +1,7 @@
 version: '2'
 services:
   mysql:
-    image: 'mysql:latest'
+    image: 'mysql:8.0.35'
     environment:
       - 'MYSQL_DATABASE=gsw'
       - 'MYSQL_ROOT_PASSWORD=gongsik1204'

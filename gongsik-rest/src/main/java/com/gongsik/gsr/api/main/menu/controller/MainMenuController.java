@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,13 +33,13 @@ public class MainMenuController {
 	@Autowired
 	private MainMenuService mainMenuService;
 	
-	@GetMapping("/menuList")
+	@GetMapping("/menuList/{usrRole}")
 	@Operation(summary = "메뉴 조회", description = "메인 화면의 메뉴 조회")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "성공")
 		})
-	public ResponseEntity<List<MainMenuDto>> meneList() {
-		List<MainMenuDto> list = mainMenuService.menuListAll();
+	public ResponseEntity<List<MainMenuDto>> meneList(@PathVariable("usrRole") String usrRole) {
+		List<MainMenuDto> list = mainMenuService.menuListAll(usrRole);
 		log.info("menuList:{}", list);
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}

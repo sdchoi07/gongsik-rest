@@ -5,6 +5,7 @@ import java.io.Serializable;
 import com.gongsik.gsr.api.mypage.profile.entity.ProfileMultiKey;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,13 +17,16 @@ import lombok.NoArgsConstructor;
 @Data
 public class OrderMultiKey implements Serializable{
 	
-	@Column(name = "ORDER_SEQ")
-	private long orderSeq;
+	@Column(name = "ORDER_NO")
+	private String orderNo;
 	
     @Column(name = "USR_ID")		
     private String usrId;
     
 	@Column(name = "USR_NM")
 	private String usrNm;
+	
+	@Column(name = "ORDER_SEQ")
+	private int orderSeq;
 	
 }

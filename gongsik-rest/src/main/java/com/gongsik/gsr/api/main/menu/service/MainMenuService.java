@@ -27,7 +27,7 @@ public class MainMenuService {
 	
 	
 	 
-	public List<MainMenuDto> menuListAll() {
+	public List<MainMenuDto> menuListAll(String usrRole) {
 //		MainMenuEntity mainMenuEntity = new MainMenuEntity();
 //		em.persist(mainMenuEntity);
 //		QMainMenuEntity menuEntitiy1 = QMainMenuEntity.mainMenuEntity;
@@ -49,7 +49,7 @@ public class MainMenuService {
 			 
 			 
 			 
-		 List<MainMenuEntity> menuList = mainMenuRepository.findAllByOrderByMenuGroupNo();
+		 List<MainMenuEntity> menuList = mainMenuRepository.findAll(usrRole);
 		 List<MainMenuDto> menus =  menuList.stream()
 										    .map(menu -> {
 										        MainMenuDto dto = new MainMenuDto();

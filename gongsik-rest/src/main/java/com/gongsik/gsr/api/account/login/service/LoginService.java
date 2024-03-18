@@ -45,6 +45,7 @@ public class LoginService {
 		}
 		map.put("usrId",list.get().getUsrId());
 		map.put("logTp", list.get().getLogTp());
+		map.put("usrRole", list.get().getUsrRole());
 		return map;
 	}
 

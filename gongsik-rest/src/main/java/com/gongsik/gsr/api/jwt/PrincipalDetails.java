@@ -35,7 +35,6 @@ public class PrincipalDetails implements UserDetails{
 		}else {
 			collect.add(new SimpleGrantedAuthority("USER"));
 		}
-		
 		//collect.add(() -> accountEntity.getUsrRole());
 	    return collect;
 	}

@@ -18,7 +18,6 @@ public class OrderDto {
 	private String orderSt;
 	private String usrId;
 	private String usrNm;
-	private Long orderSeq;
 	private String itemNo;
 	private String arrvDt;
 	private String cancelDt;
@@ -27,4 +26,5 @@ public class OrderDto {
 	private String orderNo;
 	private String orderAddr;
 	private String itemPrice;
+	private long orderSeq;
 }

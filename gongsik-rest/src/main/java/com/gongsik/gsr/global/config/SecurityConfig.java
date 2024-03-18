@@ -76,7 +76,7 @@ public class SecurityConfig {
 							.requestMatchers("/api/main/chk").hasAuthority("USER")
 							.requestMatchers("/api/mypage/**").authenticated()
 							.requestMatchers("/api/account/admin").hasAuthority("USER")
-							.requestMatchers("/user/**", "/api/v1/posts/**").hasRole("USER")
+							.requestMatchers("/api/admin/**").hasAuthority("ADMIN")
 							.anyRequest().permitAll()
 			);
 //			.((request, response, authentication) -> {

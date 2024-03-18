@@ -217,6 +217,7 @@ public class JoinService {
 					accountEntity.setUsrNo(map.get("birthDate"));
 					accountEntity.setCountryPh(map.get("countryPhNo"));
 					accountEntity.setUsrPhone(map.get("phoneNumber"));
+					accountEntity.setChatYn(map.get("chatChk"));
 					accountEntity.setUsrGrade("1");
 					accountEntity.setUsrStatus("");
 					accountEntity.setUsrRole("USER");

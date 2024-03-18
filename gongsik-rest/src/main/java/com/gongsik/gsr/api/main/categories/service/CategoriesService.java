@@ -427,7 +427,10 @@ public class CategoriesService {
 			dto.setInvenPrice(itemPrice);
 			if (request.get("usrId") != null && !"".equals(request.get("usrId"))) {
 				Optional<AccountEntity> accountEntity = accountRepository.findByUsrId(usrId);
-				String usrGrade = accountEntity.get().getUsrGrade();
+				String usrGrade = "";
+				if(!"".equals(accountEntity.get().getUsrGrade()) || accountEntity.get().getUsrGrade() != null) {
+					usrGrade = accountEntity.get().getUsrGrade();
+				}
 
 				krFormat = new DecimalFormat("###,###p 적립");
 				switch (usrGrade) {
@@ -470,8 +473,10 @@ public class CategoriesService {
 			dto.setInvenPrice(itemPrice);
 			if (request.get("usrId") != null && !"".equals(request.get("usrId"))) {
 				Optional<AccountEntity> accountEntity = accountRepository.findByUsrId(usrId);
-				String usrGrade = accountEntity.get().getUsrGrade();
-
+				String usrGrade = "";
+				if( accountEntity.get().getUsrGrade() != null && !"".equals(accountEntity.get().getUsrGrade()) ) {
+					usrGrade = accountEntity.get().getUsrGrade();;
+				}
 				krFormat = new DecimalFormat("###,###p 적립");
 				switch (usrGrade) {
 				case "1":

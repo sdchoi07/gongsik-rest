@@ -48,10 +48,22 @@ public class PaymentController {
 	@Parameters({ @Parameter(description = "", name = "", example = ""),
 			@Parameter(description = "", name = "", example = ""), })
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "결제자 정보 조회 성공", content = @Content(schema = @Schema(implementation = Map.class))) })
+			@ApiResponse(responseCode = "200", description = "결제자 검증  성공", content = @Content(schema = @Schema(implementation = Map.class))) })
 	public ResponseEntity<Map<String, Object>> verify(@RequestBody Map<String,Object> request) throws IamportResponseException, IOException {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map = paymentService.verify(request);
+		return ResponseEntity.ok(map);
+	}
+	
+	@PostMapping("/cancel")
+	@Operation(summary = "결제 취소", description = "결제 취소 하기")
+	@Parameters({ @Parameter(description = "", name = "", example = ""),
+		@Parameter(description = "", name = "", example = ""), })
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "결제자 취소 성공", content = @Content(schema = @Schema(implementation = Map.class))) })
+	public ResponseEntity<Map<String, Object>> cancel(@RequestBody Map<String,Object> request) throws IamportResponseException, IOException {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map = paymentService.cancel(request);
 		return ResponseEntity.ok(map);
 	}
 

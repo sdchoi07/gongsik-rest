@@ -73,6 +73,7 @@ public class ProfileService {
 	        resultDto.setUsrPhone(profile.getUsrPhone());
 	        resultDto.setUsrSex(profile.getUsrSex());
 	        resultDto.setCountryPh(profile.getCountryPh());
+	        resultDto.setChatYn(profile.getChatYn());
 	        return resultDto;
 	        
 	    }).orElse(null);
@@ -138,6 +139,7 @@ public class ProfileService {
 				profileEntity.setUsrSex(map.get("gender"));
 				profileEntity.setUsrNo(map.get("birthDate"));
 				profileEntity.setUsrPhone(map.get("phoneNumber"));
+				profileEntity.setChatYn(map.get("chatYn"));
 				// 회원가입 등록
 				result = profileepository.save(profileEntity);
 				

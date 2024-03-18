@@ -30,4 +30,5 @@ public class ProfileDto {
 	private LocalDateTime usrLogInDt;
 	private LocalDateTime usrLogOutDt;
 	private String logTp;
+	private String chatYn;
 }

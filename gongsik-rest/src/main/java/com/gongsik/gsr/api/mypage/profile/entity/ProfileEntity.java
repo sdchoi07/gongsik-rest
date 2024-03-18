@@ -74,6 +74,9 @@ public class ProfileEntity {
 	@Column(name = "PROVIDER_ID")
 	private String providerId;
 	
+	@Column(name = "CHAT_YN")
+	private String chatYn;
+	
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "USR_LOG_IN_DT")

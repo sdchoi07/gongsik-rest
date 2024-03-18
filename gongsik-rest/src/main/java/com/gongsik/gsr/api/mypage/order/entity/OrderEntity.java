@@ -25,10 +25,6 @@ import lombok.ToString;
 public class OrderEntity {
 	
 	@Id
-	@Column(name = "ORDER_SEQ", nullable = false)
-	private long orderSeq;
-	
-	@Id
 	@Column(name = "USR_ID", nullable = false)
 	private String usrId;
 	
@@ -36,15 +32,20 @@ public class OrderEntity {
 	@Column(name = "USR_NM")
 	private String usrNm;
 	
+	@Id
 	@Column(name = "ORDER_NO")
 	private String orderNo;
+	
+	@Id
+	@Column(name = "ORDER_SEQ")
+	private int orderSeq;
 	
 	@Column(name = "ITEM_IMG")
 	private String itemImg;
 	
 	@Column(name = "ITEM_NM")
 	private String itemNm;
-
+	
 	@Column(name = "ITEM_NO")
     private String itemNo;
 	

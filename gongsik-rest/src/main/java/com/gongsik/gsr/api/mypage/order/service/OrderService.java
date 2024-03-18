@@ -42,7 +42,7 @@ public class OrderService {
 		int currentPage = Integer.parseInt(map.get("currentPage").toString());
 		int pageSize = Integer.parseInt(map.get("pageSize").toString());
 		
-		Pageable pageable = PageRequest.of((currentPage -1), pageSize, Sort.by("ORDER_DT").descending());
+		Pageable pageable = PageRequest.of((currentPage -1), pageSize, Sort.by("ORDER_DT","ORDER_NO").descending());
 		
 		int totalCnt = orderRepository.findByUsrId(usrId);
 		
@@ -66,6 +66,8 @@ public class OrderService {
 			DecimalFormat krFormat = new DecimalFormat("###,###원");
 			String cartPrice = krFormat.format(price);
 			orderDto.setItemPrice(cartPrice);
+			orderDto.setOrderNo(result[7].toString());
+			orderDto.setItemNo(result[8].toString());
 			list.add(orderDto);
 		}
 		log.info("orderDto : {}" , list);

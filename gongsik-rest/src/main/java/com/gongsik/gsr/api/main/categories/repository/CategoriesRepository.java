@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.gongsik.gsr.api.admin.dto.ItemListDto;
 import com.gongsik.gsr.api.main.categories.entity.CategoriesEntity;
 import com.gongsik.gsr.api.payment.dto.InvenDto;
 
@@ -85,4 +86,27 @@ public interface CategoriesRepository extends JpaRepository<CategoriesEntity, Lo
 		      + "        WHERE INVEN_S_CLS_NO = :itemNo  		"
 																															,nativeQuery=true)
 	void updateItemCnt(@Param("itemNo")String itemNo, @Param("invenCnt")int invenCnt);
+	
+	@Query(value=
+		      "			SELECT 			new com.gongsik.gsr.api.admin.dto.ItemListDto(																				    "
+		      + "		 	 A.invenLClsNm as invenLClsNm																			"
+		      + "			,A.invenMClsNm as invenMClsNm 																				"
+		      + "			,A.invenSClsNm as invenSClsNm 																				"
+		      + "			,A.invenLClsNo as invenLClsNo																				"
+		      + "			,A.invenMClsNo as invenMClsNo																				"
+		      + "			,A.invenSClsNo as invenSClsNo																				"
+		      + "			,CASE WHEN B.productPrice IS NOT NULL THEN B.productPrice										"
+		      + "        		WHEN C.chemistryPrice IS NOT NULL THEN C.chemistryPrice									"
+		      + "	        	WHEN D.seedPrice IS NOT NULL THEN D.seedPrice ELSE 0 END									"
+		      + "				AS itemPrice 																				"
+		      + "			,CASE WHEN B.productSalesCnt  IS NOT NULL THEN B.productSalesCnt						 	"
+		      + "        		WHEN C.chemistrySalesCnt  IS NOT NULL THEN C.chemistrySalesCnt							"
+		      + "	        	WHEN D.seedSalesCnt  IS NOT NULL THEN D.seedSalesCnt ELSE 0 END							"
+		      + "				AS itemSalesCnt 							)												"
+		      + "	FROM CategoriesEntity A																					"
+		      + "	LEFT JOIN ProductEntity B ON A.invenSClsNo = B.productNo 											"
+		      + "	LEFT JOIN ChemistryEntity C ON A.invenSClsNo = C.chemistryNo										"
+		      + "	LEFT JOIN SeedEntity D ON A.invenSClsNo = D.seedNo  												"
+		      + "	ORDER BY invenSClsNo												"			,nativeQuery=false)
+	List<ItemListDto> findByEndDate(@Param("endDate")String endDate);
 }

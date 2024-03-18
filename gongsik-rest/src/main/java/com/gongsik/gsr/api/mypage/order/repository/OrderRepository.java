@@ -1,20 +1,20 @@
 package com.gongsik.gsr.api.mypage.order.repository;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.gongsik.gsr.api.mypage.order.dto.OrderDto;
 import com.gongsik.gsr.api.mypage.order.entity.OrderEntity;
 
 
 @Repository
-public interface OrderRepository extends JpaRepository<OrderEntity, Long>{
+public interface OrderRepository extends JpaRepository<OrderEntity, String>{
 	
 	@Query(value = "SELECT 	"
 			+ "			    ITEM_NM                                             "
@@ -29,6 +29,8 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>{
 			+ "        	        WHEN C.SEED_PRICE IS NOT NULL THEN C.SEED_PRICE									"
 			+ "        	        WHEN D.PRODUCT_PRICE IS NOT NULL THEN D.PRODUCT_PRICE ELSE 0 END				"
 			+ "        			AS ITEM_PRICE 																	"
+			+ "            ,ORDER_NO											"
+			+ "            ,ITEM_NO                                             "
 			+ "      FROM GS_ORDER_INF a										"
 			+ "      LEFT JOIN GS_CHEMISTRY_INF B								"
 			+ "             ON A.ITEM_NO = B.CHEMISTRY_NO 						"
@@ -52,6 +54,26 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>{
 			+ "        SELECT MAX(ORDER_SEQ)+1	  "
 			+ "        FROM GS_ORDER_INF 		  "  ,nativeQuery=true)
 	long find();
+
+	OrderEntity findByUsrIdAndOrderDtAndItemNo(String usrId, String orderDt, String itemNo);
+
+	@Modifying
+	@Query(value= "								       "
+			+ "       UPDATE GS_ORDER_INF 		       "
+			+ "			 SET CANCEL_DT = :cancelDt     "
+			+ "			    ,ORDER_ST  = :orderSt      "
+			+ "		   WHERE USR_ID = :usrId           "
+			+ "			 AND ORDER_DT = :orderDt       "
+			+ "          AND ITEM_NO  = :itemNo        "
+			+ "          AND ORDER_NO = :merchantUid   "  ,nativeQuery=true)
+	
+	void updateCancel(@Param("usrId")String usrId, @Param("orderDt")String orderDt, @Param("itemNo")String itemNo, @Param("cancelDt")String cancelDt, @Param("orderSt")String orderSt, @Param("merchantUid")String merchantUid);
+
+	Optional<OrderEntity> findByUsrIdAndOrderNo(String usrId, String merchantUid);
+
+	Optional<OrderEntity> findByUsrIdAndItemNoAndOrderNo(String usrId, String itemNo, String merchantUid);
+
+
 	
 
 }
