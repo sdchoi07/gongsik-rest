@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.gongsik.gsr.api.main.categories.entity.SeedEntity;
 
 @Repository
-public interface SeedRepository extends JpaRepository<SeedEntity, Long>{
+public interface SeedRepository extends JpaRepository<SeedEntity, String>{
 
 	Optional<SeedEntity> findBySeedNo(String cartItemNo);
 

@@ -22,15 +22,14 @@ import lombok.ToString;
 public class CategoriesEntity {
 	
 	@Id
-	@Column(name = "INVEN_SEQ")
-	private long invenSeq;
-	
 	@Column(name = "INVEN_L_CLS_NM")
     private String invenLClsNm;
-
+	
+	@Id
 	@Column(name = "INVEN_M_CLS_NM")
     private String invenMClsNm;
-
+	
+	@Id
     @Column(name = "INVEN_S_CLS_NM")
     private String invenSClsNm;
 

@@ -22,14 +22,10 @@ import lombok.ToString;
 @Table(name = "GS_CHEMISTRY_INF")
 public class ChemistryEntity {
 
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "CHEMISTRY_SEQ")
-	private long chemistrySeq;
-	
 	@Column(name = "CHEMISTRY_NM")
     private String chemistryNm;
-
+	
+	@Id
 	@Column(name = "CHEMISTRY_NO")
     private String chemistryNo;
 

@@ -21,14 +21,11 @@ import lombok.ToString;
 @Table(name = "GS_PRODUCT_INF")
 public class ProductEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "PRODUCT_SEQ")
-	private long productSeq;
 	
 	@Column(name = "PRODUCT_NM")
     private String productNm;
-
+	
+	@Id
 	@Column(name = "PRODUCT_NO")
     private String productNo;
 

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.gongsik.gsr.api.main.categories.entity.ChemistryEntity;
 
 @Repository
-public interface ChemistryRepository extends JpaRepository<ChemistryEntity, Long>{
+public interface ChemistryRepository extends JpaRepository<ChemistryEntity, String>{
 
 	Optional<ChemistryEntity> findByChemistryNo(String cartItemNo);
 

@@ -9,7 +9,7 @@ import com.gongsik.gsr.api.main.categories.dto.CategoriesDto;
 import com.gongsik.gsr.api.main.categories.entity.ProductEntity;
 
 @Repository
-public interface ProductRepository extends JpaRepository<ProductEntity, Long>{
+public interface ProductRepository extends JpaRepository<ProductEntity, String>{
 
 	Optional<ProductEntity> findByProductNo(String cartNo);
 

@@ -15,7 +15,7 @@ import com.gongsik.gsr.api.main.categories.entity.CategoriesEntity;
 import com.gongsik.gsr.api.payment.dto.InvenDto;
 
 @Repository
-public interface CategoriesRepository extends JpaRepository<CategoriesEntity, Long>{
+public interface CategoriesRepository extends JpaRepository<CategoriesEntity, String>{
 
 	@Query(value=
 		      "	SELECT A.INVEN_S_CLS_NM, A.INVEN_S_CLS_NO, D.PRODUCT_PRICE, D.PRODUCT_SALES_CNT, A.INVEN_CNT, D.PRODUCT_URL,  F.DEL_YN ,F.USE_YN "

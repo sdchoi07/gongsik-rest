@@ -21,14 +21,10 @@ import lombok.ToString;
 @Table(name = "GS_SEED_INF")
 public class SeedEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "SEED_SEQ")
-	private long seedSeq;
-	
 	@Column(name = "SEED_NM")
     private String seedNm;
-
+	
+	@Id
 	@Column(name = "SEED_NO")
     private String seedNo;
 

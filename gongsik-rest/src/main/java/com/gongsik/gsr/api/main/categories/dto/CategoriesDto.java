@@ -19,7 +19,6 @@ import lombok.ToString;
 public class CategoriesDto extends CommonDto{
 
 	/* INVEN MST */
-	private long invenSeq;
     private String invenLClsNm;
     private String invenMClsNm;
     private String invenSClsNm;
