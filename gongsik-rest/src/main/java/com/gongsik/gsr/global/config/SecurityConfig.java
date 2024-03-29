@@ -4,31 +4,28 @@ package com.gongsik.gsr.global.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import com.gongsik.gsr.api.account.join.repository.AccountRepository;
-import com.gongsik.gsr.api.jwt.PrincipalService;
 import com.gongsik.gsr.global.jwt.JwtAuthenticationFilter;
 import com.gongsik.gsr.global.jwt.JwtAuthorizationFilter;
-
-import jakarta.servlet.Filter;
+import com.gongsik.gsr.global.jwt.JwtProvider;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 		//private PrincipalAuthenticatiorProvider principalAuthenticatiorProvider;
 		@Autowired
-		
 		private AccountRepository accountRepository;
-		
+		@Autowired
+		private RedisTemplate<String, String> redisTemplate;
 		
 		
 		//해당 메서드의 리턴되는 오브젝트를 ioC로 등록해줌.
@@ -40,8 +37,9 @@ public class SecurityConfig {
 		public SecurityFilterChain filterChain(HttpSecurity http)throws Exception{
 				AuthenticationManagerBuilder sharedObject = http.getSharedObject(AuthenticationManagerBuilder.class);
 		        AuthenticationManager authenticationManager = sharedObject.build();
+		        JwtProvider jwtProvider = new JwtProvider(redisTemplate);
 		        JwtAuthenticationFilter jwtAuthenticationFilter 
-                = new JwtAuthenticationFilter(authenticationManager);
+                = new JwtAuthenticationFilter(authenticationManager,jwtProvider);
 		        jwtAuthenticationFilter.setFilterProcessesUrl("/api/login");
 		        http.authenticationManager(authenticationManager);
 
@@ -68,14 +66,14 @@ public class SecurityConfig {
 						httpBasic.disable()
 			)
 			.addFilter(jwtAuthenticationFilter)
-			.addFilter(new JwtAuthenticationFilter(authenticationManager))
+			.addFilter(new JwtAuthenticationFilter(authenticationManager,jwtProvider))
 			.addFilter(new JwtAuthorizationFilter(authenticationManager,accountRepository))
 			.authorizeHttpRequests((authorizeRequests) ->
 					authorizeRequests
 							.requestMatchers("/api/login").permitAll()
 							.requestMatchers("/api/main/chk").hasAuthority("USER")
 							.requestMatchers("/api/mypage/**").authenticated()
-							.requestMatchers("/api/account/admin").hasAuthority("USER")
+//							.requestMatchers("/api/account/admin").hasAuthority("USER")
 							.requestMatchers("/api/admin/**").hasAuthority("ADMIN")
 							.anyRequest().permitAll()
 			);

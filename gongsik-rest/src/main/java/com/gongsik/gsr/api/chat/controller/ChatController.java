@@ -85,7 +85,6 @@ public class ChatController {
 			// 결과 값 가져오기
 
 			responseMono.subscribe(response -> {
-				System.out.println("여기 오냐 ?");
 				// 반환된 응답(response)을 이용하여 처리
 			}, error -> {
 				// 에러 처리

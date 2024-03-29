@@ -5,7 +5,7 @@
  <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
     <!-- 로그 파일이 저장될 경로 -->
     <!-- 로그 파일 이름 -->
-    <property name="LOG_FILE_NAME" value="gongsik-web"/>
+    <property name="LOG_FILE_NAME" value="gongsik-rest"/>
     <!-- 로그 출력 패턴 -->
     <property name="LOG_PATTERN" value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr([%thread]){magenta} %clr([%-5level]) %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
     <!-- 로그 레벨 -->

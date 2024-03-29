@@ -79,6 +79,8 @@ public class AccountEntity {
 	@Column(name= "CHAT_YN")
 	private String chatYn;
 	
+	@Column(name="REFRESH_TOKEN")
+	private String refreshToken;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "USR_LOG_IN_DT")

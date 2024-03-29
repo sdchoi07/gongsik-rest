@@ -50,6 +50,6 @@ public class JoinDto {
 	private LocalDateTime usrLogOutDt;
 	
 	private String logTp;
-	
+	private String refreshToken;
 	
 }

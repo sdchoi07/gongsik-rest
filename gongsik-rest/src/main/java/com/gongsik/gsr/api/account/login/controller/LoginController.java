@@ -9,6 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gongsik.gsr.api.account.login.service.LoginService;
+import com.gongsik.gsr.global.jwt.JwtProvider;
 import com.gongsik.gsr.global.vo.ResultVO;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,39 +34,34 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Login Controller", description = "로그인")
 @RequiredArgsConstructor
 public class LoginController {
-	
+
 	@Autowired
 	private LoginService loginService;
-	
-	
-	 
-	@Autowired
-	private RedisTemplate<String, String> redisTemplate;
-//	//로그인 
-//	@GetMapping("/login")
+	// 로그인
+//	@PostMapping("/login")
 //	@Operation(summary = "로그인", description = "로그인 하기")
-//	@ApiResponses(value = {
-//			@ApiResponse(responseCode = "200", description = "성공")
-//		})
-//	public ResponseEntity<TokenInfo> login(@RequestBody Map<String,String> map){
-//		TokenInfo tokenInfo = new TokenInfo();
-//		String usrId = map.get("usrId");
-//		String usrPwd = map.get("usrPwd");
-//		
-//		UsernamePasswordAuthenticationToken authenticationToken = 
-//				new UsernamePasswordAuthenticationToken(usrId, usrPwd);
-//		Authentication authentication = 
-//				authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-//		String jwt = jwtTokenProvider.generateToken(authentication);
-//		tokenInfo.setAccessToken(jwt);
-//		tokenInfo.setUsrNm("test");
-////		tokenInfo = loginService.loginSerivce(usrId, usrPwd);
-//		//국제번호 list에 담기 
-//		//resultVo = loginService.login();
-//		return new ResponseEntity<>(tokenInfo, HttpStatus.OK); 
+//	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "성공") })
+//	public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> map) {
+//		Map<String, Object> result = new HashMap<String, Object>();
+//
+//
+//		boolean tokenCheck = loginService.tokenChk(map);
+//		if (tokenCheck) {
+//
+//			result.put("code", "01");
+//		} else {
+//			
+//			String usrId = map.get("usrId");
+//			String usrPwd = map.get("usrPwd");
+//			Authentication authentication = jwtProvider.getAuthentication(usrId, usrPwd);
+//			result = loginService.accountData(authentication);
+//			result.put("code", "02");
+//		}
+//
+//		return new ResponseEntity<>(result, HttpStatus.OK);
 //	}
-		
-	//유저 데이터
+
+	// 유저 데이터
 	@PostMapping("/data")
 	@Operation(summary = "유저 데이터", description = "유저 데이터 확인")
 	@ApiResponses(value = {
@@ -69,36 +69,28 @@ public class LoginController {
 		})
 	public ResponseEntity<Map<String,Object>> loginData(@RequestBody Map<String,String> map){
 		Map<String,Object> result = new HashMap<String, Object>();
-		Date now = new Date(System.currentTimeMillis()+ (600000*10));
 		String usrId = map.get("usrId");
-		String refreshToken = map.get("refreshToken");
-        redisTemplate.opsForValue().set("usrId", usrId);
-        redisTemplate.opsForValue().set("refreshToken", refreshToken, Duration.ofMillis(now.getTime()));
-        result = loginService.accountData(usrId, refreshToken);
+        result = loginService.accountData(usrId);
         
 		return new ResponseEntity<>(result, HttpStatus.OK); 
 	}
-	
-	//SNS로그인
+
+	// SNS로그인
 	@PostMapping("/login/OAuth")
 	@Operation(summary = "sns 로그인", description = "sns 로그인")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "성공")
-		})
-	public ResponseEntity<ResultVO> SNSLogin(@RequestBody Map<String,String> map){
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "성공") })
+	public ResponseEntity<ResultVO> SNSLogin(@RequestBody Map<String, String> map) {
 		ResultVO resultVo = new ResultVO();
-		
-	    resultVo = loginService.SNSLogin(map);
-		return new ResponseEntity<>(resultVo, HttpStatus.OK); 
+
+		resultVo = loginService.SNSLogin(map);
+		return new ResponseEntity<>(resultVo, HttpStatus.OK);
 	}
-		
-	
-	//로그아웃
+
+	// 로그아웃
 	@PostMapping("/logout")
 	@Operation(summary = "로그아웃", description = "로그인 아웃")
-	public void logout(@RequestBody Map<String,String> map){
+	public void logout(@RequestBody Map<String, String> map) {
 		loginService.logout(map);
 	}
-	
-	
+
 }

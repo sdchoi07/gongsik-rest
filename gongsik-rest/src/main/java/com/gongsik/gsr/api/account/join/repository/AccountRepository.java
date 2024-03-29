@@ -62,5 +62,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, String>{
 																															,nativeQuery=true)
 	Optional<Object[]> findByUsrId2(@Param("usrId")String usrId);
 
+	Optional<AccountEntity> findByUsrIdAndLogTp(String usrId, String logTp);
+
 }
 

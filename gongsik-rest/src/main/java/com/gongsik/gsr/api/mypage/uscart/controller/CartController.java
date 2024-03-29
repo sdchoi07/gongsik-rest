@@ -59,7 +59,7 @@ public class CartController {
 	@Operation(summary = "장바구니 목록 삭제", description = "장바구니 목록 삭제 하기")
 	@Parameters({
 		@Parameter(description = "장바구니 번호 ", name = "cartNo", example = "1"),
-		@Parameter(description = "유저아이디 ", name = "cartNo", example = "test@gmail.com"),
+		@Parameter(description = "유저아이디 ", name = "usrId", example = "test@gmail.com"),
 	})
 	@ApiResponses(value = {
 			@ApiResponse(
@@ -78,7 +78,7 @@ public class CartController {
 	@Operation(summary = "장바구니 목록 추가", description = "장바구니 목록 추가 하기")
 	@Parameters({
 		@Parameter(description = "장바구니 번호 ", name = "cartNo", example = "1"),
-		@Parameter(description = "유저아이디 ", name = "cartNo", example = "test@gmail.com"),
+		@Parameter(description = "유저아이디 ", name = "usrId", example = "test@gmail.com"),
 	})
 	@ApiResponses(value = {
 			@ApiResponse(
