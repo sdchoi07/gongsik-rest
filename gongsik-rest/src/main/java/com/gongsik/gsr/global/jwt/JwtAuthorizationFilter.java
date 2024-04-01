@@ -29,78 +29,101 @@ import jakarta.servlet.http.HttpServletResponse;
 //시큐리티가 filter가지고 있는데 그 필터중에 BasicAuthenticationFilter 라는 것이 있음.
 //권한이나 인증이 필요한 특정주소를 요청했을 때 위 필터를 무조건 타게 되었음.
 //만약에 권한이 인증이 필요한 주소가 아니라면 이 필터 사용 안함
-public class JwtAuthorizationFilter extends BasicAuthenticationFilter{
-	
-	private AccountRepository accountRepository;
+public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-	
-	
-	public JwtAuthorizationFilter(AuthenticationManager authenticationManager, AccountRepository accountRepository) {
+	private AccountRepository accountRepository;
+	private final JwtProvider jwtProvider;
+
+	public JwtAuthorizationFilter(AuthenticationManager authenticationManager, AccountRepository accountRepository,
+			JwtProvider jwtProvider) {
 		super(authenticationManager);
+		this.jwtProvider = jwtProvider;
 		this.accountRepository = accountRepository;
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) 
-					throws IOException, ServletException{
-		//super.doFilterInternal(request, response, chain);
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+		// super.doFilterInternal(request, response, chain);
 		String jwtHeader = request.getHeader("Authorization");
-		//jwt토큰을 거증해서 정상적인 사용자인지 화인
-		if("".equals(jwtHeader) || jwtHeader == null || !jwtHeader.startsWith("Bearer")) {
+		// jwt토큰을 거증해서 정상적인 사용자인지 화인
+		if ("".equals(jwtHeader) || jwtHeader == null || !jwtHeader.startsWith("Bearer")) {
+			// refresh 토큰 유효 체크
 			chain.doFilter(request, response);
 			return;
-		}
-		
-		//jwt토큰을 검증을해서 정상적인 사용자인지 확인
-		 try {
-				String JwtToken = request.getHeader("Authorization").replace("Bearer ", "");
-				
-				String username = JWT.require(Algorithm.HMAC512("gongsik")).build().verify(JwtToken).getClaim("username").asString();
-				if(!"".equals(username) || !username.equals(null)) {
-					Optional<AccountEntity> account = accountRepository.findByUsrId(username);
-					if(account.isPresent()) {
-						AccountEntity result = account.get();
-					
-						PrincipalDetails principalDetails = new PrincipalDetails(result);
+		} else {
+			String type = request.getHeader("type");
+			if ("expire".equals(type)) {
+				String redisRefreshToken = jwtProvider.getStoredRefreshToken();
+				if (!"".equals(redisRefreshToken) && redisRefreshToken != null) {
+					String usrId = jwtProvider.getStoredRefreshTokenUsrId(redisRefreshToken);
+					// DB refresh 토큰
+//			String logTp = map.get("logTp");
+					Optional<AccountEntity> accountEntity = accountRepository.findByUsrIdAndLogTp(usrId, "A");
+					String dbRefreshToken = accountEntity.get().getRefreshToken();
+					// 아직 유효 하다면 세션 유지
+					if (dbRefreshToken.equals(redisRefreshToken)) {
+
+						String usrNm = accountEntity.get().getUsrNm();
+						String accessToken = jwtProvider.createToken(usrNm);
+						response.addHeader("Authorization", "Bearer " + accessToken);
 						
-						//Jwt 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어준다.
-						Authentication authentication = 
-								new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
-						//강제로 시큐리티의 세션에 접근하여 authentication 객체를 저장
-						SecurityContextHolder.getContext().setAuthentication(authentication);
-						
-						chain.doFilter(request, response);
 					}
 				}
-	        } catch (JWTVerificationException e) {
-	            // JWT 검증에 실패한 경우 예외 처리
-	            handleJwtVerificationException(response, e);
-	        }
-		
+			}
+		}
+		// jwt토큰을 검증을해서 정상적인 사용자인지 확인
+		try {
+			String JwtToken = request.getHeader("Authorization").replace("Bearer ", "");
+
+			String username = JWT.require(Algorithm.HMAC512("gongsik")).build().verify(JwtToken).getClaim("username")
+					.asString();
+			if (!"".equals(username) || !username.equals(null)) {
+				Optional<AccountEntity> account = accountRepository.findByUsrId(username);
+				if (account.isPresent()) {
+					AccountEntity result = account.get();
+
+					PrincipalDetails principalDetails = new PrincipalDetails(result);
+
+					// Jwt 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어준다.
+					Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null,
+							principalDetails.getAuthorities());
+					// 강제로 시큐리티의 세션에 접근하여 authentication 객체를 저장
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+
+					chain.doFilter(request, response);
+				}
+			}
+		} catch (JWTVerificationException e) {
+			// JWT 검증에 실패한 경우 예외 처리
+			handleJwtVerificationException(response, e);
+		}
+
 	}
-	 private void handleJwtVerificationException(HttpServletResponse response, JWTVerificationException e) throws IOException {
-		 	final Logger log =LoggerFactory.getLogger(JwtAuthorizationFilter.class);
-		 	ResultVO resultVo = new ResultVO();
-		 	ObjectMapper objectMapper = new ObjectMapper();
-            
-            
-		 	 if (e instanceof TokenExpiredException) {
-		            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		            response.setCharacterEncoding("UTF-8");
-		            resultVo.setCode("2");
-		            resultVo.setMsg("로그아웃 되었습니다. 다시 로그인 해주세요.");
-		            String jsonResponse = objectMapper.writeValueAsString(resultVo);
-		            response.setContentType("text/plain; charset=UTF-8");
-		            response.getWriter().write(jsonResponse);
-	        }else {
-	        	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-	        	resultVo.setCode("1");
-	        	String jsonResponse = objectMapper.writeValueAsString(resultVo);
-	        	response.getWriter().write(jsonResponse);
-		        }
-		 	if (log.isDebugEnabled()) {
-		        log.debug(String.format("exception: %s, message: %s", e.getClass().getName(), e.getMessage()));
-		    }
+
+	private void handleJwtVerificationException(HttpServletResponse response, JWTVerificationException e)
+			throws IOException {
+		final Logger log = LoggerFactory.getLogger(JwtAuthorizationFilter.class);
+		ResultVO resultVo = new ResultVO();
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		if (e instanceof TokenExpiredException) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.setCharacterEncoding("UTF-8");
+			resultVo.setCode("2");
+			resultVo.setMsg("로그아웃 되었습니다. 다시 로그인 해주세요.");
+			String jsonResponse = objectMapper.writeValueAsString(resultVo);
+			response.setContentType("text/plain; charset=UTF-8");
+			response.getWriter().write(jsonResponse);
+		} else {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			resultVo.setCode("1");
+			String jsonResponse = objectMapper.writeValueAsString(resultVo);
+			response.getWriter().write(jsonResponse);
+		}
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("exception: %s, message: %s", e.getClass().getName(), e.getMessage()));
+		}
 
 //	        // 예외에 따른 응답 처리
 //	        else if (e instanceof TokenExpiredException) {
@@ -120,5 +143,5 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter{
 //	            response.getWriter().write("Authentication failed.");
 //	        }
 //	    }
-	 }
- }
+	}
+}

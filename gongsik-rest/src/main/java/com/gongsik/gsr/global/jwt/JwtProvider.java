@@ -1,15 +1,27 @@
 package com.gongsik.gsr.global.jwt;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gongsik.gsr.api.account.join.entity.AccountEntity;
+import com.gongsik.gsr.global.vo.ResultVO;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -39,20 +51,35 @@ public class JwtProvider {
 	}
 	
 	
-	public boolean validateToken(String token) {
+	public String validateToken(String token) {
         try {
             // refreshToken 유효성 확인
-        	String JwtToken = token.replace("Bearer ", "");
 			
-			String username = JWT.require(Algorithm.HMAC512("gongsik")).build().verify(JwtToken).getClaim("username").asString();
-            return true;
+			String username = JWT.require(Algorithm.HMAC512("gongsik")).build().verify(token).getClaim("username").asString();
+			
+            return username;
         } catch (Exception e) {
-            return false;
+            return "";
         }
     }
 	
 	public String getStoredRefreshToken() {
         return redisTemplate.opsForValue().get("refreshToken");
     }
+	
+	public String getStoredRefreshTokenUsrId(String refreshToekn) {
+        return JWT.require(Algorithm.HMAC512("gongsik")).build().verify(refreshToekn).getClaim("username").asString();
+    }
+
+	public Authentication getAuthentication(String usrId, String usrPwd) {
+		
+		UsernamePasswordAuthenticationToken authenticationToken = 
+				new UsernamePasswordAuthenticationToken(usrId, usrPwd);
+		//loadUserByUsername()함수가 실행후 인증완료되었다는 의미
+		Authentication authentication = authenticationToken;
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		return authentication;
+	}
+
 
 }

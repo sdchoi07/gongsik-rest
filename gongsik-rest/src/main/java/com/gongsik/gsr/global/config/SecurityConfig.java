@@ -26,6 +26,9 @@ public class SecurityConfig {
 		private AccountRepository accountRepository;
 		@Autowired
 		private RedisTemplate<String, String> redisTemplate;
+		@Autowired
+		private JwtProvider jwtProvider;
+		
 		
 		
 		//해당 메서드의 리턴되는 오브젝트를 ioC로 등록해줌.
@@ -38,9 +41,9 @@ public class SecurityConfig {
 				AuthenticationManagerBuilder sharedObject = http.getSharedObject(AuthenticationManagerBuilder.class);
 		        AuthenticationManager authenticationManager = sharedObject.build();
 		        JwtProvider jwtProvider = new JwtProvider(redisTemplate);
-		        JwtAuthenticationFilter jwtAuthenticationFilter 
-                = new JwtAuthenticationFilter(authenticationManager,jwtProvider);
-		        jwtAuthenticationFilter.setFilterProcessesUrl("/api/login");
+//		        JwtAuthenticationFilter jwtAuthenticationFilter 
+//                = new JwtAuthenticationFilter(authenticationManager,jwtProvider);
+//		        jwtAuthenticationFilter.setFilterProcessesUrl("/api/login");
 		        http.authenticationManager(authenticationManager);
 
 	        
@@ -65,13 +68,12 @@ public class SecurityConfig {
 			.httpBasic((httpBasic)->
 						httpBasic.disable()
 			)
-			.addFilter(jwtAuthenticationFilter)
-			.addFilter(new JwtAuthenticationFilter(authenticationManager,jwtProvider))
-			.addFilter(new JwtAuthorizationFilter(authenticationManager,accountRepository))
+//			.addFilter(jwtAuthenticationFilter)
+//			.addFilter(new JwtAuthenticationFilter(authenticationManager,jwtProvider))
+			.addFilter(new JwtAuthorizationFilter(authenticationManager,accountRepository,jwtProvider))
 			.authorizeHttpRequests((authorizeRequests) ->
 					authorizeRequests
 							.requestMatchers("/api/login").permitAll()
-							.requestMatchers("/api/main/chk").hasAuthority("USER")
 							.requestMatchers("/api/mypage/**").authenticated()
 //							.requestMatchers("/api/account/admin").hasAuthority("USER")
 							.requestMatchers("/api/admin/**").hasAuthority("ADMIN")

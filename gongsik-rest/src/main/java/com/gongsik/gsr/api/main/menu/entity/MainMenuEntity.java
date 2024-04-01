@@ -45,8 +45,6 @@ public class MainMenuEntity{
    	
     @Embedded
     private CommonEntity comonEntity;
-
-    
     
 	
 }

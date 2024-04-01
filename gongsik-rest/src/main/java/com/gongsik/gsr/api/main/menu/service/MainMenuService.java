@@ -28,27 +28,10 @@ public class MainMenuService {
 	
 	 
 	public List<MainMenuDto> menuListAll(String usrRole) {
-//		MainMenuEntity mainMenuEntity = new MainMenuEntity();
-//		em.persist(mainMenuEntity);
-//		QMainMenuEntity menuEntitiy1 = QMainMenuEntity.mainMenuEntity;
-//		QMainMenuEntity menuEntitiy2 = QMainMenuEntity.mainMenuEntity;
-//		JPAQueryFactory query1 = new JPAQueryFactory(em);
-//		List<Tuple> result = query1.select(menuEntitiy1.menuNm,menuEntitiy1.menuNo,menuEntitiy1.menuGroupNo)
-//			 .from(menuEntitiy1)
-//			 .where(menuEntitiy1.menuLevelNo.eq(0))
-//			 .union(JPAExpressions.select(menuEntitiy1.menuNm,menuEntitiy1.menuNo,menuEntitiy1.menuGroupNo)
-//					 .from(menuEntitiy1)
-//					 .join(menuEntitiy2).on(menuEntitiy1.menuNo.eq(menuEntitiy2.menuLevelNo) , menuEntitiy1.menuGroupNo.eq(menuEntitiy2.menuGroupNo)));
-//		JPAQueryFactory query2 = new JPAQueryFactory(em);
-//		query2.select(menuEntitiy1.menuNm,menuEntitiy1.menuNo,menuEntitiy1.menuGroupNo)
-//			 .from(menuEntitiy1)
-//			 .join(menuEntitiy2).on(menuEntitiy1.menuNo.eq(menuEntitiy2.menuLevelNo) , menuEntitiy1.menuGroupNo.eq(menuEntitiy2.menuGroupNo));
-//			 
-//		JPAQueryFactory queryUnion = new JPAQueryFactory(em);
 		
 			 
 			 
-			 
+		//메뉴 조회	 
 		 List<MainMenuEntity> menuList = mainMenuRepository.findAll(usrRole);
 		 List<MainMenuDto> menus =  menuList.stream()
 										    .map(menu -> {

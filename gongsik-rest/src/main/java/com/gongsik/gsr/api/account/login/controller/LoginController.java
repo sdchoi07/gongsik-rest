@@ -1,18 +1,12 @@
 package com.gongsik.gsr.api.account.login.controller;
 
-import java.time.Duration;
-import java.util.Date;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +21,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -37,43 +33,46 @@ public class LoginController {
 
 	@Autowired
 	private LoginService loginService;
-	// 로그인
-//	@PostMapping("/login")
-//	@Operation(summary = "로그인", description = "로그인 하기")
-//	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "성공") })
-//	public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> map) {
-//		Map<String, Object> result = new HashMap<String, Object>();
-//
-//
-//		boolean tokenCheck = loginService.tokenChk(map);
-//		if (tokenCheck) {
-//
-//			result.put("code", "01");
-//		} else {
-//			
-//			String usrId = map.get("usrId");
-//			String usrPwd = map.get("usrPwd");
-//			Authentication authentication = jwtProvider.getAuthentication(usrId, usrPwd);
-//			result = loginService.accountData(authentication);
-//			result.put("code", "02");
-//		}
-//
-//		return new ResponseEntity<>(result, HttpStatus.OK);
-//	}
 
-	// 유저 데이터
-	@PostMapping("/data")
-	@Operation(summary = "유저 데이터", description = "유저 데이터 확인")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "성공")
-		})
-	public ResponseEntity<Map<String,Object>> loginData(@RequestBody Map<String,String> map){
-		Map<String,Object> result = new HashMap<String, Object>();
-		String usrId = map.get("usrId");
-        result = loginService.accountData(usrId);
-        
-		return new ResponseEntity<>(result, HttpStatus.OK); 
+	@Autowired
+	private JwtProvider jwtProvider;
+
+	// 로그인
+	@PostMapping("/login")
+	@Operation(summary = "로그인", description = "로그인 하기")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "성공") })
+	public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> map) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		result = loginService.accountData(map);
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
+
+	@GetMapping("/chk")
+	@Operation(summary = "검증 체크", description = "검증 체크")
+	public ResponseEntity<Map<String, Object>> chk(HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+		Map<String, Object> result = new HashMap<String, Object>();
+//		 
+//	    if (!"".equals(validationCondition)) {
+		result = loginService.save(request, response);
+//	        return new ResponseEntity(HttpStatus.OK);
+//	    } else {
+		return new ResponseEntity<>(result, HttpStatus.OK);
+//	    }
+	}
+	// 유저 데이터
+//	@PostMapping("/data")
+//	@Operation(summary = "유저 데이터", description = "유저 데이터 확인")
+//	@ApiResponses(value = {
+//			@ApiResponse(responseCode = "200", description = "성공")
+//		})
+//	public ResponseEntity<Map<String,Object>> loginData(@RequestBody Map<String,String> map){
+//		Map<String,Object> result = new HashMap<String, Object>();
+//		String usrId = map.get("usrId");
+//        result = loginService.accountData(usrId);
+//        
+//		return new ResponseEntity<>(result, HttpStatus.OK); 
+//	}
 
 	// SNS로그인
 	@PostMapping("/login/OAuth")
