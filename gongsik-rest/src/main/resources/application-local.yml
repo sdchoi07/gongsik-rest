@@ -5,7 +5,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://43.203.74.116:3306/gongsik_real?serverTimezone=Asia/Seoul
     username: gongsik_real
-    password: gongsik1207  
+    password: gongsik1207
   jpa:
    database-platform: org.hibernate.dialect.MySQLDialect
    hibernate:
